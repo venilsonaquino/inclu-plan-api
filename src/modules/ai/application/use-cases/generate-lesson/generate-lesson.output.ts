@@ -1,21 +1,21 @@
 export interface GenerateLessonOutput {
-  dias: Array<{
-    dia: string;
-    materias: Array<{
-      nome: string;
-      atividades: Array<{
-        objetivo: string;
+  days: Array<{
+    day: string;
+    subjects: Array<{
+      name: string;
+      activities: Array<{
+        objective: string;
         bncc: {
-          codigo: string;
-          descricao: string;
+          code: string;
+          description: string;
         };
-        descricao: string;
-        recursos: string;
-        avaliacao: string;
-        adaptacoes: Array<{
-          aluno: string;
-          perfil: string;
-          adaptacao: string;
+        description: string;
+        resources: string;
+        evaluation: string;
+        adaptations: Array<{
+          student: string;
+          profile: string;
+          adaptation: string;
         }>;
       }>;
     }>;
