@@ -1,6 +1,6 @@
 import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
-import { GenerateLessonUseCase } from '../../application/use-cases/generate-lesson/generate-lesson.use-case';
-import { GenerateMaterialUseCase } from '../../application/use-cases/generate-material/generate-material.use-case';
+import { GenerateLessonUseCase } from '@/modules/ai/application/use-cases/generate-lesson/generate-lesson.use-case';
+import { GenerateMaterialUseCase } from '@/modules/ai/application/use-cases/generate-material/generate-material.use-case';
 
 @Controller('ai')
 export class AiController {

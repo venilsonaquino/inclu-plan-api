@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GeminiProvider } from '../infra/integrations/gemini.provider';
-import { Result } from '../../../shared/domain/utils/Result';
+import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
+import { Result } from '@/shared/domain/utils/result';
 import { GenerateLessonInput } from './generate-lesson.input';
 import { GenerateLessonOutput } from './generate-lesson.output';
 
