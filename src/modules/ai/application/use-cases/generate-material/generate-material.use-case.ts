@@ -91,13 +91,16 @@ Perfil Neurodivergente: ${payload.studentData.profile}
 
 Crie o material pedagógico exclusivo para este aluno, baseando-se na atividade original.`;
 
-      // 1. Generate text and prompts
       let materialData = await this.geminiProvider.generateText(this.materialInstruction, promptText);
 
-      // Clean potential markdown blocks
       if (typeof materialData === 'string') {
         try {
-          const cleanedStr = materialData.replace(/^\s*```json\s*/, '').replace(/\s*```\s*$/, '').trim();
+          let cleanedStr = materialData;
+          const startIndex = cleanedStr.indexOf('{');
+          const endIndex = cleanedStr.lastIndexOf('}');
+          if (startIndex !== -1 && endIndex !== -1 && endIndex >= startIndex) {
+            cleanedStr = cleanedStr.substring(startIndex, endIndex + 1);
+          }
           materialData = JSON.parse(cleanedStr);
         } catch (e) {
           this.logger.error("JSON parse error after generation", e);
