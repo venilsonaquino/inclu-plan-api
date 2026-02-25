@@ -1,5 +1,30 @@
-import { IsString, IsArray, ValidateNested, IsOptional, ArrayMinSize } from 'class-validator';
+import { IsNotEmpty, IsString, IsArray, ValidateNested, IsOptional, ArrayMinSize, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
+
+export class DisciplineInput {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  theme: string;
+
+  @IsOptional()
+  @IsString()
+  observations?: string;
+}
+
+export class DayInput {
+  @IsString()
+  @IsNotEmpty()
+  day: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DisciplineInput)
+  disciplines: DisciplineInput[];
+}
 
 export class StudentDto {
   @IsString()
@@ -15,8 +40,10 @@ export class StudentDto {
 }
 
 export class GenerateLessonInput {
-  @IsString()
-  content: string;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DayInput)
+  days: DayInput[];
 
   @IsArray()
   @ValidateNested({ each: true })

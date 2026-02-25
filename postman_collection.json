@@ -1,0 +1,72 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
+    "name": "IncluPlanAI - AI Module Tests",
+    "description": "Coleção para testar as rotas do módulo de Inteligência Artificial do IncluPlan.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Gerar Planejamento de Aula (Lesson Plan)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"days\": [\n    {\n      \"day\": \"Quarta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Matemática\", \"theme\": \"Frações\", \"observations\": \"Usar materiais visuais\" }\n      ]\n    },\n    {\n      \"day\": \"Sexta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Português\", \"theme\": \"Substantivos Compostos\" }\n      ]\n    }\n  ],\n  \"students\": [\n    {\n      \"name\": \"Alice (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"profiles\": [\"Transtorno do Espectro Autista (Nível 1)\", \"TDAH\"]\n    },\n    {\n      \"name\": \"João (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"profiles\": [\"Dislexia\"]\n    }\n  ],\n  \"imagePart\": \"\" \n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/ai/lesson-plan",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "ai",
+            "lesson-plan"
+          ]
+        },
+        "description": "Testa a rota de geração do planejamento semanal para a turma. O campo `imagePart` é opcional e pode conter o Base64 de uma imagem enviada pelo professor."
+      },
+      "response": []
+    },
+    {
+      "name": "Gerar Material Pedagógico (Material Generation)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"activityText\": \"Aula sobre o Sistema Solar. Os alunos vão aprender a ordem dos planetas e as características principais do Sol e da Terra mediante leitura compartilhada e pintura.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\"\n  }\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/ai/pedagogical-material",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "ai",
+            "pedagogical-material"
+          ]
+        },
+        "description": "Testa a geração paralela de material pedagógico individual adaptado. Nota: Se as chaves do Imagen estiverem ativas, a resposta voltará com Base64 de imagens nos cards."
+      },
+      "response": []
+    }
+  ]
+}
