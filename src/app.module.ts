@@ -6,6 +6,7 @@ import { AiModule } from './modules/ai/ai.module';
 import { TeachersModule } from './modules/teachers/teachers.module';
 import { StudentsModule } from './modules/students/students.module';
 import { SchoolClassesModule } from './modules/school-classes/school-classes.module';
+import { GradesModule } from './modules/grades/grades.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { SchoolClassesModule } from './modules/school-classes/school-classes.mod
     AiModule,
     TeachersModule,
     StudentsModule,
-    SchoolClassesModule
+    SchoolClassesModule,
+    GradesModule
   ],
   controllers: [],
   providers: [],
