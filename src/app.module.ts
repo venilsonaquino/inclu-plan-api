@@ -4,6 +4,7 @@ import { UsersModule } from './modules/users/users.module';
 import { WalletsModule } from './modules/wallets/wallets.module';
 import { AiModule } from './modules/ai/ai.module';
 import { TeachersModule } from './modules/teachers/teachers.module';
+import { StudentsModule } from './modules/students/students.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { TeachersModule } from './modules/teachers/teachers.module';
     UsersModule,
     WalletsModule,
     AiModule,
-    TeachersModule
+    TeachersModule,
+    StudentsModule
   ],
   controllers: [],
   providers: [],
