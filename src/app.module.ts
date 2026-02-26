@@ -5,6 +5,7 @@ import { TeachersModule } from './modules/teachers/teachers.module';
 import { StudentsModule } from './modules/students/students.module';
 import { SchoolClassesModule } from './modules/school-classes/school-classes.module';
 import { GradesModule } from './modules/grades/grades.module';
+import { LearningProfilesModule } from './modules/learning-profiles/learning-profiles.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { GradesModule } from './modules/grades/grades.module';
     TeachersModule,
     StudentsModule,
     SchoolClassesModule,
-    GradesModule
+    GradesModule,
+    LearningProfilesModule
   ],
   controllers: [],
   providers: [],
