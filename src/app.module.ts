@@ -6,6 +6,7 @@ import { StudentsModule } from './modules/students/students.module';
 import { SchoolClassesModule } from './modules/school-classes/school-classes.module';
 import { GradesModule } from './modules/grades/grades.module';
 import { LearningProfilesModule } from './modules/learning-profiles/learning-profiles.module';
+import { StudentLearningProfilesModule } from './modules/student-learning-profiles/student-learning-profiles.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { LearningProfilesModule } from './modules/learning-profiles/learning-pro
     StudentsModule,
     SchoolClassesModule,
     GradesModule,
-    LearningProfilesModule
+    LearningProfilesModule,
+    StudentLearningProfilesModule
   ],
   controllers: [],
   providers: [],
