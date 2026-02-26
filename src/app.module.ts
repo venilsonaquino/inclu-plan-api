@@ -5,6 +5,7 @@ import { WalletsModule } from './modules/wallets/wallets.module';
 import { AiModule } from './modules/ai/ai.module';
 import { TeachersModule } from './modules/teachers/teachers.module';
 import { StudentsModule } from './modules/students/students.module';
+import { SchoolClassesModule } from './modules/school-classes/school-classes.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { StudentsModule } from './modules/students/students.module';
     WalletsModule,
     AiModule,
     TeachersModule,
-    StudentsModule
+    StudentsModule,
+    SchoolClassesModule
   ],
   controllers: [],
   providers: [],
