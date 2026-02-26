@@ -14,7 +14,7 @@ export class CreateStudentUseCase {
       const newStudent = new Student({
         id: crypto.randomUUID(),
         name: input.name,
-        grade: input.grade,
+        gradeId: input.gradeId,
         profiles: input.profiles,
         schoolClassId: input.schoolClassId,
         notes: input.notes,
@@ -27,7 +27,7 @@ export class CreateStudentUseCase {
       return Result.ok({
         id: newStudent.id,
         name: newStudent.name,
-        grade: newStudent.grade,
+        gradeId: newStudent.gradeId,
         profiles: newStudent.profiles,
         schoolClassId: newStudent.schoolClassId,
         createdAt: newStudent.createdAt

@@ -7,7 +7,7 @@ export class CreateStudentInput {
 
   @IsString()
   @IsNotEmpty()
-  grade: string;
+  gradeId: string;
 
   @IsArray()
   @IsString({ each: true })

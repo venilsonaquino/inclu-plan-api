@@ -1,7 +1,7 @@
 export class CreateStudentOutput {
   id: string;
   name: string;
-  grade: string;
+  gradeId: string;
   profiles: string[];
   schoolClassId?: string;
   createdAt: Date;
