@@ -1,16 +1,12 @@
 name: CI Build and Test
 
 on:
-  push:
-    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "main", "dev" ] # Roda apenas quando um PR é aberto para estas branches
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [20.x]
@@ -38,16 +34,5 @@ jobs:
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  docker-build:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Build production Docker image
-      run: docker build -f docker/Dockerfile -t inclu-plan-api:latest .
