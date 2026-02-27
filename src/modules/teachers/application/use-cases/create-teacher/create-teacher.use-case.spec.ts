@@ -1,6 +1,7 @@
 import { CreateTeacherUseCase } from './create-teacher.use-case';
 import { InMemoryTeachersRepository } from '@/modules/teachers/infra/persistence/in-memory/in-memory-teachers.repository';
 import { CreateTeacherInput } from './create-teacher.input';
+import { CreateTeacherOutput } from './create-teacher.output';
 import { CryptoUtil } from '@/shared/utils/crypto.util';
 
 describe('CreateTeacherUseCase', () => {
@@ -61,5 +62,11 @@ describe('CreateTeacherUseCase', () => {
 
     expect(result.isFailure).toBe(true);
     expect(result.errorValue()).toBe('Email already in use.');
+  });
+});
+
+describe('CreateTeacherOutput', () => {
+  it('should be defined', () => {
+    expect(new CreateTeacherOutput()).toBeDefined();
   });
 });
