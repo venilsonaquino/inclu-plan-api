@@ -43,16 +43,22 @@ export class GenerateLessonUseCase {
   }
 
   private buildSemanticVectorString(payload: GenerateLessonInput): string {
-    const profiles = payload.students
-      .map(s => `Série/Ano: ${s.grade || 'Não informada'}, Transtornos/Necessidades: ${s.profiles.join(', ')}`)
-      .join(' | ');
-
     const disciplines = (payload.days || [])
       .flatMap(d => d.disciplines)
-      .map(disc => `Disciplina: ${disc.name}, Tema: ${disc.theme}${disc.observations ? `, Observações: ${disc.observations}` : ''}`)
+      .map(disc => `Disciplina: ${disc.name}, Tema: ${disc.theme}`)
       .join(' | ');
 
-    return `PERFIL DOS ALUNOS: ${profiles}. CONTEÚDO ACADÊMICO: ${disciplines}`;
+    return `CONTEÚDO ACADÊMICO: ${disciplines}`;
+  }
+
+  // Define um Hash rígido para a Turma/Nível de Aprendizagem, ignorando o Nome do aluno e Dias da semana
+  private buildPedagogicalHash(payload: GenerateLessonInput): string {
+    const profileHashBase = payload.students
+      .map(s => `[Série:${s.grade || 'N/A'}-Transtornos:${[...s.profiles].sort().join(',')}]`)
+      .sort() // Ordena para garantir que a ordem dos estudantes não quebre o Hash
+      .join('|');
+
+    return Buffer.from(profileHashBase).toString('base64');
   }
 
   async execute(payload: GenerateLessonInput): Promise<Result<GenerateLessonOutput>> {
@@ -63,12 +69,12 @@ export class GenerateLessonUseCase {
       // --- HYBRID RAG SIMULATION ---
       this.logger.log('Executing RAG Strategy: Checking Vector Memory...');
 
-      // 1. Vetoriza um texto rico em semântica pedagógica (Série, Perfil + Disciplinas sem os dias)
+      // 1. Vetoriza um texto ESTRITAMENTE acadêmico (Apenas Disciplinas e Temas Base)
       const semanticVectorString = this.buildSemanticVectorString(payload);
       const contentVector = await this.geminiProvider.generateEmbeddings(semanticVectorString);
 
-      // 2. Hash das condições exatas do aluno para atuar como nossos "Hard SQL Filters" 
-      const studentHash = Buffer.from(studentsString).toString('base64');
+      // 2. Hash das condições exatas de Aprendizagem (Série + Transtornos), sem Nomes ou Dias da Semana 
+      const studentHash = this.buildPedagogicalHash(payload);
 
       // 3. Busca na memória (distância cosseno) via Repository
       this.logger.log('Executing RAG Strategy: Checking Vector Repository...');
