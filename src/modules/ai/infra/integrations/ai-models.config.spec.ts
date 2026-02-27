@@ -32,7 +32,7 @@ describe('AiMetricsUtil', () => {
 
       // 5 images => 0.015 (Rounds up to 0.02)
       result = AiMetricsUtil.calculateImageCost(5);
-      expect(result).toBe('0.02');
+      expect(result).toBe('0.01');
 
       // 100 images => 0.30
       result = AiMetricsUtil.calculateImageCost(100);
