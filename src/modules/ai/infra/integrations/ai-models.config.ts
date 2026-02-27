@@ -13,7 +13,7 @@ export const AI_MODELS = {
     },
   },
   EMBEDDING: {
-    name: 'text-embedding-004',
+    name: 'gemini-embedding-001',
     pricing: {
       perMillionTokens: 0.000, // Virtually free, 1500 RPM on free tier
     }

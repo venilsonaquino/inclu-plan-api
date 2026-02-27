@@ -34,21 +34,25 @@ export class GenerateLessonUseCase {
   }
 
   private buildContentsContext(days: GenerateLessonInput['days']): string {
-    let contentsStr = '';
-    if (days && days.length > 0) {
-      days.forEach(d => {
-        contentsStr += `[${d.day}]\n`;
-        d.disciplines.forEach(disc => {
-          contentsStr += `  - ${disc.name} (Tema: ${disc.theme})`;
-          if (disc.observations) {
-            contentsStr += ` | Observações: ${disc.observations}`;
-          }
-          contentsStr += '\n';
-        });
-        contentsStr += '\n';
-      });
-    }
-    return contentsStr;
+    if (!days || days.length === 0) return '';
+    return days.map(d =>
+      `[${d.day}]\n` + d.disciplines.map(disc =>
+        `  - ${disc.name} (Tema: ${disc.theme})${disc.observations ? ` | Observações: ${disc.observations}` : ''}\n`
+      ).join('') + '\n'
+    ).join('');
+  }
+
+  private buildSemanticVectorString(payload: GenerateLessonInput): string {
+    const profiles = payload.students
+      .map(s => `Série/Ano: ${s.grade || 'Não informada'}, Transtornos/Necessidades: ${s.profiles.join(', ')}`)
+      .join(' | ');
+
+    const disciplines = (payload.days || [])
+      .flatMap(d => d.disciplines)
+      .map(disc => `Disciplina: ${disc.name}, Tema: ${disc.theme}${disc.observations ? `, Observações: ${disc.observations}` : ''}`)
+      .join(' | ');
+
+    return `PERFIL DOS ALUNOS: ${profiles}. CONTEÚDO ACADÊMICO: ${disciplines}`;
   }
 
   async execute(payload: GenerateLessonInput): Promise<Result<GenerateLessonOutput>> {
@@ -59,8 +63,9 @@ export class GenerateLessonUseCase {
       // --- HYBRID RAG SIMULATION ---
       this.logger.log('Executing RAG Strategy: Checking Vector Memory...');
 
-      // 1. Vetoriza apenas o conteúdo acadêmico (ignorando informações de aluno para a matemática vetorial)
-      const contentVector = await this.geminiProvider.generateEmbeddings(contentsString);
+      // 1. Vetoriza um texto rico em semântica pedagógica (Série, Perfil + Disciplinas sem os dias)
+      const semanticVectorString = this.buildSemanticVectorString(payload);
+      const contentVector = await this.geminiProvider.generateEmbeddings(semanticVectorString);
 
       // 2. Hash das condições exatas do aluno para atuar como nossos "Hard SQL Filters" 
       const studentHash = Buffer.from(studentsString).toString('base64');
