@@ -111,7 +111,7 @@ describe('GeminiProvider', () => {
   describe('generateImage', () => {
     it('should return base64 encoded string on success', async () => {
       const mockResponse = {
-        predictions: [{ bytesBase64Encoded: 'base64string' }]
+        candidates: [{ content: { parts: [{ inlineData: { data: 'base64string' } }] } }]
       };
 
       (global.fetch as jest.Mock).mockResolvedValue({
@@ -143,7 +143,7 @@ describe('GeminiProvider', () => {
     it('should return null if response format is unexpected', async () => {
       (global.fetch as jest.Mock).mockResolvedValue({
         ok: true,
-        json: jest.fn().mockResolvedValue({ predictions: [] }),
+        json: jest.fn().mockResolvedValue({ candidates: [] }),
       });
 
       const result = await provider.generateImage('draw a cat');

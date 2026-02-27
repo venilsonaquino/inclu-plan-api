@@ -7,9 +7,9 @@ export const AI_MODELS = {
     },
   },
   IMAGE: {
-    name: 'gemini-3.1-flash-image',
+    name: 'gemini-3.1-flash-image-preview',
     pricing: {
-      perImage: 0.003,
+      perImage: 0.003, // Nano Banana Preview Estimate
     },
   },
 };

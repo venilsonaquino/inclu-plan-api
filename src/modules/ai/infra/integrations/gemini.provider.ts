@@ -82,14 +82,11 @@ export class GeminiProvider {
 
   async generateImage(imagePrompt: string): Promise<string | null> {
     const apiKey = this.getApiKey();
-    const url = `${this.baseUrl}/${AI_MODELS.IMAGE.name}:predict?key=${apiKey}`;
+    // A API do Flash (Nano Banana) usa o padrão generateContent como texto
+    const url = `${this.baseUrl}/${AI_MODELS.IMAGE.name}:generateContent?key=${apiKey}`;
 
     const requestBody = {
-      instances: [{ prompt: imagePrompt }],
-      parameters: {
-        sampleCount: 1,
-        outputOptions: { mimeType: 'image/jpeg' },
-      },
+      contents: [{ parts: [{ text: imagePrompt }] }]
     };
 
     try {
@@ -105,7 +102,7 @@ export class GeminiProvider {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         this.logger.warn(
-          `[${AI_MODELS.IMAGE.name}] Imagen API failed with status: ${response.status} (Latency: ${latencyMs}ms)`
+          `[${AI_MODELS.IMAGE.name}] API failed with status: ${response.status} (Latency: ${latencyMs}ms)`
         );
         this.logger.error(`[${AI_MODELS.IMAGE.name}] Details: ${JSON.stringify(errorData)}`);
         return null;
@@ -117,8 +114,12 @@ export class GeminiProvider {
       const cost = AiMetricsUtil.calculateImageCost(1);
       this.logger.log(`[${AI_MODELS.IMAGE.name}] Latency: ${latencyMs}ms | Generated 1 image | Est. Cost: $${cost} USD`);
 
-      if (data.predictions && data.predictions[0] && data.predictions[0].bytesBase64Encoded) {
-        return data.predictions[0].bytesBase64Encoded;
+      // O Nano Banana devolve a imagem no corpo de parts -> inlineData -> data (base64)
+      const candidateParts = data.candidates?.[0]?.content?.parts || [];
+      for (const part of candidateParts) {
+        if (part.inlineData && part.inlineData.data) {
+          return part.inlineData.data; // Retorna o Base64 nativo
+        }
       }
       return null;
     } catch (error) {

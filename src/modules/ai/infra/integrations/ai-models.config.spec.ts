@@ -30,7 +30,7 @@ describe('AiMetricsUtil', () => {
       let result = AiMetricsUtil.calculateImageCost(1);
       expect(result).toBe('0.00');
 
-      // 5 images => 0.015 (Rounds up to 0.02)
+      // 5 images => 0.015
       result = AiMetricsUtil.calculateImageCost(5);
       expect(result).toBe('0.01');
 
@@ -52,7 +52,7 @@ describe('AiMetricsUtil', () => {
       expect(AI_MODELS.TEXT.pricing.inputPerMillion).toBe(0.075);
       expect(AI_MODELS.TEXT.pricing.outputPerMillion).toBe(0.30);
 
-      expect(AI_MODELS.IMAGE.name).toBe('gemini-3.1-flash-image');
+      expect(AI_MODELS.IMAGE.name).toBe('gemini-3.1-flash-image-preview');
       expect(AI_MODELS.IMAGE.pricing.perImage).toBe(0.003);
     });
   });
