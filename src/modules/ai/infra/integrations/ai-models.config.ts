@@ -2,16 +2,14 @@ export const AI_MODELS = {
   TEXT: {
     name: 'gemini-2.5-flash',
     pricing: {
-      // Prices in USD per 1 million tokens
       inputPerMillion: 0.075,
       outputPerMillion: 0.30,
     },
   },
   IMAGE: {
-    name: 'imagen-4.0-generate-001',
+    name: 'gemini-3.1-flash-image',
     pricing: {
-      // Price in USD per 1 generated image
-      perImage: 0.03,
+      perImage: 0.003,
     },
   },
 };
