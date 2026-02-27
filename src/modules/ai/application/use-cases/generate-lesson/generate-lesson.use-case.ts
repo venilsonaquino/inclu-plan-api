@@ -1,9 +1,8 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateLessonInput } from './generate-lesson.input';
 import { GenerateLessonOutput } from './generate-lesson.output';
-import { ILessonPlanRepository, I_LESSON_PLAN_REPOSITORY } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -11,10 +10,7 @@ import * as path from 'path';
 export class GenerateLessonUseCase {
   private readonly logger = new Logger(GenerateLessonUseCase.name);
 
-  constructor(
-    private readonly geminiProvider: GeminiProvider,
-    @Inject(I_LESSON_PLAN_REPOSITORY) private readonly lessonRepository: ILessonPlanRepository
-  ) { }
+  constructor(private readonly geminiProvider: GeminiProvider) { }
 
   private loadPromptTemplate(filename: string): string {
     try {
@@ -42,52 +38,12 @@ export class GenerateLessonUseCase {
     ).join('');
   }
 
-  private buildSemanticVectorString(payload: GenerateLessonInput): string {
-    const disciplines = (payload.days || [])
-      .flatMap(d => d.disciplines)
-      .map(disc => `Disciplina: ${disc.name}, Tema: ${disc.theme}`)
-      .join(' | ');
-
-    return `CONTEÚDO ACADÊMICO: ${disciplines}`;
-  }
-
-  // Define um Hash rígido para a Turma/Nível de Aprendizagem, ignorando o Nome do aluno e Dias da semana
-  private buildPedagogicalHash(payload: GenerateLessonInput): string {
-    const profileHashBase = payload.students
-      .map(s => `[Série:${s.grade || 'N/A'}-Transtornos:${[...s.profiles].sort().join(',')}]`)
-      .sort() // Ordena para garantir que a ordem dos estudantes não quebre o Hash
-      .join('|');
-
-    return Buffer.from(profileHashBase).toString('base64');
-  }
-
   async execute(payload: GenerateLessonInput): Promise<Result<GenerateLessonOutput>> {
     try {
       const studentsString = this.buildStudentsContext(payload.students);
       const contentsString = this.buildContentsContext(payload.days);
 
-      // --- HYBRID RAG SIMULATION ---
-      this.logger.log('Executing RAG Strategy: Checking Vector Memory...');
-
-      // 1. Vetoriza um texto ESTRITAMENTE acadêmico (Apenas Disciplinas e Temas Base)
-      const semanticVectorString = this.buildSemanticVectorString(payload);
-      const contentVector = await this.geminiProvider.generateEmbeddings(semanticVectorString);
-
-      // 2. Hash das condições exatas de Aprendizagem (Série + Transtornos), sem Nomes ou Dias da Semana 
-      const studentHash = this.buildPedagogicalHash(payload);
-
-      // 3. Busca na memória (distância cosseno) via Repository
-      this.logger.log('Executing RAG Strategy: Checking Vector Repository...');
-      const SIMILARITY_THRESHOLD = 0.85;
-
-      const cachedLesson = await this.lessonRepository.findSimilar(studentHash, contentVector, SIMILARITY_THRESHOLD);
-
-      if (cachedLesson) {
-        this.logger.log(`High Similarity Found! Returning cached lesson plan (Custo: $0.00)`);
-        return Result.ok<GenerateLessonOutput>(cachedLesson.lessonResult);
-      }
-
-      this.logger.log('No cache found. Falling back to Gemini LLM generation...');
+      this.logger.log('Generating lesson via Gemini LLM...');
 
       const systemInstruction = this.loadPromptTemplate('generate-lesson.system.md');
       let promptText = this.loadPromptTemplate('generate-lesson.user.md');
@@ -98,19 +54,7 @@ export class GenerateLessonUseCase {
 
       const aiResponse = await this.geminiProvider.generateText(systemInstruction, promptText, payload.imagePart);
 
-      // --- SAVE TO CACHE ---
-      const generatedLesson = aiResponse as GenerateLessonOutput;
-
-      await this.lessonRepository.save({
-        id: crypto.randomUUID(),
-        studentContextHash: studentHash,
-        contentEmbedding: contentVector,
-        lessonResult: generatedLesson
-      });
-
-      this.logger.log('Saved newly generated lesson plan to Vector Repository.');
-
-      return Result.ok<GenerateLessonOutput>(generatedLesson);
+      return Result.ok<GenerateLessonOutput>(aiResponse as GenerateLessonOutput);
     } catch (error) {
       this.logger.error('Failed to generate lesson', error);
       return Result.fail<GenerateLessonOutput>(error instanceof Error ? error.message : 'Unknown error generating lesson');
