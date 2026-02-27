@@ -22,57 +22,66 @@ export class GenerateMaterialUseCase {
     }
   }
 
+  private buildPromptContext(template: string, payload: GenerateMaterialInput): string {
+    return template
+      .replace('{{ACTIVITY_TEXT}}', payload.activityText)
+      .replace('{{STUDENT_NAME}}', payload.studentData.name)
+      .replace('{{STUDENT_PROFILE}}', payload.studentData.profile);
+  }
+
+  private sanitizeAndParseJson(rawData: string | any): any {
+    if (typeof rawData !== 'string') return rawData;
+
+    let cleanedStr = rawData;
+    const startIndex = cleanedStr.indexOf('{');
+    const endIndex = cleanedStr.lastIndexOf('}');
+    if (startIndex !== -1 && endIndex !== -1 && endIndex >= startIndex) {
+      cleanedStr = cleanedStr.substring(startIndex, endIndex + 1);
+    }
+
+    try {
+      return JSON.parse(cleanedStr);
+    } catch (e) {
+      this.logger.error("JSON parse error after generation", e);
+      throw new Error("Invalid format received from AI.");
+    }
+  }
+
+  private async fetchImagesForMaterial(materialData: any): Promise<void> {
+    const imagePromises: Promise<void>[] = [];
+
+    if (Array.isArray(materialData?.cards)) {
+      const cardPromises = materialData.cards
+        .filter((card: any) => card.imagePrompt)
+        .map((card: any) =>
+          this.geminiProvider.generateImage(card.imagePrompt)
+            .then(base64 => { card.generatedImage = base64; })
+            .catch(e => { this.logger.warn(`Card image failed: ${e.message}`); })
+        );
+      imagePromises.push(...cardPromises);
+    }
+
+    if (materialData?.board?.imagePrompt) {
+      imagePromises.push(
+        this.geminiProvider.generateImage(materialData.board.imagePrompt)
+          .then(base64 => { materialData.board.generatedImage = base64; })
+          .catch(e => { this.logger.warn(`Board image failed: ${e.message}`); })
+      );
+    }
+
+    await Promise.all(imagePromises);
+  }
+
   async execute(payload: GenerateMaterialInput): Promise<Result<GenerateMaterialOutput>> {
     try {
       const systemInstruction = this.loadPromptTemplate('generate-material.system.md');
-      let promptText = this.loadPromptTemplate('generate-material.user.md');
+      const basePrompt = this.loadPromptTemplate('generate-material.user.md');
+      const promptText = this.buildPromptContext(basePrompt, payload);
 
-      promptText = promptText
-        .replace('{{ACTIVITY_TEXT}}', payload.activityText)
-        .replace('{{STUDENT_NAME}}', payload.studentData.name)
-        .replace('{{STUDENT_PROFILE}}', payload.studentData.profile);
+      const rawAiResponse = await this.geminiProvider.generateText(systemInstruction, promptText);
+      const materialData = this.sanitizeAndParseJson(rawAiResponse);
 
-      let materialData = await this.geminiProvider.generateText(systemInstruction, promptText);
-
-      if (typeof materialData === 'string') {
-        try {
-          let cleanedStr = materialData;
-          const startIndex = cleanedStr.indexOf('{');
-          const endIndex = cleanedStr.lastIndexOf('}');
-          if (startIndex !== -1 && endIndex !== -1 && endIndex >= startIndex) {
-            cleanedStr = cleanedStr.substring(startIndex, endIndex + 1);
-          }
-          materialData = JSON.parse(cleanedStr);
-        } catch (e) {
-          this.logger.error("JSON parse error after generation", e);
-          throw new Error("Invalid format received from AI.");
-        }
-      }
-
-      // 2. Fetch images in parallel
-      const imagePromises: Promise<void>[] = [];
-
-      // Ensure array exists
-      if (materialData.cards && Array.isArray(materialData.cards)) {
-        for (const card of materialData.cards) {
-          if (card.imagePrompt) {
-            const p = this.geminiProvider.generateImage(card.imagePrompt)
-              .then(base64 => { card.generatedImage = base64; })
-              .catch(e => { this.logger.warn(`Card image failed: ${e.message}`); });
-            imagePromises.push(p);
-          }
-        }
-      }
-
-      if (materialData.board && materialData.board.imagePrompt) {
-        const p = this.geminiProvider.generateImage(materialData.board.imagePrompt)
-          .then(base64 => { materialData.board.generatedImage = base64; })
-          .catch(e => { this.logger.warn(`Board image failed: ${e.message}`); });
-        imagePromises.push(p);
-      }
-
-      // Await all parallel generation calls
-      await Promise.all(imagePromises);
+      await this.fetchImagesForMaterial(materialData);
 
       return Result.ok<GenerateMaterialOutput>(materialData);
     } catch (error) {

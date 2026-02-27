@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import axios from 'axios';
 import { AI_MODELS, AiMetricsUtil } from './ai-models.config';
 
 @Injectable()
@@ -39,19 +40,12 @@ export class GeminiProvider {
 
     try {
       const startTime = performance.now();
-      const response = await fetch(url, {
-        method: 'POST',
+      const response = await axios.post(url, requestBody, {
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || `Gemini API error: ${response.status}`);
-      }
-
-      const data = await response.json();
       const latencyMs = Math.round(performance.now() - startTime);
+      const data = response.data;
 
       const candidate = data.candidates?.[0];
       const rawText = candidate?.content?.parts?.[0]?.text;
@@ -74,7 +68,11 @@ export class GeminiProvider {
       }
 
       return JSON.parse(rawText);
-    } catch (error) {
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) {
+        this.logger.error(`Gemini API error: ${error.response.status}`, error.response.data);
+        throw new Error(error.response.data?.error?.message || `Gemini API error: ${error.response.status}`);
+      }
       this.logger.error('Error in generateText', error);
       throw error;
     }
@@ -89,26 +87,15 @@ export class GeminiProvider {
       contents: [{ parts: [{ text: imagePrompt }] }]
     };
 
+    const startTime = performance.now();
+
     try {
-      const startTime = performance.now();
-      const response = await fetch(url, {
-        method: 'POST',
+      const response = await axios.post(url, requestBody, {
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
       });
 
       const latencyMs = Math.round(performance.now() - startTime);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        this.logger.warn(
-          `[${AI_MODELS.IMAGE.name}] API failed with status: ${response.status} (Latency: ${latencyMs}ms)`
-        );
-        this.logger.error(`[${AI_MODELS.IMAGE.name}] Details: ${JSON.stringify(errorData)}`);
-        return null;
-      }
-
-      const data = await response.json();
+      const data = response.data;
 
       // Pricing logic moved to AiMetricsUtil
       const cost = AiMetricsUtil.calculateImageCost(1);
@@ -122,8 +109,15 @@ export class GeminiProvider {
         }
       }
       return null;
-    } catch (error) {
-      this.logger.error('Error generating image', error);
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) {
+        this.logger.warn(
+          `[${AI_MODELS.IMAGE.name}] API failed with status: ${error.response.status} (Latency: ${Math.round(performance.now() - startTime)}ms)`
+        );
+        this.logger.error(`[${AI_MODELS.IMAGE.name}] Details: ${JSON.stringify(error.response.data)}`);
+      } else {
+        this.logger.error('Error generating image', error);
+      }
       return null;
     }
   }
