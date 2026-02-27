@@ -151,5 +151,55 @@ describe('GeminiProvider', () => {
       const result = await provider.generateImage('draw a cat');
       expect(result).toBeNull();
     });
+    describe('generateEmbeddings', () => {
+      it('should return an array of numbers representing the vector', async () => {
+        const mockVector = [0.1, 0.2, -0.3];
+        mockedAxios.post.mockResolvedValueOnce({
+          data: {
+            embedding: {
+              values: mockVector
+            }
+          }
+        });
+
+        const result = await provider.generateEmbeddings('Test text for embedding');
+
+        expect(result).toEqual(mockVector);
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+          expect.stringContaining('text-embedding-004:embedContent'),
+          expect.objectContaining({
+            model: 'models/text-embedding-004',
+            content: { parts: [{ text: 'Test text for embedding' }] }
+          }),
+          expect.any(Object)
+        );
+      });
+
+      it('should throw an error if the array is missing or malformed', async () => {
+        mockedAxios.post.mockResolvedValueOnce({
+          data: {} // missing embedding.values
+        });
+
+        await expect(provider.generateEmbeddings('Test text')).rejects.toThrow(
+          'Failed to extract embedding array from Google AI response.'
+        );
+      });
+
+      it('should throw an error if API response is not ok', async () => {
+        mockedAxios.post.mockRejectedValueOnce({
+          isAxiosError: true,
+          response: {
+            status: 400,
+            data: {
+              error: {
+                message: 'Invalid request'
+              }
+            }
+          }
+        });
+
+        await expect(provider.generateEmbeddings('Test text')).rejects.toThrow('Invalid request');
+      });
+    });
   });
 });

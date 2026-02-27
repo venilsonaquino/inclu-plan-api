@@ -12,6 +12,12 @@ export const AI_MODELS = {
       perImage: 0.003, // Nano Banana Preview Estimate
     },
   },
+  EMBEDDING: {
+    name: 'text-embedding-004',
+    pricing: {
+      perMillionTokens: 0.000, // Virtually free, 1500 RPM on free tier
+    }
+  }
 };
 
 export class AiMetricsUtil {

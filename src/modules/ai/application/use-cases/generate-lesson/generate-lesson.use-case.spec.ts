@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateLessonUseCase } from './generate-lesson.use-case';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
+import { ILessonPlanRepository, I_LESSON_PLAN_REPOSITORY } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
 import * as fs from 'fs';
 
 jest.mock('fs');
@@ -9,6 +10,7 @@ jest.mock('@/modules/ai/infra/integrations/gemini.provider');
 describe('GenerateLessonUseCase', () => {
   let useCase: GenerateLessonUseCase;
   let geminiProvider: jest.Mocked<GeminiProvider>;
+  let lessonRepository: jest.Mocked<ILessonPlanRepository>;
 
   const mockPayload = {
     students: [
@@ -25,14 +27,33 @@ describe('GenerateLessonUseCase', () => {
   };
 
   beforeEach(async () => {
+    const mockLessonRepository = {
+      findSimilar: jest.fn(),
+      save: jest.fn(),
+      clear: jest.fn(),
+      count: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [GenerateLessonUseCase, GeminiProvider],
+      providers: [
+        GenerateLessonUseCase,
+        GeminiProvider,
+        {
+          provide: I_LESSON_PLAN_REPOSITORY,
+          useValue: mockLessonRepository,
+        }
+      ],
     }).compile();
 
     useCase = module.get<GenerateLessonUseCase>(GenerateLessonUseCase);
     geminiProvider = module.get(GeminiProvider) as jest.Mocked<GeminiProvider>;
+    lessonRepository = module.get(I_LESSON_PLAN_REPOSITORY) as jest.Mocked<ILessonPlanRepository>;
 
     jest.clearAllMocks();
+
+    // Default mock for RAG
+    geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2]);
+    lessonRepository.findSimilar.mockResolvedValue(null);
   });
 
   describe('loadPromptTemplate', () => {
@@ -64,6 +85,7 @@ describe('GenerateLessonUseCase', () => {
       expect(result.isSuccess).toBe(true);
       expect(result.getValue()).toEqual(mockAiOutput);
       expect(geminiProvider.generateText).toHaveBeenCalledTimes(1);
+      expect(lessonRepository.save).toHaveBeenCalledTimes(1);
 
       const callArgs = geminiProvider.generateText.mock.calls[0];
       // Arg 0 is system prompt
@@ -71,6 +93,31 @@ describe('GenerateLessonUseCase', () => {
       // Arg 1 is user prompt, verify that injected tags have been replaced
       expect(callArgs[1]).toContain('Portal da Matemática (Tema: Frações) | Observações: Usar material dourado');
       expect(callArgs[1]).toContain('- NOME: Enzo | SÉRIE/ANO: 3º Ano | PERFIL: TEA, TDAH');
+    });
+
+    it('should use the local RAG Memory cache on identical payload without hitting Gemini LLM', async () => {
+      (fs.readFileSync as jest.Mock).mockReturnValue('mock prompt');
+      const mockAiOutput = { days: [{ day: 'Tuesday', subjects: [] }] };
+      geminiProvider.generateText.mockResolvedValue(mockAiOutput as any);
+
+      // Simulate that the repository finds a similar cache hit (second behavior logic)
+      lessonRepository.findSimilar.mockResolvedValue({
+        id: '1234',
+        studentContextHash: 'hash123',
+        contentEmbedding: [0.1, 0.2],
+        lessonResult: mockAiOutput as any
+      });
+
+      // Chamada com Cache (Custo Zero - RAG Cache)
+      const result2 = await useCase.execute(mockPayload);
+
+      expect(result2.isSuccess).toBe(true);
+      expect(result2.getValue()).toEqual(mockAiOutput);
+
+      // O Gemini NAO PODE ter sido chamado (geração de texto), pois pegou do Cache
+      expect(geminiProvider.generateText).not.toHaveBeenCalled();
+      expect(lessonRepository.findSimilar).toHaveBeenCalledTimes(1);
+      expect(lessonRepository.save).not.toHaveBeenCalled(); // No save on cache hit
     });
 
     it('should handle students without grades', async () => {

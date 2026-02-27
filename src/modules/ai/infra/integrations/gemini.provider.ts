@@ -112,13 +112,52 @@ export class GeminiProvider {
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
         this.logger.warn(
-          `[${AI_MODELS.IMAGE.name}] API failed with status: ${error.response.status} (Latency: ${Math.round(performance.now() - startTime)}ms)`
+          `[${AI_MODELS.IMAGE.name}] API failed with status: ${error.response.status} (Latency: ${Math.round(performance.now() - startTime)}ms)}`
         );
         this.logger.error(`[${AI_MODELS.IMAGE.name}] Details: ${JSON.stringify(error.response.data)}`);
       } else {
         this.logger.error('Error generating image', error);
       }
-      return null;
+    }
+    return null;
+  }
+
+  async generateEmbeddings(text: string): Promise<number[]> {
+    const apiKey = this.getApiKey();
+    const url = `${this.baseUrl}/${AI_MODELS.EMBEDDING.name}:embedContent?key=${apiKey}`;
+
+    const requestBody = {
+      model: `models/${AI_MODELS.EMBEDDING.name}`,
+      content: {
+        parts: [{ text }]
+      }
+    };
+
+    try {
+      const startTime = performance.now();
+      const response = await axios.post(url, requestBody, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const latencyMs = Math.round(performance.now() - startTime);
+      const data = response.data;
+
+      const embeddingArray = data.embedding?.values;
+
+      if (!embeddingArray || !Array.isArray(embeddingArray)) {
+        throw new Error('Failed to extract embedding array from Google AI response.');
+      }
+
+      this.logger.log(`[${AI_MODELS.EMBEDDING.name}] Latency: ${latencyMs}ms | Generated Vector[${embeddingArray.length}]`);
+
+      return embeddingArray;
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) {
+        this.logger.error(`Embedding API error: ${error.response.status}`, error.response.data);
+        throw new Error(error.response.data?.error?.message || `Embedding API error: ${error.response.status}`);
+      }
+      this.logger.error('Error in generateEmbeddings', error);
+      throw error;
     }
   }
 }
