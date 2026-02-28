@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GeminiProvider } from './gemini.provider';
+import axios from 'axios';
+
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('GeminiProvider', () => {
   let provider: GeminiProvider;
@@ -10,13 +14,8 @@ describe('GeminiProvider', () => {
     }).compile();
 
     provider = module.get<GeminiProvider>(GeminiProvider);
-
-    // Clear mocks and env before each test
     jest.clearAllMocks();
     process.env.GEMINI_API_KEY = 'test_api_key';
-
-    // Polyfill fetch if necessary or spy on global fetch
-    global.fetch = jest.fn();
   });
 
   afterEach(() => {
@@ -50,14 +49,13 @@ describe('GeminiProvider', () => {
         }
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: jest.fn().mockResolvedValue(mockResponseBody),
+      mockedAxios.post.mockResolvedValue({
+        data: mockResponseBody,
       });
 
       const result = await provider.generateText('system', 'user');
       expect(result).toEqual({ result: 'success' });
-      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(mockedAxios.post).toHaveBeenCalledTimes(1);
     });
 
     it('should include image data if imagePartBase64 is provided', async () => {
@@ -65,28 +63,31 @@ describe('GeminiProvider', () => {
         candidates: [{ content: { parts: [{ text: '{"success": true}' }] } }]
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: jest.fn().mockResolvedValue(mockResponseBody),
+      mockedAxios.post.mockResolvedValue({
+        data: mockResponseBody,
       });
 
       await provider.generateText('system', 'user', 'base64image');
 
-      const fetchCallArgs = (global.fetch as jest.Mock).mock.calls[0];
-      const requestBody = JSON.parse(fetchCallArgs[1].body);
+      const fetchCallArgs = mockedAxios.post.mock.calls[0];
+      const requestBody = fetchCallArgs[1] as any;
 
       expect(requestBody.contents[0].parts[0].inlineData).toBeDefined();
       expect(requestBody.contents[0].parts[0].inlineData.data).toBe('base64image');
     });
 
     it('should throw an error if API response is not ok', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        status: 500,
-        json: jest.fn().mockRejectedValue(new Error('no json body')),
-      });
+      const errorResponse = {
+        isAxiosError: true,
+        response: {
+          status: 500,
+          data: { error: { message: 'Gemini API Internal Server Error' } }
+        }
+      };
+      mockedAxios.isAxiosError.mockReturnValue(true);
+      mockedAxios.post.mockRejectedValue(errorResponse);
 
-      await expect(provider.generateText('sys', 'prompt')).rejects.toThrow('Gemini API error: 500');
+      await expect(provider.generateText('sys', 'prompt')).rejects.toThrow('Gemini API Internal Server Error');
     });
 
     it('should throw an error if rawText is missing (blocked or failed)', async () => {
@@ -99,9 +100,8 @@ describe('GeminiProvider', () => {
         ]
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: jest.fn().mockResolvedValue(mockResponseBody),
+      mockedAxios.post.mockResolvedValue({
+        data: mockResponseBody,
       });
 
       await expect(provider.generateText('sys', 'prompt')).rejects.toThrow('AI generation failed or was blocked. Reason: SAFETY');
@@ -111,12 +111,11 @@ describe('GeminiProvider', () => {
   describe('generateImage', () => {
     it('should return base64 encoded string on success', async () => {
       const mockResponse = {
-        predictions: [{ bytesBase64Encoded: 'base64string' }]
+        candidates: [{ content: { parts: [{ inlineData: { data: 'base64string' } }] } }]
       };
 
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: jest.fn().mockResolvedValue(mockResponse),
+      mockedAxios.post.mockResolvedValue({
+        data: mockResponse,
       });
 
       const result = await provider.generateImage('draw a cat');
@@ -124,26 +123,29 @@ describe('GeminiProvider', () => {
     });
 
     it('should return null if response is not ok (400, 500, etc)', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: false,
-        status: 400,
-        json: jest.fn().mockResolvedValue({ error: { message: 'bad request' } }),
-      });
+      const errorResponse = {
+        isAxiosError: true,
+        response: {
+          status: 400,
+          data: { error: { message: 'bad request' } }
+        }
+      };
+      mockedAxios.isAxiosError.mockReturnValue(true);
+      mockedAxios.post.mockRejectedValue(errorResponse);
 
       const result = await provider.generateImage('draw a cat');
       expect(result).toBeNull();
     });
 
     it('should return null if generate process throws an exception', async () => {
-      (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+      mockedAxios.post.mockRejectedValue(new Error('Network error'));
       const result = await provider.generateImage('draw a cat');
       expect(result).toBeNull();
     });
 
     it('should return null if response format is unexpected', async () => {
-      (global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: jest.fn().mockResolvedValue({ predictions: [] }),
+      mockedAxios.post.mockResolvedValue({
+        data: { candidates: [] }
       });
 
       const result = await provider.generateImage('draw a cat');
