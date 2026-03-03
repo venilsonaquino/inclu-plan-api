@@ -4,7 +4,7 @@ import { IMaterialCacheRepository, MaterialCacheRecord } from '@/modules/ai/doma
 @Injectable()
 export class InMemoryMaterialCacheRepository implements IMaterialCacheRepository {
   private readonly logger = new Logger(InMemoryMaterialCacheRepository.name);
-  private readonly memoryDb: MaterialCacheRecord[] = [];
+  private readonly memoryDb: MaterialCacheRecord<any>[] = [];
 
   private cosineSimilarity(vecA: number[], vecB: number[]): number {
     if (vecA.length !== vecB.length) return 0;
@@ -20,21 +20,21 @@ export class InMemoryMaterialCacheRepository implements IMaterialCacheRepository
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
   }
 
-  async findSimilar(contextHash: string, payloadVector: number[], threshold: number): Promise<MaterialCacheRecord | null> {
+  async findSimilar<T = any>(contextHash: string, payloadVector: number[], threshold: number): Promise<MaterialCacheRecord<T> | null> {
     for (const memory of this.memoryDb) {
       if (memory.contextHash === contextHash) {
         const similarity = this.cosineSimilarity(payloadVector, memory.payloadEmbedding);
         this.logger.debug(`Compared with material cache ${memory.id} - Similarity: ${(similarity * 100).toFixed(2)}%`);
 
         if (similarity >= threshold) {
-          return memory;
+          return memory as MaterialCacheRecord<T>;
         }
       }
     }
     return null;
   }
 
-  async save(record: MaterialCacheRecord): Promise<void> {
+  async save<T = any>(record: MaterialCacheRecord<T>): Promise<void> {
     this.memoryDb.push(record);
   }
 

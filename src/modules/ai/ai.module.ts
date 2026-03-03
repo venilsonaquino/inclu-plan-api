@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AiController } from './infra/http/ai.controller';
 import { GenerateLessonUseCase } from './application/use-cases/generate-lesson/generate-lesson.use-case';
-import { GenerateMaterialUseCase } from './application/use-cases/generate-material/generate-material.use-case';
+import { GenerateCardsUseCase } from './application/use-cases/generate-cards/generate-cards.use-case';
+import { GenerateBoardUseCase } from './application/use-cases/generate-board/generate-board.use-case';
+import { GenerateHomeworkUseCase } from './application/use-cases/generate-homework/generate-homework.use-case';
 import { GeminiProvider } from './infra/integrations/gemini.provider';
 import { I_LESSON_PLAN_REPOSITORY } from './domain/repositories/lesson-plan.repository.interface';
 import { InMemoryLessonPlanRepository } from './infra/persistence/in-memory/in-memory-lesson-plan.repository';
@@ -13,7 +15,9 @@ import { InMemoryMaterialCacheRepository } from './infra/persistence/in-memory/i
   controllers: [AiController],
   providers: [
     GenerateLessonUseCase,
-    GenerateMaterialUseCase,
+    GenerateCardsUseCase,
+    GenerateBoardUseCase,
+    GenerateHomeworkUseCase,
     GeminiProvider,
     {
       provide: I_LESSON_PLAN_REPOSITORY,
