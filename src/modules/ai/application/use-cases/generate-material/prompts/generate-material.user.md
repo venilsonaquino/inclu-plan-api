@@ -1,8 +1,14 @@
 Contexto da Atividade Original Planejada:
-{{ACTIVITY_TEXT}}
+Disciplina/Tema: {{THEME}}
+Objetivo: {{OBJECTIVE}}
+Descrição: {{DESCRIPTION}}
 
 DADOS DO ALUNO ALVO:
 Nome: {{STUDENT_NAME}}
+Série/Ano: {{STUDENT_GRADE}}
 Perfil Neurodivergente: {{STUDENT_PROFILE}}
 
-Crie o material pedagógico exclusivo para este aluno, baseando-se na atividade original.
+Adaptação Sugerida no Plano de Aula:
+{{STUDENT_ADAPTATION}}
+
+Crie o material pedagógico exclusivo para este aluno, baseando-se na atividade original e expandindo a adaptação sugerida.

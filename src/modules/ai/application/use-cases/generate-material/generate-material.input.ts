@@ -6,12 +6,24 @@ export class MaterialStudentDto {
   name: string;
 
   @IsString()
+  grade: string;
+
+  @IsString()
   profile: string;
+
+  @IsString()
+  adaptation: string;
 }
 
 export class GenerateMaterialInput {
   @IsString()
-  activityText: string;
+  theme: string;
+
+  @IsString()
+  objective: string;
+
+  @IsString()
+  description: string;
 
   @ValidateNested()
   @Type(() => MaterialStudentDto)

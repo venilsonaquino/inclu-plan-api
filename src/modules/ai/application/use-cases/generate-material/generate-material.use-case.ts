@@ -1,16 +1,22 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateMaterialInput } from './generate-material.input';
 import { GenerateMaterialOutput } from './generate-material.output';
 import * as fs from 'fs';
 import * as path from 'path';
+import { I_MATERIAL_CACHE_REPOSITORY, IMaterialCacheRepository } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class GenerateMaterialUseCase {
   private readonly logger = new Logger(GenerateMaterialUseCase.name);
 
-  constructor(private readonly geminiProvider: GeminiProvider) { }
+  constructor(
+    private readonly geminiProvider: GeminiProvider,
+    @Inject(I_MATERIAL_CACHE_REPOSITORY)
+    private readonly materialCache: IMaterialCacheRepository,
+  ) { }
 
   private loadPromptTemplate(filename: string): string {
     try {
@@ -24,9 +30,13 @@ export class GenerateMaterialUseCase {
 
   private buildPromptContext(template: string, payload: GenerateMaterialInput): string {
     return template
-      .replace('{{ACTIVITY_TEXT}}', payload.activityText)
+      .replace('{{THEME}}', payload.theme)
+      .replace('{{OBJECTIVE}}', payload.objective)
+      .replace('{{DESCRIPTION}}', payload.description)
       .replace('{{STUDENT_NAME}}', payload.studentData.name)
-      .replace('{{STUDENT_PROFILE}}', payload.studentData.profile);
+      .replace('{{STUDENT_GRADE}}', payload.studentData.grade)
+      .replace('{{STUDENT_PROFILE}}', payload.studentData.profile)
+      .replace('{{STUDENT_ADAPTATION}}', payload.studentData.adaptation);
   }
 
   private sanitizeAndParseJson(rawData: string | any): any {
@@ -74,6 +84,24 @@ export class GenerateMaterialUseCase {
 
   async execute(payload: GenerateMaterialInput): Promise<Result<GenerateMaterialOutput>> {
     try {
+      // 1. Prepare Semantic Cache context
+      const contextHash = `${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}`; // A basic broad grouping
+      const semanticContextStr = `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Adaptação: ${payload.studentData.adaptation}`;
+
+      this.logger.log(`Checking semantic cache for material...`);
+      const payloadEmbedding = await this.geminiProvider.generateEmbeddings(semanticContextStr);
+
+      // 2. Fetch from Cache (Threshold 0.95 = 95% similar meaning)
+      const cachedMaterial = await this.materialCache.findSimilar(contextHash, payloadEmbedding, 0.95);
+
+      if (cachedMaterial) {
+        this.logger.log(`CACHE HIT! Reusing material id ${cachedMaterial.id} with pre-generated images.`);
+        return Result.ok<GenerateMaterialOutput>(cachedMaterial.materialResult);
+      }
+
+      this.logger.log(`CACHE MISS. Generating new material from scratch...`);
+
+      // 3. Normal Generation Flow
       const systemInstruction = this.loadPromptTemplate('generate-material.system.md');
       const basePrompt = this.loadPromptTemplate('generate-material.user.md');
       const promptText = this.buildPromptContext(basePrompt, payload);
@@ -82,6 +110,14 @@ export class GenerateMaterialUseCase {
       const materialData = this.sanitizeAndParseJson(rawAiResponse);
 
       await this.fetchImagesForMaterial(materialData);
+
+      // 4. Save to Cache
+      await this.materialCache.save({
+        id: randomUUID(),
+        contextHash,
+        payloadEmbedding,
+        materialResult: materialData
+      });
 
       return Result.ok<GenerateMaterialOutput>(materialData);
     } catch (error) {
