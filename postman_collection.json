@@ -49,7 +49,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
+          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte VISUAL usando pictogramas claros, rotinas visuais estruturadas e pouca poluição.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
         },
         "url": {
           "raw": "http://localhost:3000/api/ai/pedagogical-material/cards",
@@ -81,7 +81,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
+          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte COGNITIVO usando instruções curtas, passo-a-passo simplificado e evite metáforas.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
         },
         "url": {
           "raw": "http://localhost:3000/api/ai/pedagogical-material/board",
@@ -113,7 +113,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
+          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte SENSORIO-MOTOR usando texturas imaginárias, movimento corporal e manipulação tátil.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
         },
         "url": {
           "raw": "http://localhost:3000/api/ai/pedagogical-material/homework",

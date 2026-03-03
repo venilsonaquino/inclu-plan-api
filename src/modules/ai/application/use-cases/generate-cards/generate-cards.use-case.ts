@@ -29,6 +29,7 @@ export class GenerateCardsUseCase {
   }
 
   private buildPromptContext(template: string, payload: GenerateMaterialInput): string {
+    const override = payload.strategyOverride ? `\nDIRETRIZ OBRIGATÓRIA OVERRIDE:\n${payload.strategyOverride}\n` : '';
     return template
       .replace('{{THEME}}', payload.theme)
       .replace('{{OBJECTIVE}}', payload.objective)
@@ -36,7 +37,8 @@ export class GenerateCardsUseCase {
       .replace('{{STUDENT_NAME}}', payload.studentData.name)
       .replace('{{STUDENT_GRADE}}', payload.studentData.grade)
       .replace('{{STUDENT_PROFILE}}', payload.studentData.profile)
-      .replace('{{STUDENT_ADAPTATION}}', payload.studentData.adaptation);
+      .replace('{{STUDENT_ADAPTATION}}', payload.studentData.adaptation)
+      .replace('{{STRATEGY_OVERRIDE}}', override);
   }
 
   private async fetchImagesForCards(cardsData: GenerateCardsOutput): Promise<void> {
@@ -55,8 +57,13 @@ export class GenerateCardsUseCase {
 
   async execute(payload: GenerateMaterialInput): Promise<Result<GenerateCardsOutput>> {
     try {
-      const contextHash = `${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-CARDS`;
-      const semanticContextStr = `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Adaptação: ${payload.studentData.adaptation}. Contexto: Cartões Visuais.`;
+      const contextHash = payload.strategyOverride
+        ? `${payload.strategyOverride}-${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-CARDS`
+        : `${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-CARDS`;
+
+      const semanticContextStr = payload.strategyOverride
+        ? `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Estratégia Substituta: ${payload.strategyOverride}. Adaptação: ${payload.studentData.adaptation}. Contexto: Cartões Visuais.`
+        : `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Adaptação: ${payload.studentData.adaptation}. Contexto: Cartões Visuais.`;
 
       this.logger.log(`Checking semantic cache for Cards...`);
       const payloadEmbedding = await this.geminiProvider.generateEmbeddings(semanticContextStr);

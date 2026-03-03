@@ -1,4 +1,4 @@
-import { IsString, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class MaterialStudentDto {
@@ -24,6 +24,10 @@ export class GenerateMaterialInput {
 
   @IsString()
   description: string;
+
+  @IsOptional()
+  @IsString()
+  strategyOverride?: string;
 
   @ValidateNested()
   @Type(() => MaterialStudentDto)

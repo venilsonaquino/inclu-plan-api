@@ -29,6 +29,7 @@ export class GenerateHomeworkUseCase {
   }
 
   private buildPromptContext(template: string, payload: GenerateMaterialInput): string {
+    const override = payload.strategyOverride ? `\nDIRETRIZ OBRIGATÓRIA OVERRIDE:\n${payload.strategyOverride}\n` : '';
     return template
       .replace('{{THEME}}', payload.theme)
       .replace('{{OBJECTIVE}}', payload.objective)
@@ -36,13 +37,19 @@ export class GenerateHomeworkUseCase {
       .replace('{{STUDENT_NAME}}', payload.studentData.name)
       .replace('{{STUDENT_GRADE}}', payload.studentData.grade)
       .replace('{{STUDENT_PROFILE}}', payload.studentData.profile)
-      .replace('{{STUDENT_ADAPTATION}}', payload.studentData.adaptation);
+      .replace('{{STUDENT_ADAPTATION}}', payload.studentData.adaptation)
+      .replace('{{STRATEGY_OVERRIDE}}', override);
   }
 
   async execute(payload: GenerateMaterialInput): Promise<Result<GenerateHomeworkOutput>> {
     try {
-      const contextHash = `${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-HOMEWORK`;
-      const semanticContextStr = `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Adaptação: ${payload.studentData.adaptation}. Contexto: Lição de Casa.`;
+      const contextHash = payload.strategyOverride
+        ? `${payload.strategyOverride}-${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-HOMEWORK`
+        : `${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-HOMEWORK`;
+
+      const semanticContextStr = payload.strategyOverride
+        ? `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Estratégia Substituta: ${payload.strategyOverride}. Adaptação: ${payload.studentData.adaptation}. Contexto: Lição de Casa.`
+        : `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Adaptação: ${payload.studentData.adaptation}. Contexto: Lição de Casa.`;
 
       this.logger.log(`Checking semantic cache for Homework...`);
       const payloadEmbedding = await this.geminiProvider.generateEmbeddings(semanticContextStr);
