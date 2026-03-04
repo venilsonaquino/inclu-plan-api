@@ -55,11 +55,6 @@ export class GenerateCardsUseCase {
     await Promise.all(promises);
   }
 
-  async buildSystemPrompt(payload: GenerateCardsInput): Promise<string> {
-    const systemInstruction = this.loadPromptTemplate('generate-cards.system.md');
-    return systemInstruction;
-  }
-
   async execute(payload: GenerateCardsInput): Promise<Result<GenerateCardsOutput>> {
     try {
       const contextHash = payload.strategyOverride
