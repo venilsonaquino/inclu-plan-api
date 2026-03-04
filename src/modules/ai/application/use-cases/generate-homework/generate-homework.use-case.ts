@@ -2,7 +2,7 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateHomeworkInput } from './generate-homework.input';
-import { GenerateHomeworkOutput, GenerateHomeworkSchema } from './generate-homework.output';
+import { GenerateHomeworkOutput } from './generate-homework.output';
 import * as fs from 'fs';
 import * as path from 'path';
 import { I_MATERIAL_CACHE_REPOSITORY, IMaterialCacheRepository } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
@@ -67,7 +67,7 @@ export class GenerateHomeworkUseCase {
       const basePrompt = this.loadPromptTemplate('generate-material.user.md');
       const promptText = this.buildPromptContext(basePrompt, payload);
 
-      const rawAiResponse = await this.geminiProvider.generateText(systemInstruction, promptText, GenerateHomeworkSchema);
+      const rawAiResponse = await this.geminiProvider.generateText(systemInstruction, promptText);
       const homeworkData = rawAiResponse as GenerateHomeworkOutput;
 
       if (homeworkData.homework?.imagePrompt) {

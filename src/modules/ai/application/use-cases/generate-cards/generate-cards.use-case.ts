@@ -2,7 +2,7 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateCardsInput } from './generate-cards.input';
-import { GenerateCardsOutput, GenerateCardsSchema } from './generate-cards.output';
+import { GenerateCardsOutput } from './generate-cards.output';
 import * as fs from 'fs';
 import * as path from 'path';
 import { I_MATERIAL_CACHE_REPOSITORY, IMaterialCacheRepository } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
@@ -55,6 +55,11 @@ export class GenerateCardsUseCase {
     await Promise.all(promises);
   }
 
+  async buildSystemPrompt(payload: GenerateCardsInput): Promise<string> {
+    const systemInstruction = this.loadPromptTemplate('generate-cards.system.md');
+    return systemInstruction;
+  }
+
   async execute(payload: GenerateCardsInput): Promise<Result<GenerateCardsOutput>> {
     try {
       const contextHash = payload.strategyOverride
@@ -81,7 +86,7 @@ export class GenerateCardsUseCase {
       const basePrompt = this.loadPromptTemplate('generate-material.user.md');
       const promptText = this.buildPromptContext(basePrompt, payload);
 
-      const rawAiResponse = await this.geminiProvider.generateText(systemInstruction, promptText, GenerateCardsSchema);
+      const rawAiResponse = await this.geminiProvider.generateText(systemInstruction, promptText);
 
       const cardsData = rawAiResponse as GenerateCardsOutput;
 

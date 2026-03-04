@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { AI_MODELS, AiMetricsUtil } from './ai-models.config';
-import { GoogleGenAI } from '@google/genai'; // Keep just in case, but unused hereafter.
-import { zodToJsonSchema } from 'zod-to-json-schema';
 
 @Injectable()
 export class GeminiProvider {
@@ -17,7 +15,7 @@ export class GeminiProvider {
     return key;
   }
 
-  async generateText(systemInstruction: string, promptText: string, schema?: any, imagePartBase64?: string): Promise<any> {
+  async generateText(systemInstruction: string, promptText: string, imagePartBase64?: string): Promise<any> {
     const apiKey = this.getApiKey();
     const url = `${this.baseUrl}/${AI_MODELS.TEXT.name}:generateContent?key=${apiKey}`;
 
@@ -31,19 +29,13 @@ export class GeminiProvider {
       });
     }
 
-    const generationConfig: any = {
-      responseMimeType: 'application/json',
-      temperature: 0.7,
-    };
-
-    if (schema) {
-      generationConfig.responseSchema = zodToJsonSchema(schema);
-    }
-
     const requestBody = {
       systemInstruction: { parts: [{ text: systemInstruction }] },
       contents: [{ parts: contentsPart }],
-      generationConfig,
+      generationConfig: {
+        responseMimeType: 'application/json',
+        temperature: 0.7,
+      },
     };
 
     try {
@@ -64,6 +56,7 @@ export class GeminiProvider {
       const generatedTokens = usage.candidatesTokenCount || 0;
       const totalTokens = usage.totalTokenCount || 0;
 
+      // Pricing logic moved to AiMetricsUtil to respect Clean Code
       const totalCost = AiMetricsUtil.calculateTextCost(promptTokens, generatedTokens);
 
       this.logger.log(
@@ -74,16 +67,13 @@ export class GeminiProvider {
         throw new Error(`AI generation failed or was blocked. Reason: ${finishReason}`);
       }
 
-      if (schema) {
-        return JSON.parse(rawText);
-      }
-      return rawText;
+      return JSON.parse(rawText);
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
         this.logger.error(`Gemini API error: ${error.response.status}`, error.response.data);
         throw new Error(error.response.data?.error?.message || `Gemini API error: ${error.response.status}`);
       }
-      this.logger.error('Error in generateText via Axios', error);
+      this.logger.error('Error in generateText', error);
       throw error;
     }
   }
