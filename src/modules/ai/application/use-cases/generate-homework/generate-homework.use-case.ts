@@ -1,7 +1,7 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { Result } from '@/shared/domain/utils/result';
-import { GenerateMaterialInput } from '../generate-material/generate-material.input';
+import { GenerateHomeworkInput } from './generate-homework.input';
 import { GenerateHomeworkOutput } from './generate-homework.output';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -28,7 +28,7 @@ export class GenerateHomeworkUseCase {
     }
   }
 
-  private buildPromptContext(template: string, payload: GenerateMaterialInput): string {
+  private buildPromptContext(template: string, payload: GenerateHomeworkInput): string {
     const override = payload.strategyOverride ? `\nDIRETRIZ OBRIGATÓRIA OVERRIDE:\n${payload.strategyOverride}\n` : '';
     return template
       .replace('{{THEME}}', payload.theme)
@@ -41,7 +41,12 @@ export class GenerateHomeworkUseCase {
       .replace('{{STRATEGY_OVERRIDE}}', override);
   }
 
-  async execute(payload: GenerateMaterialInput): Promise<Result<GenerateHomeworkOutput>> {
+  async buildSystemPrompt(payload: GenerateHomeworkInput): Promise<string> {
+    const systemInstruction = this.loadPromptTemplate('generate-homework.system.md');
+    return systemInstruction;
+  }
+
+  async execute(payload: GenerateHomeworkInput): Promise<Result<GenerateHomeworkOutput>> {
     try {
       const contextHash = payload.strategyOverride
         ? `${payload.strategyOverride}-${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-HOMEWORK`

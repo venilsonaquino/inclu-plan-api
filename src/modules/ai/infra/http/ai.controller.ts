@@ -3,6 +3,9 @@ import { GenerateLessonUseCase } from '@/modules/ai/application/use-cases/genera
 import { GenerateCardsUseCase } from '@/modules/ai/application/use-cases/generate-cards/generate-cards.use-case';
 import { GenerateBoardUseCase } from '@/modules/ai/application/use-cases/generate-board/generate-board.use-case';
 import { GenerateHomeworkUseCase } from '@/modules/ai/application/use-cases/generate-homework/generate-homework.use-case';
+import { GenerateCardsInput } from '@/modules/ai/application/use-cases/generate-cards/generate-cards.input';
+import { GenerateBoardInput } from '@/modules/ai/application/use-cases/generate-board/generate-board.input';
+import { GenerateHomeworkInput } from '@/modules/ai/application/use-cases/generate-homework/generate-homework.input';
 
 @Controller('ai')
 export class AiController {
@@ -23,7 +26,7 @@ export class AiController {
   }
 
   @Post('pedagogical-material/cards')
-  async generateCards(@Body() body: any) {
+  async generateCards(@Body() body: GenerateCardsInput) {
     const result = await this.generateCardsUseCase.execute(body);
     if (result.isFailure) {
       throw new HttpException(result.errorValue(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -32,7 +35,7 @@ export class AiController {
   }
 
   @Post('pedagogical-material/board')
-  async generateBoard(@Body() body: any) {
+  async generateBoard(@Body() body: GenerateBoardInput) {
     const result = await this.generateBoardUseCase.execute(body);
     if (result.isFailure) {
       throw new HttpException(result.errorValue(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -41,7 +44,7 @@ export class AiController {
   }
 
   @Post('pedagogical-material/homework')
-  async generateHomework(@Body() body: any) {
+  async generateHomework(@Body() body: GenerateHomeworkInput) {
     const result = await this.generateHomeworkUseCase.execute(body);
     if (result.isFailure) {
       throw new HttpException(result.errorValue(), HttpStatus.INTERNAL_SERVER_ERROR);

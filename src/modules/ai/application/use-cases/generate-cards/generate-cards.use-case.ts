@@ -1,7 +1,7 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { Result } from '@/shared/domain/utils/result';
-import { GenerateMaterialInput } from '../generate-material/generate-material.input';
+import { GenerateCardsInput } from './generate-cards.input';
 import { GenerateCardsOutput } from './generate-cards.output';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -28,7 +28,7 @@ export class GenerateCardsUseCase {
     }
   }
 
-  private buildPromptContext(template: string, payload: GenerateMaterialInput): string {
+  private buildPromptContext(template: string, payload: GenerateCardsInput): string {
     const override = payload.strategyOverride ? `\nDIRETRIZ OBRIGATÓRIA OVERRIDE:\n${payload.strategyOverride}\n` : '';
     return template
       .replace('{{THEME}}', payload.theme)
@@ -55,7 +55,12 @@ export class GenerateCardsUseCase {
     await Promise.all(promises);
   }
 
-  async execute(payload: GenerateMaterialInput): Promise<Result<GenerateCardsOutput>> {
+  async buildSystemPrompt(payload: GenerateCardsInput): Promise<string> {
+    const systemInstruction = this.loadPromptTemplate('generate-cards.system.md');
+    return systemInstruction;
+  }
+
+  async execute(payload: GenerateCardsInput): Promise<Result<GenerateCardsOutput>> {
     try {
       const contextHash = payload.strategyOverride
         ? `${payload.strategyOverride}-${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-CARDS`
