@@ -41,11 +41,6 @@ export class GenerateHomeworkUseCase {
       .replace('{{STRATEGY_OVERRIDE}}', override);
   }
 
-  async buildSystemPrompt(payload: GenerateHomeworkInput): Promise<string> {
-    const systemInstruction = this.loadPromptTemplate('generate-homework.system.md');
-    return systemInstruction;
-  }
-
   async execute(payload: GenerateHomeworkInput): Promise<Result<GenerateHomeworkOutput>> {
     try {
       const contextHash = payload.strategyOverride

@@ -70,9 +70,12 @@ describe('GenerateHomeworkUseCase', () => {
       (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
 
       const aiResult = {
-        title: 'Lição de Casa',
-        instructions: ['Step 1'],
-        imagePrompt: 'Homework base image'
+        homework: {
+          title: 'Lição',
+          instructions: 'instructions',
+          materialsNeeded: 'materials',
+          imagePrompt: 'Homework base image'
+        }
       };
       geminiProvider.generateText.mockResolvedValue(aiResult as any);
       geminiProvider.generateImage.mockResolvedValue('base64StringMock');
@@ -84,7 +87,7 @@ describe('GenerateHomeworkUseCase', () => {
       expect(geminiProvider.generateImage).toHaveBeenCalledTimes(1);
 
       const returnedValue = result.getValue();
-      expect(returnedValue.generatedImage).toBe('base64StringMock');
+      expect(returnedValue.homework.generatedImage).toBe('base64StringMock');
 
       expect(materialCacheRepository.save).toHaveBeenCalled();
     });
@@ -102,7 +105,7 @@ describe('GenerateHomeworkUseCase', () => {
       geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2] as any);
       materialCacheRepository.findSimilar.mockResolvedValue(null);
       (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
-      geminiProvider.generateText.mockResolvedValue({ title: 'Lição' } as any);
+      geminiProvider.generateText.mockResolvedValue({ homework: { title: 'a', instructions: 'b', materialsNeeded: 'c', imagePrompt: 'd' } } as any);
 
       const payloadOverride = { ...mockPayload, strategyOverride: 'Foco Sensório' };
 

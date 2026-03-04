@@ -41,11 +41,6 @@ export class GenerateBoardUseCase {
       .replace('{{STRATEGY_OVERRIDE}}', override);
   }
 
-  async buildSystemPrompt(payload: GenerateBoardInput): Promise<string> {
-    const systemInstruction = this.loadPromptTemplate('generate-board.system.md');
-    return systemInstruction;
-  }
-
   async execute(payload: GenerateBoardInput): Promise<Result<GenerateBoardOutput>> {
     try {
       const contextHash = payload.strategyOverride
