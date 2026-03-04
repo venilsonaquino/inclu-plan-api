@@ -2,7 +2,7 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateBoardInput } from './generate-board.input';
-import { GenerateBoardOutput } from './generate-board.output';
+import { GenerateBoardOutput, GenerateBoardSchema } from './generate-board.output';
 import * as fs from 'fs';
 import * as path from 'path';
 import { I_MATERIAL_CACHE_REPOSITORY, IMaterialCacheRepository } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
@@ -67,7 +67,7 @@ export class GenerateBoardUseCase {
       const basePrompt = this.loadPromptTemplate('generate-material.user.md');
       const promptText = this.buildPromptContext(basePrompt, payload);
 
-      const rawAiResponse = await this.geminiProvider.generateText(systemInstruction, promptText);
+      const rawAiResponse = await this.geminiProvider.generateText(systemInstruction, promptText, GenerateBoardSchema);
       const boardData = rawAiResponse as GenerateBoardOutput;
 
       if (boardData.board?.imagePrompt) {

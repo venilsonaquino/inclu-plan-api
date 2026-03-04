@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateLessonInput } from './generate-lesson.input';
-import { GenerateLessonOutput } from './generate-lesson.output';
+import { GenerateLessonOutput, GenerateLessonSchema } from './generate-lesson.output';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -52,7 +52,7 @@ export class GenerateLessonUseCase {
         .replace('{{STUDENTS_STR}}', studentsString)
         .replace('{{CONTENTS_STR}}', contentsString);
 
-      const aiResponse = await this.geminiProvider.generateText(systemInstruction, promptText, payload.imagePart);
+      const aiResponse = await this.geminiProvider.generateText(systemInstruction, promptText, GenerateLessonSchema, payload.imagePart);
 
       return Result.ok<GenerateLessonOutput>(aiResponse as GenerateLessonOutput);
     } catch (error) {
