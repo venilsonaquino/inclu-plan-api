@@ -7,16 +7,20 @@ import { SchoolClass } from '@/modules/school-classes/domain/entities/school-cla
 
 @Injectable()
 export class CreateSchoolClassUseCase {
-  constructor(private readonly schoolClassesRepository: ISchoolClassesRepository) { }
+  constructor(
+    private readonly schoolClassesRepository: ISchoolClassesRepository,
+  ) {}
 
-  async execute(input: CreateSchoolClassInput): Promise<Result<CreateSchoolClassOutput>> {
+  async execute(
+    input: CreateSchoolClassInput,
+  ): Promise<Result<CreateSchoolClassOutput>> {
     try {
       const newClass = new SchoolClass({
         id: crypto.randomUUID(),
         name: input.name,
         teacherId: input.teacherId, // In the future, parsed from authentication token
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
 
       await this.schoolClassesRepository.create(newClass);
@@ -26,11 +30,12 @@ export class CreateSchoolClassUseCase {
         name: newClass.name,
         teacherId: newClass.teacherId,
         isActive: newClass.isActive,
-        createdAt: newClass.createdAt
+        createdAt: newClass.createdAt,
       });
-
     } catch (error) {
-      return Result.fail('An unexpected error occurred while creating the school class.');
+      return Result.fail(
+        'An unexpected error occurred while creating the school class.',
+      );
     }
   }
 }

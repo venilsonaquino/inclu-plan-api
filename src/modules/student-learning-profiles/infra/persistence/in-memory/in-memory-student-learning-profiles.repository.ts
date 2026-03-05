@@ -11,16 +11,23 @@ export class InMemoryStudentLearningProfilesRepository implements IStudentLearni
   }
 
   async findByStudentId(studentId: string): Promise<StudentLearningProfile[]> {
-    return this.associations.filter(a => a.studentId === studentId);
+    return this.associations.filter((a) => a.studentId === studentId);
   }
 
-  async findByProfileId(learningProfileId: string): Promise<StudentLearningProfile[]> {
-    return this.associations.filter(a => a.learningProfileId === learningProfileId);
+  async findByProfileId(
+    learningProfileId: string,
+  ): Promise<StudentLearningProfile[]> {
+    return this.associations.filter(
+      (a) => a.learningProfileId === learningProfileId,
+    );
   }
 
   async remove(studentId: string, learningProfileId: string): Promise<void> {
     this.associations = this.associations.filter(
-      a => !(a.studentId === studentId && a.learningProfileId === learningProfileId)
+      (a) =>
+        !(
+          a.studentId === studentId && a.learningProfileId === learningProfileId
+        ),
     );
   }
 }

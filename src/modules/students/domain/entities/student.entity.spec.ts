@@ -7,7 +7,7 @@ describe('StudentEntity', () => {
       name: 'John Doe',
       gradeId: 'grade-1',
       profiles: ['profile-1'],
-      notes: 'Some notes'
+      notes: 'Some notes',
     });
 
     expect(student).toBeDefined();

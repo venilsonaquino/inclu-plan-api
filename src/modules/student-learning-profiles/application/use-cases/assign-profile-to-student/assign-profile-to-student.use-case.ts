@@ -7,16 +7,20 @@ import { StudentLearningProfile } from '@/modules/student-learning-profiles/doma
 
 @Injectable()
 export class AssignProfileToStudentUseCase {
-  constructor(private readonly repository: IStudentLearningProfilesRepository) { }
+  constructor(
+    private readonly repository: IStudentLearningProfilesRepository,
+  ) {}
 
-  async execute(input: AssignProfileInput): Promise<Result<AssignProfileOutput>> {
+  async execute(
+    input: AssignProfileInput,
+  ): Promise<Result<AssignProfileOutput>> {
     try {
       const association = new StudentLearningProfile({
         id: crypto.randomUUID(),
         studentId: input.studentId,
         learningProfileId: input.learningProfileId,
         notes: input.notes,
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       await this.repository.assign(association);
@@ -26,11 +30,12 @@ export class AssignProfileToStudentUseCase {
         studentId: association.studentId,
         learningProfileId: association.learningProfileId,
         notes: association.notes,
-        createdAt: association.createdAt
+        createdAt: association.createdAt,
       });
-
     } catch (error) {
-      return Result.fail('An unexpected error occurred while assigning the profile to the student.');
+      return Result.fail(
+        'An unexpected error occurred while assigning the profile to the student.',
+      );
     }
   }
 }

@@ -45,7 +45,9 @@ describe('CreateLearningProfileUseCase', () => {
     const result = await useCase.execute(input);
 
     expect(result.isFailure).toBe(true);
-    expect(result.errorValue()).toBe('An unexpected error occurred while creating the learning profile.');
+    expect(result.errorValue()).toBe(
+      'An unexpected error occurred while creating the learning profile.',
+    );
   });
 });
 

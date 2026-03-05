@@ -8,11 +8,15 @@ import { CryptoUtil } from '@/shared/utils/crypto.util';
 
 @Injectable()
 export class CreateTeacherUseCase {
-  constructor(private readonly teachersRepository: ITeachersRepository) { }
+  constructor(private readonly teachersRepository: ITeachersRepository) {}
 
-  async execute(input: CreateTeacherInput): Promise<Result<CreateTeacherOutput>> {
+  async execute(
+    input: CreateTeacherInput,
+  ): Promise<Result<CreateTeacherOutput>> {
     try {
-      const existingTeacher = await this.teachersRepository.findByEmail(input.email);
+      const existingTeacher = await this.teachersRepository.findByEmail(
+        input.email,
+      );
 
       if (existingTeacher) {
         return Result.fail('Email already in use.');
@@ -26,7 +30,7 @@ export class CreateTeacherUseCase {
         email: input.email,
         passwordHash: hashedPassword,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
 
       await this.teachersRepository.create(newTeacher);
@@ -35,11 +39,12 @@ export class CreateTeacherUseCase {
         id: newTeacher.id,
         name: newTeacher.name,
         email: newTeacher.email,
-        createdAt: newTeacher.createdAt
+        createdAt: newTeacher.createdAt,
       });
-
     } catch (error) {
-      return Result.fail('An unexpected error occurred while creating the teacher.');
+      return Result.fail(
+        'An unexpected error occurred while creating the teacher.',
+      );
     }
   }
 }

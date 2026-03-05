@@ -26,7 +26,7 @@ import { InMemoryMaterialCacheRepository } from './infra/persistence/in-memory/i
     {
       provide: I_MATERIAL_CACHE_REPOSITORY,
       useClass: InMemoryMaterialCacheRepository,
-    }
+    },
   ],
 })
-export class AiModule { }
+export class AiModule {}

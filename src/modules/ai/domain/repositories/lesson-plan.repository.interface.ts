@@ -10,7 +10,11 @@ export interface LessonPlanRecord {
 export const I_LESSON_PLAN_REPOSITORY = 'ILessonPlanRepository';
 
 export interface ILessonPlanRepository {
-  findSimilar(studentHash: string, contentVector: number[], threshold: number): Promise<LessonPlanRecord | null>;
+  findSimilar(
+    studentHash: string,
+    contentVector: number[],
+    threshold: number,
+  ): Promise<LessonPlanRecord | null>;
   save(record: LessonPlanRecord): Promise<void>;
 
   // For testing purposes

@@ -11,25 +11,24 @@ describe('GenerateLessonUseCase', () => {
   let geminiProvider: jest.Mocked<GeminiProvider>;
 
   const mockPayload = {
-    students: [
-      { name: 'Enzo', grade: '3º Ano', profiles: ['TEA', 'TDAH'] },
-    ],
+    students: [{ name: 'Enzo', grade: '3º Ano', profiles: ['TEA', 'TDAH'] }],
     days: [
       {
         day: 'Segunda-feira',
         disciplines: [
-          { name: 'Portal da Matemática', theme: 'Frações', observations: 'Usar material dourado' },
+          {
+            name: 'Portal da Matemática',
+            theme: 'Frações',
+            observations: 'Usar material dourado',
+          },
         ],
-      }
+      },
     ],
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        GenerateLessonUseCase,
-        GeminiProvider,
-      ],
+      providers: [GenerateLessonUseCase, GeminiProvider],
     }).compile();
 
     useCase = module.get<GenerateLessonUseCase>(GenerateLessonUseCase);
@@ -55,7 +54,8 @@ describe('GenerateLessonUseCase', () => {
       // Mock raw template files
       (fs.readFileSync as jest.Mock).mockImplementation((pathStr: string) => {
         if (pathStr.includes('system.md')) return 'SYSTEM PROMPT';
-        if (pathStr.includes('user.md')) return 'USER PROMPT \\n {{CONTENTS_STR}} \\n {{STUDENTS_STR}}';
+        if (pathStr.includes('user.md'))
+          return 'USER PROMPT \\n {{CONTENTS_STR}} \\n {{STUDENTS_STR}}';
         return '';
       });
 
@@ -72,17 +72,23 @@ describe('GenerateLessonUseCase', () => {
       // Arg 0 is system prompt
       expect(callArgs[0]).toBe('SYSTEM PROMPT');
       // Arg 1 is user prompt, verify that injected tags have been replaced
-      expect(callArgs[1]).toContain('Portal da Matemática (Tema: Frações) | Observações: Usar material dourado');
-      expect(callArgs[1]).toContain('- NOME: Enzo | SÉRIE/ANO: 3º Ano | PERFIL: TEA, TDAH');
+      expect(callArgs[1]).toContain(
+        'Portal da Matemática (Tema: Frações) | Observações: Usar material dourado',
+      );
+      expect(callArgs[1]).toContain(
+        '- NOME: Enzo | SÉRIE/ANO: 3º Ano | PERFIL: TEA, TDAH',
+      );
     });
 
     it('should handle students without grades', async () => {
-      (fs.readFileSync as jest.Mock).mockReturnValue('mock prompt {{STUDENTS_STR}}');
+      (fs.readFileSync as jest.Mock).mockReturnValue(
+        'mock prompt {{STUDENTS_STR}}',
+      );
       geminiProvider.generateText.mockResolvedValue({} as any);
 
       const payloadNoGrade = {
         students: [{ name: 'Maria', grade: '', profiles: [] }],
-        days: []
+        days: [],
       };
 
       await useCase.execute(payloadNoGrade);

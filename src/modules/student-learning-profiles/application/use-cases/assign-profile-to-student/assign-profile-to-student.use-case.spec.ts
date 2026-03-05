@@ -11,7 +11,7 @@ describe('AssignProfileToStudentUseCase', () => {
       assign: jest.fn(),
       findByStudentId: jest.fn(),
       findByProfileId: jest.fn(),
-      remove: jest.fn()
+      remove: jest.fn(),
     };
     useCase = new AssignProfileToStudentUseCase(repository);
   });
@@ -20,7 +20,7 @@ describe('AssignProfileToStudentUseCase', () => {
     const input = {
       studentId: 'student-123',
       learningProfileId: 'profile-abc',
-      notes: 'Needs visual support'
+      notes: 'Needs visual support',
     };
 
     repository.assign.mockResolvedValue(undefined);
@@ -40,7 +40,7 @@ describe('AssignProfileToStudentUseCase', () => {
   it('should fail when repository throws an error', async () => {
     const input = {
       studentId: 'student-123',
-      learningProfileId: 'profile-abc'
+      learningProfileId: 'profile-abc',
     };
 
     repository.assign.mockRejectedValue(new Error('DB Error'));
@@ -48,7 +48,9 @@ describe('AssignProfileToStudentUseCase', () => {
     const result = await useCase.execute(input);
 
     expect(result.isFailure).toBe(true);
-    expect(result.errorValue()).toBe('An unexpected error occurred while assigning the profile to the student.');
+    expect(result.errorValue()).toBe(
+      'An unexpected error occurred while assigning the profile to the student.',
+    );
   });
 });
 

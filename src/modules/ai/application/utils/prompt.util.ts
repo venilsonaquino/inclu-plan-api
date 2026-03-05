@@ -28,9 +28,11 @@ export class PromptUtil {
         profile: string;
         adaptation: string;
       };
-    }
+    },
   ): string {
-    const override = payload.strategyOverride ? `\nDIRETRIZ OBRIGATÓRIA OVERRIDE:\n${payload.strategyOverride}\n` : '';
+    const override = payload.strategyOverride
+      ? `\nDIRETRIZ OBRIGATÓRIA OVERRIDE:\n${payload.strategyOverride}\n`
+      : '';
     return template
       .replace('{{THEME}}', payload.theme)
       .replace('{{OBJECTIVE}}', payload.objective)

@@ -9,7 +9,6 @@ async function bootstrap() {
   app.enableCors();
   await app.listen(3000);
 
-
   const end = Date.now();
   console.log(`Application is running on: ${end - start}ms`);
 }

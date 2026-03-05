@@ -92,7 +92,9 @@ describe('GenerateCardsUseCase', () => {
     });
 
     it('should gracefully handle GeminiProvider failures', async () => {
-      geminiProvider.generateEmbeddings.mockRejectedValue(new Error('Embedding fail'));
+      geminiProvider.generateEmbeddings.mockRejectedValue(
+        new Error('Embedding fail'),
+      );
 
       const result = await useCase.execute(mockPayload);
 
@@ -106,12 +108,15 @@ describe('GenerateCardsUseCase', () => {
       (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
       geminiProvider.generateText.mockResolvedValue({ cards: [] } as any);
 
-      const payloadOverride = { ...mockPayload, strategyOverride: 'Foco Visual' };
+      const payloadOverride = {
+        ...mockPayload,
+        strategyOverride: 'Foco Visual',
+      };
 
       await useCase.execute(payloadOverride);
 
       expect(geminiProvider.generateEmbeddings).toHaveBeenCalledWith(
-        expect.stringContaining('Estratégia Substituta: Foco Visual')
+        expect.stringContaining('Estratégia Substituta: Foco Visual'),
       );
     });
   });

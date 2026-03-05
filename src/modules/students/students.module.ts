@@ -13,6 +13,6 @@ import { InMemoryStudentsRepository } from '@/modules/students/infra/persistence
       useClass: InMemoryStudentsRepository,
     },
   ],
-  exports: [IStudentsRepository]
+  exports: [IStudentsRepository],
 })
-export class StudentsModule { }
+export class StudentsModule {}

@@ -13,6 +13,6 @@ import { InMemoryGradesRepository } from '@/modules/grades/infra/persistence/in-
       useClass: InMemoryGradesRepository,
     },
   ],
-  exports: [IGradesRepository]
+  exports: [IGradesRepository],
 })
-export class GradesModule { }
+export class GradesModule {}

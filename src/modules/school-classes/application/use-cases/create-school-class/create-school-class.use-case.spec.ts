@@ -46,7 +46,9 @@ describe('CreateSchoolClassUseCase', () => {
     const result = await useCase.execute(input);
 
     expect(result.isFailure).toBe(true);
-    expect(result.errorValue()).toBe('An unexpected error occurred while creating the school class.');
+    expect(result.errorValue()).toBe(
+      'An unexpected error occurred while creating the school class.',
+    );
   });
 });
 

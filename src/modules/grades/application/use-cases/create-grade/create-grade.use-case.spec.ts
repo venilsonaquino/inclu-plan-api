@@ -44,7 +44,9 @@ describe('CreateGradeUseCase', () => {
     const result = await useCase.execute(input);
 
     expect(result.isFailure).toBe(true);
-    expect(result.errorValue()).toBe('An unexpected error occurred while creating the grade level.');
+    expect(result.errorValue()).toBe(
+      'An unexpected error occurred while creating the grade level.',
+    );
   });
 });
 

@@ -5,7 +5,9 @@ import { Response } from 'express';
 
 @Controller('student-learning-profiles')
 export class StudentLearningProfilesController {
-  constructor(private readonly assignProfileToStudentUseCase: AssignProfileToStudentUseCase) { }
+  constructor(
+    private readonly assignProfileToStudentUseCase: AssignProfileToStudentUseCase,
+  ) {}
 
   @Post('assign')
   async assign(@Body() input: AssignProfileInput, @Res() res: Response) {
@@ -14,7 +16,9 @@ export class StudentLearningProfilesController {
     if (result.isSuccess) {
       return res.status(HttpStatus.CREATED).json(result.getValue());
     } else {
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: result.errorValue() });
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: result.errorValue() });
     }
   }
 }

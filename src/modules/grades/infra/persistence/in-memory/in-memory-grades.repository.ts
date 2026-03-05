@@ -11,7 +11,7 @@ export class InMemoryGradesRepository implements IGradesRepository {
   }
 
   async findById(id: string): Promise<Grade | null> {
-    const grade = this.grades.find(g => g.id === id);
+    const grade = this.grades.find((g) => g.id === id);
     return grade ? grade : null;
   }
 

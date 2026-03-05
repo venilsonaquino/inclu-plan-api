@@ -7,16 +7,20 @@ import { LearningProfile } from '@/modules/learning-profiles/domain/entities/lea
 
 @Injectable()
 export class CreateLearningProfileUseCase {
-  constructor(private readonly learningProfilesRepository: ILearningProfilesRepository) { }
+  constructor(
+    private readonly learningProfilesRepository: ILearningProfilesRepository,
+  ) {}
 
-  async execute(input: CreateLearningProfileInput): Promise<Result<CreateLearningProfileOutput>> {
+  async execute(
+    input: CreateLearningProfileInput,
+  ): Promise<Result<CreateLearningProfileOutput>> {
     try {
       const newProfile = new LearningProfile({
         id: crypto.randomUUID(),
         name: input.name,
         description: input.description,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
 
       await this.learningProfilesRepository.create(newProfile);
@@ -25,11 +29,12 @@ export class CreateLearningProfileUseCase {
         id: newProfile.id,
         name: newProfile.name,
         description: newProfile.description,
-        createdAt: newProfile.createdAt
+        createdAt: newProfile.createdAt,
       });
-
     } catch (error) {
-      return Result.fail('An unexpected error occurred while creating the learning profile.');
+      return Result.fail(
+        'An unexpected error occurred while creating the learning profile.',
+      );
     }
   }
 }

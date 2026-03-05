@@ -49,7 +49,9 @@ describe('GenerateBoardUseCase', () => {
 
   describe('execute', () => {
     it('should return cached material if a similar request exists', async () => {
-      const cachedResult = { board: { title: 'Prancha', text: 'Text', imagePrompt: 'Prompt' } };
+      const cachedResult = {
+        board: { title: 'Prancha', text: 'Text', imagePrompt: 'Prompt' },
+      };
       geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2] as any);
       materialCacheRepository.findSimilar.mockResolvedValue({
         id: '123',
@@ -73,8 +75,8 @@ describe('GenerateBoardUseCase', () => {
         board: {
           title: 'Prancha Title',
           text: 'Text',
-          imagePrompt: 'Step 1 image'
-        }
+          imagePrompt: 'Step 1 image',
+        },
       };
       geminiProvider.generateText.mockResolvedValue(aiResult as any);
       geminiProvider.generateImage.mockResolvedValue('base64StringMock');
@@ -95,14 +97,19 @@ describe('GenerateBoardUseCase', () => {
       geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2] as any);
       materialCacheRepository.findSimilar.mockResolvedValue(null);
       (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
-      geminiProvider.generateText.mockResolvedValue({ board: { title: 'a', text: 'b', imagePrompt: 'c' } } as any);
+      geminiProvider.generateText.mockResolvedValue({
+        board: { title: 'a', text: 'b', imagePrompt: 'c' },
+      } as any);
 
-      const payloadOverride = { ...mockPayload, strategyOverride: 'Foco Visual' };
+      const payloadOverride = {
+        ...mockPayload,
+        strategyOverride: 'Foco Visual',
+      };
 
       await useCase.execute(payloadOverride);
 
       expect(geminiProvider.generateEmbeddings).toHaveBeenCalledWith(
-        expect.stringContaining('Estratégia Substituta: Foco Visual')
+        expect.stringContaining('Estratégia Substituta: Foco Visual'),
       );
     });
   });

@@ -5,7 +5,10 @@ import { GenerateMaterialInput } from './generate-material.input';
 import { GenerateMaterialOutput } from './generate-material.output';
 import * as fs from 'fs';
 import * as path from 'path';
-import { I_MATERIAL_CACHE_REPOSITORY, IMaterialCacheRepository } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
+import {
+  I_MATERIAL_CACHE_REPOSITORY,
+  IMaterialCacheRepository,
+} from '@/modules/ai/domain/repositories/material-cache.repository.interface';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -16,7 +19,7 @@ export class GenerateMaterialUseCase {
     private readonly geminiProvider: GeminiProvider,
     @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
-  ) { }
+  ) {}
 
   private loadPromptTemplate(filename: string): string {
     try {
@@ -28,7 +31,10 @@ export class GenerateMaterialUseCase {
     }
   }
 
-  private buildPromptContext(template: string, payload: GenerateMaterialInput): string {
+  private buildPromptContext(
+    template: string,
+    payload: GenerateMaterialInput,
+  ): string {
     return template
       .replace('{{THEME}}', payload.theme)
       .replace('{{OBJECTIVE}}', payload.objective)
@@ -52,8 +58,8 @@ export class GenerateMaterialUseCase {
     try {
       return JSON.parse(cleanedStr);
     } catch (e) {
-      this.logger.error("JSON parse error after generation", e);
-      throw new Error("Invalid format received from AI.");
+      this.logger.error('JSON parse error after generation', e);
+      throw new Error('Invalid format received from AI.');
     }
   }
 
@@ -64,49 +70,73 @@ export class GenerateMaterialUseCase {
       const cardPromises = materialData.cards
         .filter((card: any) => card.imagePrompt)
         .map((card: any) =>
-          this.geminiProvider.generateImage(card.imagePrompt)
-            .then(base64 => { card.generatedImage = base64; })
-            .catch(e => { this.logger.warn(`Card image failed: ${e.message}`); })
+          this.geminiProvider
+            .generateImage(card.imagePrompt)
+            .then((base64) => {
+              card.generatedImage = base64;
+            })
+            .catch((e) => {
+              this.logger.warn(`Card image failed: ${e.message}`);
+            }),
         );
       imagePromises.push(...cardPromises);
     }
 
     if (materialData?.board?.imagePrompt) {
       imagePromises.push(
-        this.geminiProvider.generateImage(materialData.board.imagePrompt)
-          .then(base64 => { materialData.board.generatedImage = base64; })
-          .catch(e => { this.logger.warn(`Board image failed: ${e.message}`); })
+        this.geminiProvider
+          .generateImage(materialData.board.imagePrompt)
+          .then((base64) => {
+            materialData.board.generatedImage = base64;
+          })
+          .catch((e) => {
+            this.logger.warn(`Board image failed: ${e.message}`);
+          }),
       );
     }
 
     await Promise.all(imagePromises);
   }
 
-  async execute(payload: GenerateMaterialInput): Promise<Result<GenerateMaterialOutput>> {
+  async execute(
+    payload: GenerateMaterialInput,
+  ): Promise<Result<GenerateMaterialOutput>> {
     try {
       // 1. Prepare Semantic Cache context
       const contextHash = `${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}`; // A basic broad grouping
       const semanticContextStr = `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Adaptação: ${payload.studentData.adaptation}`;
 
       this.logger.log(`Checking semantic cache for material...`);
-      const payloadEmbedding = await this.geminiProvider.generateEmbeddings(semanticContextStr);
+      const payloadEmbedding =
+        await this.geminiProvider.generateEmbeddings(semanticContextStr);
 
       // 2. Fetch from Cache (Threshold 0.95 = 95% similar meaning)
-      const cachedMaterial = await this.materialCache.findSimilar(contextHash, payloadEmbedding, 0.95);
+      const cachedMaterial = await this.materialCache.findSimilar(
+        contextHash,
+        payloadEmbedding,
+        0.95,
+      );
 
       if (cachedMaterial) {
-        this.logger.log(`CACHE HIT! Reusing material id ${cachedMaterial.id} with pre-generated images.`);
+        this.logger.log(
+          `CACHE HIT! Reusing material id ${cachedMaterial.id} with pre-generated images.`,
+        );
         return Result.ok<GenerateMaterialOutput>(cachedMaterial.materialResult);
       }
 
       this.logger.log(`CACHE MISS. Generating new material from scratch...`);
 
       // 3. Normal Generation Flow
-      const systemInstruction = this.loadPromptTemplate('generate-material.system.md');
+      const systemInstruction = this.loadPromptTemplate(
+        'generate-material.system.md',
+      );
       const basePrompt = this.loadPromptTemplate('generate-material.user.md');
       const promptText = this.buildPromptContext(basePrompt, payload);
 
-      const rawAiResponse = await this.geminiProvider.generateText(systemInstruction, promptText);
+      const rawAiResponse = await this.geminiProvider.generateText(
+        systemInstruction,
+        promptText,
+      );
       const materialData = this.sanitizeAndParseJson(rawAiResponse);
 
       await this.fetchImagesForMaterial(materialData);
@@ -116,13 +146,17 @@ export class GenerateMaterialUseCase {
         id: randomUUID(),
         contextHash,
         payloadEmbedding,
-        materialResult: materialData
+        materialResult: materialData,
       });
 
       return Result.ok<GenerateMaterialOutput>(materialData);
     } catch (error) {
       this.logger.error('Failed to generate material', error);
-      return Result.fail<GenerateMaterialOutput>(error instanceof Error ? error.message : 'Unknown error generating material');
+      return Result.fail<GenerateMaterialOutput>(
+        error instanceof Error
+          ? error.message
+          : 'Unknown error generating material',
+      );
     }
   }
 }

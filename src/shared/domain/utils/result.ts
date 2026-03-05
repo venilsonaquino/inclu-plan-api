@@ -4,7 +4,11 @@ export class Result<T> {
   public error: string | null;
   private _value: T | null;
 
-  private constructor(isSuccess: boolean, error?: string | null, value?: T | null) {
+  private constructor(
+    isSuccess: boolean,
+    error?: string | null,
+    value?: T | null,
+  ) {
     if (isSuccess && error) {
       throw new Error(
         'InvalidOperation: A result cannot be successful and contain an error',

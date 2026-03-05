@@ -7,9 +7,11 @@ import { Student } from '@/modules/students/domain/entities/student.entity';
 
 @Injectable()
 export class CreateStudentUseCase {
-  constructor(private readonly studentsRepository: IStudentsRepository) { }
+  constructor(private readonly studentsRepository: IStudentsRepository) {}
 
-  async execute(input: CreateStudentInput): Promise<Result<CreateStudentOutput>> {
+  async execute(
+    input: CreateStudentInput,
+  ): Promise<Result<CreateStudentOutput>> {
     try {
       const newStudent = new Student({
         id: crypto.randomUUID(),
@@ -19,7 +21,7 @@ export class CreateStudentUseCase {
         schoolClassId: input.schoolClassId,
         notes: input.notes,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
 
       await this.studentsRepository.create(newStudent);
@@ -30,11 +32,12 @@ export class CreateStudentUseCase {
         gradeId: newStudent.gradeId,
         profiles: newStudent.profiles,
         schoolClassId: newStudent.schoolClassId,
-        createdAt: newStudent.createdAt
+        createdAt: newStudent.createdAt,
       });
-
     } catch (error) {
-      return Result.fail('An unexpected error occurred while creating the student.');
+      return Result.fail(
+        'An unexpected error occurred while creating the student.',
+      );
     }
   }
 }

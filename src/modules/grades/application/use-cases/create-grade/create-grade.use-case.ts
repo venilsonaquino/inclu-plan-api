@@ -7,7 +7,7 @@ import { Grade } from '@/modules/grades/domain/entities/grade.entity';
 
 @Injectable()
 export class CreateGradeUseCase {
-  constructor(private readonly gradesRepository: IGradesRepository) { }
+  constructor(private readonly gradesRepository: IGradesRepository) {}
 
   async execute(input: CreateGradeInput): Promise<Result<CreateGradeOutput>> {
     try {
@@ -16,7 +16,7 @@ export class CreateGradeUseCase {
         name: input.name,
         description: input.description,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
 
       await this.gradesRepository.create(newGrade);
@@ -25,11 +25,12 @@ export class CreateGradeUseCase {
         id: newGrade.id,
         name: newGrade.name,
         description: newGrade.description,
-        createdAt: newGrade.createdAt
+        createdAt: newGrade.createdAt,
       });
-
     } catch (error) {
-      return Result.fail('An unexpected error occurred while creating the grade level.');
+      return Result.fail(
+        'An unexpected error occurred while creating the grade level.',
+      );
     }
   }
 }
