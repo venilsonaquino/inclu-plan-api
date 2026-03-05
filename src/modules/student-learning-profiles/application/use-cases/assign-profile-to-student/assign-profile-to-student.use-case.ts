@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IStudentLearningProfilesRepository } from '@/modules/student-learning-profiles/domain/repositories/student-learning-profiles.repository';
 import { AssignProfileInput } from './assign-profile.input';
 import { AssignProfileOutput } from './assign-profile.output';
@@ -7,6 +7,8 @@ import { StudentLearningProfile } from '@/modules/student-learning-profiles/doma
 
 @Injectable()
 export class AssignProfileToStudentUseCase {
+  private readonly logger = new Logger(AssignProfileToStudentUseCase.name);
+
   constructor(
     private readonly repository: IStudentLearningProfilesRepository,
   ) {}
@@ -33,6 +35,10 @@ export class AssignProfileToStudentUseCase {
         createdAt: association.createdAt,
       });
     } catch (error) {
+      this.logger.error(
+        'Unexpected error assigning profile',
+        error instanceof Error ? error.stack : error,
+      );
       return Result.fail(
         'An unexpected error occurred while assigning the profile to the student.',
       );

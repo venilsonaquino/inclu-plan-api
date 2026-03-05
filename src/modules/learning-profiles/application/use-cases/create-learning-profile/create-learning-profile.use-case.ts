@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ILearningProfilesRepository } from '@/modules/learning-profiles/domain/repositories/learning-profiles.repository';
 import { CreateLearningProfileInput } from './create-learning-profile.input';
 import { CreateLearningProfileOutput } from './create-learning-profile.output';
@@ -7,6 +7,8 @@ import { LearningProfile } from '@/modules/learning-profiles/domain/entities/lea
 
 @Injectable()
 export class CreateLearningProfileUseCase {
+  private readonly logger = new Logger(CreateLearningProfileUseCase.name);
+
   constructor(
     private readonly learningProfilesRepository: ILearningProfilesRepository,
   ) {}
@@ -32,6 +34,10 @@ export class CreateLearningProfileUseCase {
         createdAt: newProfile.createdAt,
       });
     } catch (error) {
+      this.logger.error(
+        'Unexpected error creating learning profile',
+        error instanceof Error ? error.stack : error,
+      );
       return Result.fail(
         'An unexpected error occurred while creating the learning profile.',
       );

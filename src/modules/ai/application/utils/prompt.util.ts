@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { Logger } from '@nestjs/common';
 
 const logger = new Logger('PromptUtil');
@@ -7,8 +7,8 @@ const logger = new Logger('PromptUtil');
 export class PromptUtil {
   static loadPromptTemplate(dirname: string, filename: string): string {
     try {
-      const promptPath = path.join(dirname, 'prompts', filename);
-      return fs.readFileSync(promptPath, 'utf8');
+      const promptPath = join(dirname, 'prompts', filename);
+      return readFileSync(promptPath, 'utf8');
     } catch (error) {
       logger.error(`Could not load prompt file: ${filename}`, error);
       throw new Error(`Failed to load prompt template: ${filename}`);

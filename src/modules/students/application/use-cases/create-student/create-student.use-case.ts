@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IStudentsRepository } from '@/modules/students/domain/repositories/students.repository';
 import { CreateStudentInput } from './create-student.input';
 import { CreateStudentOutput } from './create-student.output';
@@ -7,6 +7,8 @@ import { Student } from '@/modules/students/domain/entities/student.entity';
 
 @Injectable()
 export class CreateStudentUseCase {
+  private readonly logger = new Logger(CreateStudentUseCase.name);
+
   constructor(private readonly studentsRepository: IStudentsRepository) {}
 
   async execute(
@@ -35,6 +37,10 @@ export class CreateStudentUseCase {
         createdAt: newStudent.createdAt,
       });
     } catch (error) {
+      this.logger.error(
+        'Unexpected error creating student',
+        error instanceof Error ? error.stack : error,
+      );
       return Result.fail(
         'An unexpected error occurred while creating the student.',
       );

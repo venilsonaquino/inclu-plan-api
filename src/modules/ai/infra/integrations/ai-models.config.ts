@@ -15,7 +15,7 @@ export const AI_MODELS = {
   EMBEDDING: {
     name: 'gemini-embedding-001',
     pricing: {
-      perMillionTokens: 0.0, // Virtually free, 1500 RPM on free tier
+      perMillionTokens: 0, // Virtually free, 1500 RPM on free tier
     },
   },
 };

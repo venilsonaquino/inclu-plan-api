@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ISchoolClassesRepository } from '@/modules/school-classes/domain/repositories/school-classes.repository';
 import { CreateSchoolClassInput } from './create-school-class.input';
 import { CreateSchoolClassOutput } from './create-school-class.output';
@@ -7,6 +7,8 @@ import { SchoolClass } from '@/modules/school-classes/domain/entities/school-cla
 
 @Injectable()
 export class CreateSchoolClassUseCase {
+  private readonly logger = new Logger(CreateSchoolClassUseCase.name);
+
   constructor(
     private readonly schoolClassesRepository: ISchoolClassesRepository,
   ) {}
@@ -33,6 +35,10 @@ export class CreateSchoolClassUseCase {
         createdAt: newClass.createdAt,
       });
     } catch (error) {
+      this.logger.error(
+        'Unexpected error creating school class',
+        error instanceof Error ? error.stack : error,
+      );
       return Result.fail(
         'An unexpected error occurred while creating the school class.',
       );

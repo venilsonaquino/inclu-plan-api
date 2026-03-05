@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ITeachersRepository } from '@/modules/teachers/domain/repositories/teachers.repository';
 import { CreateTeacherInput } from './create-teacher.input';
 import { CreateTeacherOutput } from './create-teacher.output';
@@ -8,6 +8,8 @@ import { CryptoUtil } from '@/shared/utils/crypto.util';
 
 @Injectable()
 export class CreateTeacherUseCase {
+  private readonly logger = new Logger(CreateTeacherUseCase.name);
+
   constructor(private readonly teachersRepository: ITeachersRepository) {}
 
   async execute(
@@ -42,6 +44,10 @@ export class CreateTeacherUseCase {
         createdAt: newTeacher.createdAt,
       });
     } catch (error) {
+      this.logger.error(
+        'Unexpected error creating teacher',
+        error instanceof Error ? error.stack : error,
+      );
       return Result.fail(
         'An unexpected error occurred while creating the teacher.',
       );
