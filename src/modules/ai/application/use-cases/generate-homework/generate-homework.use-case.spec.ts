@@ -92,6 +92,24 @@ describe('GenerateHomeworkUseCase', () => {
       expect(materialCacheRepository.save).toHaveBeenCalled();
     });
 
+    it('should handle inner generateImage failure gracefully (fallback to undefined image)', async () => {
+      geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2] as any);
+      materialCacheRepository.findSimilar.mockResolvedValue(null);
+      (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
+      geminiProvider.generateText.mockResolvedValue({
+        homework: { title: 'a', instructions: 'b', imagePrompt: 'c' },
+      } as any);
+
+      // Force image generation to throw error
+      geminiProvider.generateImage.mockRejectedValue(new Error('Image AI offline'));
+
+      const result = await useCase.execute(mockPayload);
+
+      // We expect the result to still be successful, just without the image
+      expect(result.isSuccess).toBe(true);
+      expect(result.getValue().homework.generatedImage).toBeUndefined();
+    });
+
     it('should gracefully handle GeminiProvider failures', async () => {
       geminiProvider.generateEmbeddings.mockRejectedValue(
         new Error('API Down'),
