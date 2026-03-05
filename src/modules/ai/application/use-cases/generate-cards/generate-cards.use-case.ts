@@ -3,7 +3,7 @@ import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider'
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateCardsInput } from './generate-cards.input';
 import { GenerateCardsOutput } from './generate-cards.output';
-import * as fs from 'fs';
+import { PromptUtil } from '../../utils/prompt.util';
 import * as path from 'path';
 import { I_MATERIAL_CACHE_REPOSITORY, IMaterialCacheRepository } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
 import { randomUUID } from 'crypto';
@@ -17,29 +17,6 @@ export class GenerateCardsUseCase {
     @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
   ) { }
-
-  private loadPromptTemplate(filename: string): string {
-    try {
-      const promptPath = path.join(__dirname, 'prompts', filename);
-      return fs.readFileSync(promptPath, 'utf8');
-    } catch (error) {
-      this.logger.error(`Could not load prompt file: ${filename}`, error);
-      throw new Error(`Failed to load prompt template: ${filename}`);
-    }
-  }
-
-  private buildPromptContext(template: string, payload: GenerateCardsInput): string {
-    const override = payload.strategyOverride ? `\nDIRETRIZ OBRIGATÓRIA OVERRIDE:\n${payload.strategyOverride}\n` : '';
-    return template
-      .replace('{{THEME}}', payload.theme)
-      .replace('{{OBJECTIVE}}', payload.objective)
-      .replace('{{DESCRIPTION}}', payload.description)
-      .replace('{{STUDENT_NAME}}', payload.studentData.name)
-      .replace('{{STUDENT_GRADE}}', payload.studentData.grade)
-      .replace('{{STUDENT_PROFILE}}', payload.studentData.profile)
-      .replace('{{STUDENT_ADAPTATION}}', payload.studentData.adaptation)
-      .replace('{{STRATEGY_OVERRIDE}}', override);
-  }
 
   private async fetchImagesForCards(cardsData: GenerateCardsOutput): Promise<void> {
     if (!cardsData || !Array.isArray(cardsData.cards)) return;
@@ -77,9 +54,9 @@ export class GenerateCardsUseCase {
 
       this.logger.log(`CACHE MISS. Generating new Cards from scratch...`);
 
-      const systemInstruction = this.loadPromptTemplate('generate-cards.system.md');
-      const basePrompt = this.loadPromptTemplate('generate-material.user.md');
-      const promptText = this.buildPromptContext(basePrompt, payload);
+      const systemInstruction = PromptUtil.loadPromptTemplate(__dirname, 'generate-cards.system.md');
+      const basePrompt = PromptUtil.loadPromptTemplate(__dirname, 'generate-material.user.md');
+      const promptText = PromptUtil.buildPromptContext(basePrompt, payload);
 
       const rawAiResponse = await this.geminiProvider.generateText(systemInstruction, promptText);
 
