@@ -166,9 +166,9 @@ describe('GeminiProvider', () => {
 
         expect(result).toEqual(mockVector);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          expect.stringContaining('text-embedding-004:embedContent'),
+          expect.stringContaining('gemini-embedding-001:embedContent'),
           expect.objectContaining({
-            model: 'models/text-embedding-004',
+            model: 'models/gemini-embedding-001',
             content: { parts: [{ text: 'Test text for embedding' }] }
           }),
           expect.any(Object)
