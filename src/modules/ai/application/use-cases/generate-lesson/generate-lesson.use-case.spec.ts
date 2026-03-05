@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateLessonUseCase } from './generate-lesson.use-case';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
-jest.mock('fs');
+jest.mock('node:fs');
+jest.mock('node:path');
 jest.mock('@/modules/ai/infra/integrations/gemini.provider');
 
 describe('GenerateLessonUseCase', () => {
@@ -51,7 +53,7 @@ describe('GenerateLessonUseCase', () => {
 
   describe('execute', () => {
     it('should successfully build prompt strings and return AI result', async () => {
-      // Mock raw template files
+      (path.join as jest.Mock).mockImplementation((...args) => args.join('/'));
       (fs.readFileSync as jest.Mock).mockImplementation((pathStr: string) => {
         if (pathStr.includes('system.md')) return 'SYSTEM PROMPT';
         if (pathStr.includes('user.md'))

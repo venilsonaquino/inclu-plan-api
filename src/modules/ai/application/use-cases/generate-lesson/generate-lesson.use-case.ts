@@ -3,8 +3,8 @@ import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider'
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateLessonInput } from './generate-lesson.input';
 import { GenerateLessonOutput } from './generate-lesson.output';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 @Injectable()
 export class GenerateLessonUseCase {
@@ -41,10 +41,12 @@ export class GenerateLessonUseCase {
         (d) =>
           `[${d.day}]\n` +
           d.disciplines
-            .map(
-              (disc) =>
-                `  - ${disc.name} (Tema: ${disc.theme})${disc.observations ? ` | Observações: ${disc.observations}` : ''}\n`,
-            )
+            .map((disc) => {
+              const obs = disc.observations
+                ? ` | Observações: ${disc.observations}`
+                : '';
+              return `  - ${disc.name} (Tema: ${disc.theme})${obs}\n`;
+            })
             .join('') +
           '\n',
       )

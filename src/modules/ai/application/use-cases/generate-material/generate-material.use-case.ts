@@ -3,13 +3,13 @@ import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider'
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateMaterialInput } from './generate-material.input';
 import { GenerateMaterialOutput } from './generate-material.output';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import {
   I_MATERIAL_CACHE_REPOSITORY,
   IMaterialCacheRepository,
 } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class GenerateMaterialUseCase {

@@ -8,7 +8,7 @@ import {
   I_MATERIAL_CACHE_REPOSITORY,
   IMaterialCacheRepository,
 } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class GenerateBoardUseCase {
