@@ -50,6 +50,16 @@ describe('CreateSchoolClassUseCase', () => {
       'An unexpected error occurred while creating the school class.',
     );
   });
+
+  it('should cover the fallback branch for non-Error thrown objects', async () => {
+    const input = {
+      name: '3º Ano B',
+      teacherId: 'teacher-123',
+    };
+    repository.create.mockRejectedValue('String Error');
+    const result = await useCase.execute(input);
+    expect(result.isFailure).toBe(true);
+  });
 });
 
 describe('CreateSchoolClassOutput', () => {

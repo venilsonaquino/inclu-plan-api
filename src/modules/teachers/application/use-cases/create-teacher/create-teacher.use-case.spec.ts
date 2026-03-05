@@ -66,6 +66,34 @@ describe('CreateTeacherUseCase', () => {
     expect(result.isFailure).toBe(true);
     expect(result.errorValue()).toBe('Email already in use.');
   });
+
+  it('should fail when repository throws an error', async () => {
+    const input: CreateTeacherInput = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'strongpassword123',
+    };
+    jest.spyOn(repository, 'create').mockRejectedValueOnce(new Error('DB Error'));
+
+    const result = await useCase.execute(input);
+
+    expect(result.isFailure).toBe(true);
+    expect(result.errorValue()).toBe(
+      'An unexpected error occurred while creating the teacher.',
+    );
+  });
+
+  it('should cover the fallback branch for non-Error thrown objects', async () => {
+    const input: CreateTeacherInput = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'strongpassword123',
+    };
+    jest.spyOn(repository, 'create').mockRejectedValueOnce('String Error');
+
+    const result = await useCase.execute(input);
+    expect(result.isFailure).toBe(true);
+  });
 });
 
 describe('CreateTeacherOutput', () => {

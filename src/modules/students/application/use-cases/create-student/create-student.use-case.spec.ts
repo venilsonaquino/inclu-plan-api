@@ -61,6 +61,17 @@ describe('CreateStudentUseCase', () => {
       'An unexpected error occurred while creating the student.',
     );
   });
+
+  it('should cover the fallback branch for non-Error thrown objects', async () => {
+    const input = {
+      name: 'John Doe',
+      gradeId: 'grade-123',
+      profiles: [],
+    };
+    studentsRepository.create.mockRejectedValue('String Error');
+    const result = await useCase.execute(input);
+    expect(result.isFailure).toBe(true);
+  });
 });
 
 describe('CreateStudentOutput', () => {

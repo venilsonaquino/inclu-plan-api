@@ -52,6 +52,16 @@ describe('AssignProfileToStudentUseCase', () => {
       'An unexpected error occurred while assigning the profile to the student.',
     );
   });
+
+  it('should cover the fallback branch for non-Error thrown objects', async () => {
+    const input = {
+      studentId: 'student-123',
+      learningProfileId: 'profile-abc',
+    };
+    repository.assign.mockRejectedValue('String Error');
+    const result = await useCase.execute(input);
+    expect(result.isFailure).toBe(true);
+  });
 });
 
 describe('AssignProfileOutput', () => {
