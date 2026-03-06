@@ -83,7 +83,8 @@
     "collectCoverageFrom": [
       "src/**/*.(t|j)s",
       "!src/main.ts",
-      "!src/**/*.module.ts"
+      "!src/**/*.module.ts",
+      "!src/database/sequelize/**/*.(t|j)s"
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"
