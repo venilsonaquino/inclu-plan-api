@@ -24,7 +24,10 @@ export class LessonStudents {
 
   toPromptString(): string {
     return this._students
-      .map(s => `- NOME: ${s.name} | SÉRIE/ANO: ${s.grade || 'Não informada'} | NEURODIVERGÊNCIA: ${s.neurodivergencies.join(', ')}`)
+      .map(
+        s =>
+          `- NOME: ${s.name} | SÉRIE/ANO: ${s.grade || 'Não informada'} | NEURODIVERGÊNCIA: ${s.neurodivergencies.join(', ')}`,
+      )
       .join('\n');
   }
 }

@@ -9,17 +9,20 @@ import { SchoolClass } from '@/modules/school-classes/domain/entities/school-cla
 export class CreateSchoolClassUseCase {
   private readonly logger = new Logger(CreateSchoolClassUseCase.name);
 
-  constructor(private readonly schoolClassesRepository: ISchoolClassesRepository) { }
+  constructor(private readonly schoolClassesRepository: ISchoolClassesRepository) {}
 
   async execute(input: CreateSchoolClassInput): Promise<Result<CreateSchoolClassOutput>> {
     try {
-      const newClass = new SchoolClass({
-        name: input.name,
-        teacherId: input.teacherId, // In the future, parsed from authentication token
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }, crypto.randomUUID());
+      const newClass = new SchoolClass(
+        {
+          name: input.name,
+          teacherId: input.teacherId, // In the future, parsed from authentication token
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        crypto.randomUUID(),
+      );
 
       await this.schoolClassesRepository.create(newClass);
 

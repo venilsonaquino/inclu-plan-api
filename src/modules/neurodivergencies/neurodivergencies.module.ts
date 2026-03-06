@@ -18,4 +18,4 @@ import { SequelizeModule } from '@nestjs/sequelize';
   ],
   exports: [INeurodivergenciesRepository],
 })
-export class NeurodivergenciesModule { }
+export class NeurodivergenciesModule {}

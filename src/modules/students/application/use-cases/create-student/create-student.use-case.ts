@@ -9,19 +9,22 @@ import { Student } from '@/modules/students/domain/entities/student.entity';
 export class CreateStudentUseCase {
   private readonly logger = new Logger(CreateStudentUseCase.name);
 
-  constructor(private readonly studentsRepository: IStudentsRepository) { }
+  constructor(private readonly studentsRepository: IStudentsRepository) {}
 
   async execute(input: CreateStudentInput): Promise<Result<CreateStudentOutput>> {
     try {
-      const newStudent = new Student({
-        name: input.name,
-        gradeId: input.gradeId,
-        neurodivergencies: input.neurodivergencies,
-        schoolClassId: input.schoolClassId,
-        notes: input.notes,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }, crypto.randomUUID());
+      const newStudent = new Student(
+        {
+          name: input.name,
+          gradeId: input.gradeId,
+          neurodivergencies: input.neurodivergencies,
+          schoolClassId: input.schoolClassId,
+          notes: input.notes,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        crypto.randomUUID(),
+      );
 
       await this.studentsRepository.create(newStudent);
 

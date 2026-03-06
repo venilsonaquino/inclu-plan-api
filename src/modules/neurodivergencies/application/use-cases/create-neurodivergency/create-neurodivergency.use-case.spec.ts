@@ -1,4 +1,3 @@
-import { Result } from '@/shared/domain/utils/result';
 import { CreateNeurodivergencyUseCase } from './create-neurodivergency.use-case';
 import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain/repositories/neurodivergencies.repository';
 

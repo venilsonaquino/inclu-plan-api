@@ -9,16 +9,19 @@ import { Neurodivergency } from '@/modules/neurodivergencies/domain/entities/neu
 export class CreateNeurodivergencyUseCase {
   private readonly logger = new Logger(CreateNeurodivergencyUseCase.name);
 
-  constructor(private readonly neurodivergenciesRepository: INeurodivergenciesRepository) { }
+  constructor(private readonly neurodivergenciesRepository: INeurodivergenciesRepository) {}
 
   async execute(input: CreateNeurodivergencyInput): Promise<Result<CreateNeurodivergencyOutput>> {
     try {
-      const newNeurodivergency = new Neurodivergency({
-        name: input.name,
-        description: input.description,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }, crypto.randomUUID());
+      const newNeurodivergency = new Neurodivergency(
+        {
+          name: input.name,
+          description: input.description,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        crypto.randomUUID(),
+      );
 
       await this.neurodivergenciesRepository.create(newNeurodivergency);
 

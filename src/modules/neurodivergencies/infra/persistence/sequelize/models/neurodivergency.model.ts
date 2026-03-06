@@ -34,11 +34,14 @@ export class NeurodivergencyModel extends Model<NeurodivergencyModel> {
 
   // Domain Mapping Utils
   toDomain(): Neurodivergency {
-    return new Neurodivergency({
-      name: this.name,
-      description: this.description,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-    }, this.id);
+    return new Neurodivergency(
+      {
+        name: this.name,
+        description: this.description,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
+      },
+      this.id,
+    );
   }
 }

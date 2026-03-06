@@ -5,7 +5,7 @@ import { Response } from 'express';
 
 @Controller('neurodivergencies')
 export class NeurodivergenciesController {
-  constructor(private readonly createNeurodivergencyUseCase: CreateNeurodivergencyUseCase) { }
+  constructor(private readonly createNeurodivergencyUseCase: CreateNeurodivergencyUseCase) {}
 
   @Post()
   async create(@Body() input: CreateNeurodivergencyInput, @Res() res: Response) {

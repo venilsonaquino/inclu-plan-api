@@ -38,4 +38,4 @@ import { StudentNeurodivergenciesModule } from './modules/student-neurodivergenc
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

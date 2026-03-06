@@ -17,7 +17,7 @@ export class SequelizeStudentsRepository implements IStudentsRepository {
     @InjectModel(StudentNeurodivergencyModel)
     private readonly pivotModel: typeof StudentNeurodivergencyModel,
     private readonly sequelize: Sequelize,
-  ) { }
+  ) {}
 
   async create(student: Student): Promise<void> {
     const transaction = await this.sequelize.transaction();
@@ -38,7 +38,7 @@ export class SequelizeStudentsRepository implements IStudentsRepository {
 
       if (student.neurodivergencies && student.neurodivergencies.length > 0) {
         // Create associations directly using provided IDs
-        const associations = student.neurodivergencies.map((id) => ({
+        const associations = student.neurodivergencies.map(id => ({
           studentId: student.id,
           neurodivergencyId: id,
           notes: 'Auto-linked on student creation',
@@ -67,6 +67,6 @@ export class SequelizeStudentsRepository implements IStudentsRepository {
       where: { schoolClassId },
       include: [NeurodivergencyModel],
     });
-    return models.map((model) => model.toDomain());
+    return models.map(model => model.toDomain());
   }
 }

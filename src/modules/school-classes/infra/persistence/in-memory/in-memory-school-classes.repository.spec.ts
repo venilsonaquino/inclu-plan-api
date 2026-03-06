@@ -9,10 +9,13 @@ describe('InMemorySchoolClassesRepository', () => {
   });
 
   it('should create and retrieve by id', async () => {
-    const schoolClass = new SchoolClass({
-      name: 'Class',
-      teacherId: 't1',
-    }, '1');
+    const schoolClass = new SchoolClass(
+      {
+        name: 'Class',
+        teacherId: 't1',
+      },
+      '1',
+    );
     await repository.create(schoolClass);
     const found = await repository.findById('1');
     expect(found?.name).toBe('Class');

@@ -54,16 +54,19 @@ export class StudentModel extends Model<StudentModel> {
 
   // Domain Mapping Utils
   toDomain(): Student {
-    return new Student({
-      name: this.name,
-      gradeId: this.gradeId,
-      neurodivergencies: this.neurodivergencies ? this.neurodivergencies.map(p => p.id) : [],
-      schoolClassId: this.schoolClassId,
-      notes: this.notes,
-      isActive: this.isActive,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-      deletedAt: this.deletedAt,
-    }, this.id);
+    return new Student(
+      {
+        name: this.name,
+        gradeId: this.gradeId,
+        neurodivergencies: this.neurodivergencies ? this.neurodivergencies.map(p => p.id) : [],
+        schoolClassId: this.schoolClassId,
+        notes: this.notes,
+        isActive: this.isActive,
+        createdAt: this.createdAt,
+        updatedAt: this.updatedAt,
+        deletedAt: this.deletedAt,
+      },
+      this.id,
+    );
   }
 }

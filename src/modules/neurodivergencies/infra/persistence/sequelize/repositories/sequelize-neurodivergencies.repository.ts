@@ -9,7 +9,7 @@ export class SequelizeNeurodivergenciesRepository implements INeurodivergenciesR
   constructor(
     @InjectModel(NeurodivergencyModel)
     private readonly neurodivergencyModel: typeof NeurodivergencyModel,
-  ) { }
+  ) {}
 
   async create(neurodivergency: Neurodivergency): Promise<void> {
     await this.neurodivergencyModel.create({

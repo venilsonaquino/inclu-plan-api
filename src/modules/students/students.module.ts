@@ -9,13 +9,7 @@ import { StudentNeurodivergencyModel } from '@/modules/student-neurodivergencies
 import { SequelizeModule } from '@nestjs/sequelize';
 
 @Module({
-  imports: [
-    SequelizeModule.forFeature([
-      StudentModel,
-      NeurodivergencyModel,
-      StudentNeurodivergencyModel,
-    ]),
-  ],
+  imports: [SequelizeModule.forFeature([StudentModel, NeurodivergencyModel, StudentNeurodivergencyModel])],
   controllers: [StudentsController],
   providers: [
     CreateStudentUseCase,
@@ -26,4 +20,4 @@ import { SequelizeModule } from '@nestjs/sequelize';
   ],
   exports: [IStudentsRepository],
 })
-export class StudentsModule { }
+export class StudentsModule {}

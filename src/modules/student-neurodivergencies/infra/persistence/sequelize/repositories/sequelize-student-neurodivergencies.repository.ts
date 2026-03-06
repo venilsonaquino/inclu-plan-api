@@ -9,7 +9,7 @@ export class SequelizeStudentNeurodivergenciesRepository implements IStudentNeur
   constructor(
     @InjectModel(StudentNeurodivergencyModel)
     private readonly model: typeof StudentNeurodivergencyModel,
-  ) { }
+  ) {}
 
   async assign(association: StudentNeurodivergency): Promise<void> {
     await this.model.create({
@@ -25,14 +25,14 @@ export class SequelizeStudentNeurodivergenciesRepository implements IStudentNeur
     const models = await this.model.findAll({
       where: { studentId },
     });
-    return models.map((m) => this.toDomain(m));
+    return models.map(m => this.toDomain(m));
   }
 
   async findByNeurodivergencyId(neurodivergencyId: string): Promise<StudentNeurodivergency[]> {
     const models = await this.model.findAll({
       where: { neurodivergencyId },
     });
-    return models.map((m) => this.toDomain(m));
+    return models.map(m => this.toDomain(m));
   }
 
   async remove(studentId: string, neurodivergencyId: string): Promise<void> {

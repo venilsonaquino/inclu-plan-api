@@ -9,17 +9,27 @@ export interface GradeProps {
 
 export class Grade extends Entity<GradeProps> {
   constructor(props: Partial<GradeProps>, id?: string) {
-    super({
-      name: props.name ?? '',
-      description: props.description,
-      createdAt: props.createdAt ?? new Date(),
-      updatedAt: props.updatedAt ?? new Date(),
-    }, id);
+    super(
+      {
+        name: props.name ?? '',
+        description: props.description,
+        createdAt: props.createdAt ?? new Date(),
+        updatedAt: props.updatedAt ?? new Date(),
+      },
+      id,
+    );
   }
 
-  get name() { return this.props.name; }
-  get description() { return this.props.description; }
-  get createdAt() { return this.props.createdAt; }
-  get updatedAt() { return this.props.updatedAt; }
+  get name() {
+    return this.props.name;
+  }
+  get description() {
+    return this.props.description;
+  }
+  get createdAt() {
+    return this.props.createdAt;
+  }
+  get updatedAt() {
+    return this.props.updatedAt;
+  }
 }
-
