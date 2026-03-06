@@ -75,9 +75,7 @@ describe('GeminiProvider', () => {
       const requestBody = fetchCallArgs[1] as any;
 
       expect(requestBody.contents[0].parts[0].inlineData).toBeDefined();
-      expect(requestBody.contents[0].parts[0].inlineData.data).toBe(
-        'base64image',
-      );
+      expect(requestBody.contents[0].parts[0].inlineData.data).toBe('base64image');
     });
 
     it('should throw an error if API response is not ok', async () => {
@@ -91,9 +89,7 @@ describe('GeminiProvider', () => {
       mockedAxios.isAxiosError.mockReturnValue(true);
       mockedAxios.post.mockRejectedValue(errorResponse);
 
-      await expect(provider.generateText('sys', 'prompt')).rejects.toThrow(
-        'Gemini API Internal Server Error',
-      );
+      await expect(provider.generateText('sys', 'prompt')).rejects.toThrow('Gemini API Internal Server Error');
     });
 
     it('should throw an error if rawText is missing (blocked or failed)', async () => {
@@ -119,9 +115,7 @@ describe('GeminiProvider', () => {
   describe('generateImage', () => {
     it('should return base64 encoded string on success', async () => {
       const mockResponse = {
-        candidates: [
-          { content: { parts: [{ inlineData: { data: 'base64string' } }] } },
-        ],
+        candidates: [{ content: { parts: [{ inlineData: { data: 'base64string' } }] } }],
       };
 
       mockedAxios.post.mockResolvedValue({
@@ -172,9 +166,7 @@ describe('GeminiProvider', () => {
           },
         });
 
-        const result = await provider.generateEmbeddings(
-          'Test text for embedding',
-        );
+        const result = await provider.generateEmbeddings('Test text for embedding');
 
         expect(result).toEqual(mockVector);
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -210,9 +202,7 @@ describe('GeminiProvider', () => {
           },
         });
 
-        await expect(provider.generateEmbeddings('Test text')).rejects.toThrow(
-          'Invalid request',
-        );
+        await expect(provider.generateEmbeddings('Test text')).rejects.toThrow('Invalid request');
       });
     });
   });

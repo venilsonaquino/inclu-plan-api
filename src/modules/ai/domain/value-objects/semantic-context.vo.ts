@@ -28,9 +28,7 @@ export class SemanticContext {
     const textParts = [
       `Objetivo: ${props.objective}`,
       `Descrição: ${props.description}`,
-      props.strategyOverride
-        ? `Estratégia Substituta: ${props.strategyOverride}`
-        : null,
+      props.strategyOverride ? `Estratégia Substituta: ${props.strategyOverride}` : null,
       `Adaptação: ${props.studentData.adaptation}`,
       `Contexto: ${props.contextDescription}`,
     ];

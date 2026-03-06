@@ -120,9 +120,7 @@ describe('GenerateHomeworkUseCase', () => {
     });
 
     it('should gracefully handle GeminiProvider failures', async () => {
-      geminiProvider.generateEmbeddings.mockRejectedValue(
-        new Error('API Down'),
-      );
+      geminiProvider.generateEmbeddings.mockRejectedValue(new Error('API Down'));
 
       const result = await useCase.execute(mockPayload);
 

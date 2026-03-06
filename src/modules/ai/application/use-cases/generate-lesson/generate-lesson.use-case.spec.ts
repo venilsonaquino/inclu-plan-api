@@ -31,8 +31,7 @@ describe('GenerateLessonUseCase', () => {
     templateLoader = {
       load: jest.fn().mockImplementation((pathStr: string) => {
         if (pathStr.includes('system.md')) return 'SYSTEM PROMPT';
-        if (pathStr.includes('user.md'))
-          return 'USER PROMPT \\n {{CONTENTS_STR}} \\n {{STUDENTS_STR}}';
+        if (pathStr.includes('user.md')) return 'USER PROMPT \\n {{CONTENTS_STR}} \\n {{STUDENTS_STR}}';
         return 'mock prompt {{STUDENTS_STR}}';
       }),
     };
@@ -59,7 +58,6 @@ describe('GenerateLessonUseCase', () => {
 
   describe('execute', () => {
     it('should successfully build prompt strings and return AI result', async () => {
-
       const mockAiOutput = { days: [{ day: 'Segunda', subjects: [] }] };
       geminiProvider.generateText.mockResolvedValue(mockAiOutput as any);
 
@@ -73,12 +71,8 @@ describe('GenerateLessonUseCase', () => {
       // Arg 0 is system prompt
       expect(callArgs[0]).toBe('SYSTEM PROMPT');
       // Arg 1 is user prompt, verify that injected tags have been replaced
-      expect(callArgs[1]).toContain(
-        'Portal da Matemática (Tema: Frações) | Observações: Usar material dourado',
-      );
-      expect(callArgs[1]).toContain(
-        '- NOME: Enzo | SÉRIE/ANO: 3º Ano | PERFIL: TEA, TDAH',
-      );
+      expect(callArgs[1]).toContain('Portal da Matemática (Tema: Frações) | Observações: Usar material dourado');
+      expect(callArgs[1]).toContain('- NOME: Enzo | SÉRIE/ANO: 3º Ano | PERFIL: TEA, TDAH');
     });
 
     it('should handle students without grades', async () => {

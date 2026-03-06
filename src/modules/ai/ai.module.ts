@@ -39,4 +39,4 @@ import { InMemoryMaterialCacheRepository } from './infra/persistence/in-memory/i
     },
   ],
 })
-export class AiModule { }
+export class AiModule {}

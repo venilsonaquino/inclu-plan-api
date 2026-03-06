@@ -11,11 +11,11 @@ export class InMemorySchoolClassesRepository implements ISchoolClassesRepository
   }
 
   async findById(id: string): Promise<SchoolClass | null> {
-    const schoolClass = this.schoolClasses.find((c) => c.id === id);
+    const schoolClass = this.schoolClasses.find(c => c.id === id);
     return schoolClass ? schoolClass : null;
   }
 
   async findByTeacherId(teacherId: string): Promise<SchoolClass[]> {
-    return this.schoolClasses.filter((c) => c.teacherId === teacherId);
+    return this.schoolClasses.filter(c => c.teacherId === teacherId);
   }
 }

@@ -80,9 +80,7 @@ describe('GenerateCardsUseCase', () => {
       materialCacheRepository.findSimilar.mockResolvedValue(null);
 
       const aiResult = {
-        cards: [
-          { title: 'Sol', text: 'Estrela', imagePrompt: 'Desenho de sol' },
-        ],
+        cards: [{ title: 'Sol', text: 'Estrela', imagePrompt: 'Desenho de sol' }],
       };
       geminiProvider.generateText.mockResolvedValue(aiResult as any);
       geminiProvider.generateImage.mockResolvedValue('base64StringMock');
@@ -119,9 +117,7 @@ describe('GenerateCardsUseCase', () => {
     });
 
     it('should gracefully handle GeminiProvider failures', async () => {
-      geminiProvider.generateEmbeddings.mockRejectedValue(
-        new Error('Embedding fail'),
-      );
+      geminiProvider.generateEmbeddings.mockRejectedValue(new Error('Embedding fail'));
 
       const result = await useCase.execute(mockPayload);
 

@@ -23,11 +23,9 @@ export class GenerateHomeworkUseCase {
     private readonly templateLoader: ITemplateLoader,
     @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
-  ) { }
+  ) {}
 
-  async execute(
-    payload: GenerateHomeworkInput,
-  ): Promise<Result<GenerateHomeworkOutput>> {
+  async execute(payload: GenerateHomeworkInput): Promise<Result<GenerateHomeworkOutput>> {
     try {
       const semanticContext = new SemanticContext({
         ...payload,
@@ -38,14 +36,9 @@ export class GenerateHomeworkUseCase {
       const semanticContextStr = semanticContext.semanticString;
 
       this.logger.log(`Checking semantic cache for Homework...`);
-      const payloadEmbedding =
-        await this.aiProvider.generateEmbeddings(semanticContextStr);
+      const payloadEmbedding = await this.aiProvider.generateEmbeddings(semanticContextStr);
 
-      const cachedMaterial = await this.materialCache.findSimilar(
-        contextHash,
-        payloadEmbedding,
-        0.95,
-      );
+      const cachedMaterial = await this.materialCache.findSimilar(contextHash, payloadEmbedding, 0.95);
 
       if (cachedMaterial) {
         this.logger.log(`CACHE HIT! Reusing Homework id ${cachedMaterial.id}`);
@@ -54,27 +47,17 @@ export class GenerateHomeworkUseCase {
 
       this.logger.log(`CACHE MISS. Generating new Homework from scratch...`);
 
-      const systemInstruction = await this.templateLoader.load(
-        'generate-homework/prompts/generate-homework.system.md',
-      );
-      const basePrompt = await this.templateLoader.load(
-        'generate-homework/prompts/generate-material.user.md',
-      );
+      const systemInstruction = await this.templateLoader.load('generate-homework/prompts/generate-homework.system.md');
+      const basePrompt = await this.templateLoader.load('generate-homework/prompts/generate-material.user.md');
       const promptText = PromptUtil.buildPromptContext(basePrompt, payload);
 
-      const rawAiResponse = await this.aiProvider.generateText(
-        systemInstruction,
-        promptText,
-      );
+      const rawAiResponse = await this.aiProvider.generateText(systemInstruction, promptText);
       const homeworkData = rawAiResponse as GenerateHomeworkOutput;
 
       if (homeworkData.homework?.imagePrompt) {
         this.logger.log(`Fetching AI Images for Homework...`);
         try {
-          homeworkData.homework.generatedImage =
-            await this.aiProvider.generateImage(
-              homeworkData.homework.imagePrompt,
-            );
+          homeworkData.homework.generatedImage = await this.aiProvider.generateImage(homeworkData.homework.imagePrompt);
         } catch (e) {
           this.logger.warn(`Homework image failed: ${e.message}`);
         }
@@ -90,9 +73,7 @@ export class GenerateHomeworkUseCase {
       return Result.ok<GenerateHomeworkOutput>(homeworkData);
     } catch (error) {
       this.logger.error('Failed to generate homework', error);
-      return Result.fail<GenerateHomeworkOutput>(
-        error instanceof Error ? error.message : 'Unknown error',
-      );
+      return Result.fail<GenerateHomeworkOutput>(error instanceof Error ? error.message : 'Unknown error');
     }
   }
 }

@@ -5,11 +5,7 @@ export interface IAiProvider {
    * Generates text based on system instructions and a user prompt.
    * Can optionally parse a base64 image part.
    */
-  generateText(
-    systemInstruction: string,
-    promptText: string,
-    imagePartBase64?: string,
-  ): Promise<any>;
+  generateText(systemInstruction: string, promptText: string, imagePartBase64?: string): Promise<any>;
 
   /**
    * Generates an image based on a prompt and returns the base64 string

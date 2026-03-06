@@ -1,17 +1,8 @@
-import { Logger } from '@nestjs/common';
 import { PromptPayloadDto } from '../dtos/prompt-payload.dto';
 
-const logger = new Logger('PromptUtil');
-
 export class PromptUtil {
-
-  static buildPromptContext(
-    template: string,
-    payload: PromptPayloadDto,
-  ): string {
-    const override = payload.strategyOverride
-      ? `\nDIRETRIZ OBRIGATÓRIA OVERRIDE:\n${payload.strategyOverride}\n`
-      : '';
+  static buildPromptContext(template: string, payload: PromptPayloadDto): string {
+    const override = payload.strategyOverride ? `\nDIRETRIZ OBRIGATÓRIA OVERRIDE:\n${payload.strategyOverride}\n` : '';
     return template
       .replace('{{THEME}}', payload.theme)
       .replace('{{OBJECTIVE}}', payload.objective)

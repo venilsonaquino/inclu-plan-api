@@ -30,13 +30,8 @@ export class CreateGradeUseCase {
         createdAt: newGrade.createdAt,
       });
     } catch (error) {
-      this.logger.error(
-        'Unexpected error creating grade',
-        error instanceof Error ? error.stack : error,
-      );
-      return Result.fail(
-        'An unexpected error occurred while creating the grade level.',
-      );
+      this.logger.error('Unexpected error creating grade', error instanceof Error ? error.stack : error);
+      return Result.fail('An unexpected error occurred while creating the grade level.');
     }
   }
 }

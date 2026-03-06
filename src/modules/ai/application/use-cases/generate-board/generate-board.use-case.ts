@@ -23,11 +23,9 @@ export class GenerateBoardUseCase {
     private readonly templateLoader: ITemplateLoader,
     @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
-  ) { }
+  ) {}
 
-  async execute(
-    payload: GenerateBoardInput,
-  ): Promise<Result<GenerateBoardOutput>> {
+  async execute(payload: GenerateBoardInput): Promise<Result<GenerateBoardOutput>> {
     try {
       const semanticContext = new SemanticContext({
         ...payload,
@@ -38,14 +36,9 @@ export class GenerateBoardUseCase {
       const semanticContextStr = semanticContext.semanticString;
 
       this.logger.log(`Checking semantic cache for Board...`);
-      const payloadEmbedding =
-        await this.aiProvider.generateEmbeddings(semanticContextStr);
+      const payloadEmbedding = await this.aiProvider.generateEmbeddings(semanticContextStr);
 
-      const cachedMaterial = await this.materialCache.findSimilar(
-        contextHash,
-        payloadEmbedding,
-        0.95,
-      );
+      const cachedMaterial = await this.materialCache.findSimilar(contextHash, payloadEmbedding, 0.95);
 
       if (cachedMaterial) {
         this.logger.log(`CACHE HIT! Reusing Board id ${cachedMaterial.id}`);
@@ -54,27 +47,17 @@ export class GenerateBoardUseCase {
 
       this.logger.log(`CACHE MISS. Generating new Board from scratch...`);
 
-      const systemInstruction = await this.templateLoader.load(
-        'generate-board/prompts/generate-board.system.md',
-      );
-      const basePrompt = await this.templateLoader.load(
-        'generate-board/prompts/generate-material.user.md',
-      );
+      const systemInstruction = await this.templateLoader.load('generate-board/prompts/generate-board.system.md');
+      const basePrompt = await this.templateLoader.load('generate-board/prompts/generate-material.user.md');
       const promptText = PromptUtil.buildPromptContext(basePrompt, payload);
 
-      const rawAiResponse = await this.aiProvider.generateText(
-        systemInstruction,
-        promptText,
-      );
+      const rawAiResponse = await this.aiProvider.generateText(systemInstruction, promptText);
       const boardData = rawAiResponse as GenerateBoardOutput;
 
       if (boardData.board?.imagePrompt) {
         this.logger.log(`Fetching AI Images for Board...`);
         try {
-          boardData.board.generatedImage =
-            await this.aiProvider.generateImage(
-              boardData.board.imagePrompt,
-            );
+          boardData.board.generatedImage = await this.aiProvider.generateImage(boardData.board.imagePrompt);
         } catch (e) {
           this.logger.warn(`Board image failed: ${e.message}`);
         }
@@ -90,9 +73,7 @@ export class GenerateBoardUseCase {
       return Result.ok<GenerateBoardOutput>(boardData);
     } catch (error) {
       this.logger.error('Failed to generate board', error);
-      return Result.fail<GenerateBoardOutput>(
-        error instanceof Error ? error.message : 'Unknown error',
-      );
+      return Result.fail<GenerateBoardOutput>(error instanceof Error ? error.message : 'Unknown error');
     }
   }
 }

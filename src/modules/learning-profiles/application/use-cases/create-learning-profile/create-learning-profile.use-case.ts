@@ -9,13 +9,9 @@ import { LearningProfile } from '@/modules/learning-profiles/domain/entities/lea
 export class CreateLearningProfileUseCase {
   private readonly logger = new Logger(CreateLearningProfileUseCase.name);
 
-  constructor(
-    private readonly learningProfilesRepository: ILearningProfilesRepository,
-  ) {}
+  constructor(private readonly learningProfilesRepository: ILearningProfilesRepository) {}
 
-  async execute(
-    input: CreateLearningProfileInput,
-  ): Promise<Result<CreateLearningProfileOutput>> {
+  async execute(input: CreateLearningProfileInput): Promise<Result<CreateLearningProfileOutput>> {
     try {
       const newProfile = new LearningProfile({
         id: crypto.randomUUID(),
@@ -34,13 +30,8 @@ export class CreateLearningProfileUseCase {
         createdAt: newProfile.createdAt,
       });
     } catch (error) {
-      this.logger.error(
-        'Unexpected error creating learning profile',
-        error instanceof Error ? error.stack : error,
-      );
-      return Result.fail(
-        'An unexpected error occurred while creating the learning profile.',
-      );
+      this.logger.error('Unexpected error creating learning profile', error instanceof Error ? error.stack : error);
+      return Result.fail('An unexpected error occurred while creating the learning profile.');
     }
   }
 }

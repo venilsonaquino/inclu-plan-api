@@ -9,13 +9,9 @@ import { SchoolClass } from '@/modules/school-classes/domain/entities/school-cla
 export class CreateSchoolClassUseCase {
   private readonly logger = new Logger(CreateSchoolClassUseCase.name);
 
-  constructor(
-    private readonly schoolClassesRepository: ISchoolClassesRepository,
-  ) {}
+  constructor(private readonly schoolClassesRepository: ISchoolClassesRepository) {}
 
-  async execute(
-    input: CreateSchoolClassInput,
-  ): Promise<Result<CreateSchoolClassOutput>> {
+  async execute(input: CreateSchoolClassInput): Promise<Result<CreateSchoolClassOutput>> {
     try {
       const newClass = new SchoolClass({
         id: crypto.randomUUID(),
@@ -35,13 +31,8 @@ export class CreateSchoolClassUseCase {
         createdAt: newClass.createdAt,
       });
     } catch (error) {
-      this.logger.error(
-        'Unexpected error creating school class',
-        error instanceof Error ? error.stack : error,
-      );
-      return Result.fail(
-        'An unexpected error occurred while creating the school class.',
-      );
+      this.logger.error('Unexpected error creating school class', error instanceof Error ? error.stack : error);
+      return Result.fail('An unexpected error occurred while creating the school class.');
     }
   }
 }

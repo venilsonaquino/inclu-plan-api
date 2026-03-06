@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
 import { GenerateLessonUseCase } from '@/modules/ai/application/use-cases/generate-lesson/generate-lesson.use-case';
 import { GenerateCardsUseCase } from '@/modules/ai/application/use-cases/generate-cards/generate-cards.use-case';
 import { GenerateBoardUseCase } from '@/modules/ai/application/use-cases/generate-board/generate-board.use-case';
@@ -26,10 +20,7 @@ export class AiController {
   async generateLessonPlan(@Body() body: any) {
     const result = await this.generateLessonUseCase.execute(body);
     if (result.isFailure) {
-      throw new HttpException(
-        result.errorValue(),
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException(result.errorValue(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return result.getValue();
   }
@@ -38,10 +29,7 @@ export class AiController {
   async generateCards(@Body() body: GenerateCardsInput) {
     const result = await this.generateCardsUseCase.execute(body);
     if (result.isFailure) {
-      throw new HttpException(
-        result.errorValue(),
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException(result.errorValue(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return result.getValue();
   }
@@ -50,10 +38,7 @@ export class AiController {
   async generateBoard(@Body() body: GenerateBoardInput) {
     const result = await this.generateBoardUseCase.execute(body);
     if (result.isFailure) {
-      throw new HttpException(
-        result.errorValue(),
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException(result.errorValue(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return result.getValue();
   }
@@ -62,10 +47,7 @@ export class AiController {
   async generateHomework(@Body() body: GenerateHomeworkInput) {
     const result = await this.generateHomeworkUseCase.execute(body);
     if (result.isFailure) {
-      throw new HttpException(
-        result.errorValue(),
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException(result.errorValue(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return result.getValue();
   }

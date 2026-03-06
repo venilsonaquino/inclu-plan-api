@@ -31,9 +31,7 @@ describe('SchoolClassesController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     } as any;
-    jest
-      .spyOn(useCase, 'execute')
-      .mockResolvedValue(Result.ok({ id: '1' } as any));
+    jest.spyOn(useCase, 'execute').mockResolvedValue(Result.ok({ id: '1' } as any));
     await controller.create({ name: 'Class', teacherId: 't1' }, mockRes);
     expect(mockRes.status).toHaveBeenCalledWith(201);
   });

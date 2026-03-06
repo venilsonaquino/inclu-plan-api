@@ -28,13 +28,11 @@ export class LessonSchedule {
     if (this._days.length === 0) return '';
     return this._days
       .map(
-        (d) =>
+        d =>
           `[${d.day}]\n` +
           d.disciplines
-            .map((disc) => {
-              const obs = disc.observations
-                ? ` | Observações: ${disc.observations}`
-                : '';
+            .map(disc => {
+              const obs = disc.observations ? ` | Observações: ${disc.observations}` : '';
               return `  - ${disc.name} (Tema: ${disc.theme})${obs}\n`;
             })
             .join('') +

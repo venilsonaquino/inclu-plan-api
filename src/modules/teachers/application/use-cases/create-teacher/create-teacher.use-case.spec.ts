@@ -37,10 +37,7 @@ describe('CreateTeacherUseCase', () => {
     expect(savedTeacher?.passwordHash).toContain(':'); // checking our salt:key format
 
     // Verify hash actually matches using util
-    const isMatch = await CryptoUtil.compare(
-      input.password,
-      savedTeacher!.passwordHash,
-    );
+    const isMatch = await CryptoUtil.compare(input.password, savedTeacher!.passwordHash);
     expect(isMatch).toBe(true);
   });
 
@@ -78,9 +75,7 @@ describe('CreateTeacherUseCase', () => {
     const result = await useCase.execute(input);
 
     expect(result.isFailure).toBe(true);
-    expect(result.errorValue()).toBe(
-      'An unexpected error occurred while creating the teacher.',
-    );
+    expect(result.errorValue()).toBe('An unexpected error occurred while creating the teacher.');
   });
 
   it('should cover the fallback branch for non-Error thrown objects', async () => {

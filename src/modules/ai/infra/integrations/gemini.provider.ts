@@ -6,24 +6,17 @@ import { IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface
 @Injectable()
 export class GeminiProvider implements IAiProvider {
   private readonly logger = new Logger(GeminiProvider.name);
-  private readonly baseUrl =
-    'https://generativelanguage.googleapis.com/v1beta/models';
+  private readonly baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
 
   private getApiKey(): string {
     const key = process.env.GEMINI_API_KEY;
     if (!key) {
-      throw new Error(
-        'GEMINI_API_KEY is not defined in environment variables.',
-      );
+      throw new Error('GEMINI_API_KEY is not defined in environment variables.');
     }
     return key;
   }
 
-  async generateText(
-    systemInstruction: string,
-    promptText: string,
-    imagePartBase64?: string,
-  ): Promise<any> {
+  async generateText(systemInstruction: string, promptText: string, imagePartBase64?: string): Promise<any> {
     const apiKey = this.getApiKey();
     const url = `${this.baseUrl}/${AI_MODELS.TEXT.name}:generateContent?key=${apiKey}`;
 
@@ -65,32 +58,21 @@ export class GeminiProvider implements IAiProvider {
       const totalTokens = usage.totalTokenCount || 0;
 
       // Pricing logic moved to AiMetricsUtil to respect Clean Code
-      const totalCost = AiMetricsUtil.calculateTextCost(
-        promptTokens,
-        generatedTokens,
-      );
+      const totalCost = AiMetricsUtil.calculateTextCost(promptTokens, generatedTokens);
 
       this.logger.log(
         `[${AI_MODELS.TEXT.name}] Latency: ${latencyMs}ms | Status: ${finishReason} | Tokens: ${totalTokens} | Est. Cost: $${totalCost} USD`,
       );
 
       if (!rawText) {
-        throw new Error(
-          `AI generation failed or was blocked. Reason: ${finishReason}`,
-        );
+        throw new Error(`AI generation failed or was blocked. Reason: ${finishReason}`);
       }
 
       return JSON.parse(rawText);
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
-        this.logger.error(
-          `Gemini API error: ${error.response.status}`,
-          error.response.data,
-        );
-        throw new Error(
-          error.response.data?.error?.message ||
-          `Gemini API error: ${error.response.status}`,
-        );
+        this.logger.error(`Gemini API error: ${error.response.status}`, error.response.data);
+        throw new Error(error.response.data?.error?.message || `Gemini API error: ${error.response.status}`);
       }
       this.logger.error('Error in generateText', error);
       throw error;
@@ -135,9 +117,7 @@ export class GeminiProvider implements IAiProvider {
         this.logger.warn(
           `[${AI_MODELS.IMAGE.name}] API failed with status: ${error.response.status} (Latency: ${Math.round(performance.now() - startTime)}ms)}`,
         );
-        this.logger.error(
-          `[${AI_MODELS.IMAGE.name}] Details: ${JSON.stringify(error.response.data)}`,
-        );
+        this.logger.error(`[${AI_MODELS.IMAGE.name}] Details: ${JSON.stringify(error.response.data)}`);
       } else {
         this.logger.error('Error generating image', error);
       }
@@ -168,9 +148,7 @@ export class GeminiProvider implements IAiProvider {
       const embeddingArray = data.embedding?.values;
 
       if (!embeddingArray || !Array.isArray(embeddingArray)) {
-        throw new Error(
-          'Failed to extract embedding array from Google AI response.',
-        );
+        throw new Error('Failed to extract embedding array from Google AI response.');
       }
 
       this.logger.log(
@@ -180,14 +158,8 @@ export class GeminiProvider implements IAiProvider {
       return embeddingArray;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
-        this.logger.error(
-          `Embedding API error: ${error.response.status}`,
-          error.response.data,
-        );
-        throw new Error(
-          error.response.data?.error?.message ||
-          `Embedding API error: ${error.response.status}`,
-        );
+        this.logger.error(`Embedding API error: ${error.response.status}`, error.response.data);
+        throw new Error(error.response.data?.error?.message || `Embedding API error: ${error.response.status}`);
       }
       this.logger.error('Error in generateEmbeddings', error);
       throw error;

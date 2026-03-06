@@ -33,10 +33,7 @@ describe('VectorUtil', () => {
       // Norm A: sqrt(1+4+9) = sqrt(14) ~ 3.7416...
       // Norm B: sqrt(16+25+36) = sqrt(77) ~ 8.7749...
       // Sim = 32 / (sqrt(14) * sqrt(77)) = 32 / 32.8329 = 0.974631846
-      expect(VectorUtil.cosineSimilarity(vecA, vecB)).toBeCloseTo(
-        0.974631846,
-        4,
-      );
+      expect(VectorUtil.cosineSimilarity(vecA, vecB)).toBeCloseTo(0.974631846, 4);
     });
 
     it('should return 0 if norm of vector A is 0', () => {

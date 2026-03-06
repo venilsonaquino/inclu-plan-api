@@ -24,10 +24,7 @@ export class LessonStudents {
 
   toPromptString(): string {
     return this._students
-      .map(
-        (s) =>
-          `- NOME: ${s.name} | SÉRIE/ANO: ${s.grade || 'Não informada'} | PERFIL: ${s.profiles.join(', ')}`,
-      )
+      .map(s => `- NOME: ${s.name} | SÉRIE/ANO: ${s.grade || 'Não informada'} | PERFIL: ${s.profiles.join(', ')}`)
       .join('\n');
   }
 }

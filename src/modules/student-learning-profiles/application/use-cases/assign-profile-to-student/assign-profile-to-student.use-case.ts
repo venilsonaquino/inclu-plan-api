@@ -9,13 +9,9 @@ import { StudentLearningProfile } from '@/modules/student-learning-profiles/doma
 export class AssignProfileToStudentUseCase {
   private readonly logger = new Logger(AssignProfileToStudentUseCase.name);
 
-  constructor(
-    private readonly repository: IStudentLearningProfilesRepository,
-  ) {}
+  constructor(private readonly repository: IStudentLearningProfilesRepository) {}
 
-  async execute(
-    input: AssignProfileInput,
-  ): Promise<Result<AssignProfileOutput>> {
+  async execute(input: AssignProfileInput): Promise<Result<AssignProfileOutput>> {
     try {
       const association = new StudentLearningProfile({
         id: crypto.randomUUID(),
@@ -35,13 +31,8 @@ export class AssignProfileToStudentUseCase {
         createdAt: association.createdAt,
       });
     } catch (error) {
-      this.logger.error(
-        'Unexpected error assigning profile',
-        error instanceof Error ? error.stack : error,
-      );
-      return Result.fail(
-        'An unexpected error occurred while assigning the profile to the student.',
-      );
+      this.logger.error('Unexpected error assigning profile', error instanceof Error ? error.stack : error);
+      return Result.fail('An unexpected error occurred while assigning the profile to the student.');
     }
   }
 }

@@ -11,7 +11,7 @@ export class InMemoryLearningProfilesRepository implements ILearningProfilesRepo
   }
 
   async findById(id: string): Promise<LearningProfile | null> {
-    const profile = this.profiles.find((p) => p.id === id);
+    const profile = this.profiles.find(p => p.id === id);
     return profile ? profile : null;
   }
 
