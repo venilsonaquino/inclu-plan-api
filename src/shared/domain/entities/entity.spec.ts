@@ -1,6 +1,6 @@
 import { Entity } from './entity';
 
-class StubEntity extends Entity<{ name: string }> { }
+class StubEntity extends Entity<{ name: string }> {}
 
 describe('Entity', () => {
   it('should create an entity with provided id', () => {

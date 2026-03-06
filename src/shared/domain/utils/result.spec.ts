@@ -47,13 +47,17 @@ describe('Result', () => {
 
   describe('constructor validation', () => {
     it('should throw if success with error', () => {
-      // @ts-ignore
-      expect(() => new Result(true, 'error')).toThrow('InvalidOperation: A result cannot be successful and contain an error');
+      // @ts-expect-error: testing internal constructor validation
+      expect(() => new Result(true, 'error')).toThrow(
+        'InvalidOperation: A result cannot be successful and contain an error',
+      );
     });
 
     it('should throw if failure without error', () => {
-      // @ts-ignore
-      expect(() => new Result(false, null)).toThrow('InvalidOperation: A failing result needs to contain an error message');
+      // @ts-expect-error: testing internal constructor validation
+      expect(() => new Result(false, null)).toThrow(
+        'InvalidOperation: A failing result needs to contain an error message',
+      );
     });
   });
 });

@@ -15,10 +15,6 @@ describe('AiController', () => {
   let generateHomeworkUseCase: any;
 
   beforeEach(async () => {
-    const mockUseCase = {
-      execute: jest.fn(),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AiController],
       providers: [
