@@ -1,20 +1,9 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { Logger } from '@nestjs/common';
 import { PromptPayloadDto } from '../dtos/prompt-payload.dto';
 
 const logger = new Logger('PromptUtil');
 
 export class PromptUtil {
-  static loadPromptTemplate(dirname: string, filename: string): string {
-    try {
-      const promptPath = join(dirname, 'prompts', filename);
-      return readFileSync(promptPath, 'utf8');
-    } catch (error) {
-      logger.error(`Could not load prompt file: ${filename}`, error);
-      throw new Error(`Failed to load prompt template: ${filename}`);
-    }
-  }
 
   static buildPromptContext(
     template: string,

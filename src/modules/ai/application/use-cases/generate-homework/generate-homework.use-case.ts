@@ -1,5 +1,6 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { I_AI_PROVIDER, IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
+import { I_TEMPLATE_LOADER, ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateHomeworkInput } from './generate-homework.input';
 import { GenerateHomeworkOutput } from './generate-homework.output';
@@ -18,6 +19,8 @@ export class GenerateHomeworkUseCase {
   constructor(
     @Inject(I_AI_PROVIDER)
     private readonly aiProvider: IAiProvider,
+    @Inject(I_TEMPLATE_LOADER)
+    private readonly templateLoader: ITemplateLoader,
     @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
   ) { }
@@ -51,13 +54,11 @@ export class GenerateHomeworkUseCase {
 
       this.logger.log(`CACHE MISS. Generating new Homework from scratch...`);
 
-      const systemInstruction = PromptUtil.loadPromptTemplate(
-        __dirname,
-        'generate-homework.system.md',
+      const systemInstruction = await this.templateLoader.load(
+        'generate-homework/prompts/generate-homework.system.md',
       );
-      const basePrompt = PromptUtil.loadPromptTemplate(
-        __dirname,
-        'generate-material.user.md',
+      const basePrompt = await this.templateLoader.load(
+        'generate-homework/prompts/generate-material.user.md',
       );
       const promptText = PromptUtil.buildPromptContext(basePrompt, payload);
 

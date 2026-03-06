@@ -1,5 +1,6 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { I_AI_PROVIDER, IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
+import { I_TEMPLATE_LOADER, ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateLessonInput } from './generate-lesson.input';
 import { GenerateLessonOutput } from './generate-lesson.output';
@@ -13,6 +14,7 @@ export class GenerateLessonUseCase {
 
   constructor(
     @Inject(I_AI_PROVIDER) private readonly aiProvider: IAiProvider,
+    @Inject(I_TEMPLATE_LOADER) private readonly templateLoader: ITemplateLoader,
   ) { }
 
   async execute(
@@ -27,8 +29,12 @@ export class GenerateLessonUseCase {
 
       this.logger.log('Generating lesson via Gemini LLM...');
 
-      const systemInstruction = PromptUtil.loadPromptTemplate(__dirname, 'generate-lesson.system.md');
-      let promptText = PromptUtil.loadPromptTemplate(__dirname, 'generate-lesson.user.md');
+      const systemInstruction = await this.templateLoader.load(
+        'generate-lesson/prompts/generate-lesson.system.md',
+      );
+      let promptText = await this.templateLoader.load(
+        'generate-lesson/prompts/generate-lesson.user.md',
+      );
 
       promptText = promptText
         .replace('{{STUDENTS_STR}}', studentsString)
