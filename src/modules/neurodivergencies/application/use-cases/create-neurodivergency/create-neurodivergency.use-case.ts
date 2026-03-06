@@ -14,12 +14,11 @@ export class CreateNeurodivergencyUseCase {
   async execute(input: CreateNeurodivergencyInput): Promise<Result<CreateNeurodivergencyOutput>> {
     try {
       const newNeurodivergency = new Neurodivergency({
-        id: crypto.randomUUID(),
         name: input.name,
         description: input.description,
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
+      }, crypto.randomUUID());
 
       await this.neurodivergenciesRepository.create(newNeurodivergency);
 

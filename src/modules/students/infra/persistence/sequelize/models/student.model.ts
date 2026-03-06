@@ -55,7 +55,6 @@ export class StudentModel extends Model<StudentModel> {
   // Domain Mapping Utils
   toDomain(): Student {
     return new Student({
-      id: this.id,
       name: this.name,
       gradeId: this.gradeId,
       neurodivergencies: this.neurodivergencies ? this.neurodivergencies.map(p => p.id) : [],
@@ -65,6 +64,6 @@ export class StudentModel extends Model<StudentModel> {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,
-    });
+    }, this.id);
   }
 }

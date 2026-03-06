@@ -14,7 +14,6 @@ export class CreateStudentUseCase {
   async execute(input: CreateStudentInput): Promise<Result<CreateStudentOutput>> {
     try {
       const newStudent = new Student({
-        id: crypto.randomUUID(),
         name: input.name,
         gradeId: input.gradeId,
         neurodivergencies: input.neurodivergencies,
@@ -22,7 +21,7 @@ export class CreateStudentUseCase {
         notes: input.notes,
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
+      }, crypto.randomUUID());
 
       await this.studentsRepository.create(newStudent);
 
