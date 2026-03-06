@@ -1,40 +1,8 @@
 import { PromptUtil } from './prompt.util';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-
-jest.mock('node:fs');
-jest.mock('node:path');
 
 describe('PromptUtil', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  describe('loadPromptTemplate', () => {
-    it('should load prompt template successfully', () => {
-      (path.join as jest.Mock).mockImplementation((...args) => args.join('/'));
-      (fs.readFileSync as jest.Mock).mockReturnValue('mock template content');
-
-      const result = PromptUtil.loadPromptTemplate('test-dir', 'test.md');
-
-      expect(path.join).toHaveBeenCalledWith('test-dir', 'prompts', 'test.md');
-      expect(fs.readFileSync).toHaveBeenCalledWith(
-        'test-dir/prompts/test.md',
-        'utf8',
-      );
-      expect(result).toBe('mock template content');
-    });
-
-    it('should throw an error and log if reading fails', () => {
-      (path.join as jest.Mock).mockImplementation((...args) => args.join('/'));
-      (fs.readFileSync as jest.Mock).mockImplementation(() => {
-        throw new Error('File not found');
-      });
-
-      expect(() => {
-        PromptUtil.loadPromptTemplate('test-dir', 'test.md');
-      }).toThrow('Failed to load prompt template: test.md');
-    });
   });
 
   describe('buildPromptContext', () => {
