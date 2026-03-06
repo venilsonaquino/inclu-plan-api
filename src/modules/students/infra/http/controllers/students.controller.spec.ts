@@ -31,13 +31,8 @@ describe('StudentsController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     } as any;
-    jest
-      .spyOn(useCase, 'execute')
-      .mockResolvedValue(Result.ok({ id: '1' } as any));
-    await controller.create(
-      { name: 'Student', gradeId: 'g1', profiles: [] },
-      mockRes,
-    );
+    jest.spyOn(useCase, 'execute').mockResolvedValue(Result.ok({ id: '1' } as any));
+    await controller.create({ name: 'Student', gradeId: 'g1', profiles: [] }, mockRes);
     expect(mockRes.status).toHaveBeenCalledWith(201);
   });
 
@@ -47,10 +42,7 @@ describe('StudentsController', () => {
       json: jest.fn(),
     } as any;
     jest.spyOn(useCase, 'execute').mockResolvedValue(Result.fail('Error'));
-    await controller.create(
-      { name: 'Student', gradeId: 'g1', profiles: [] },
-      mockRes,
-    );
+    await controller.create({ name: 'Student', gradeId: 'g1', profiles: [] }, mockRes);
     expect(mockRes.status).toHaveBeenCalledWith(400);
   });
 });

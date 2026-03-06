@@ -22,10 +22,8 @@ export const AI_MODELS = {
 
 export class AiMetricsUtil {
   static calculateTextCost(inputTokens: number, outputTokens: number): string {
-    const costInput =
-      (inputTokens * AI_MODELS.TEXT.pricing.inputPerMillion) / 1_000_000;
-    const costOutput =
-      (outputTokens * AI_MODELS.TEXT.pricing.outputPerMillion) / 1_000_000;
+    const costInput = (inputTokens * AI_MODELS.TEXT.pricing.inputPerMillion) / 1_000_000;
+    const costOutput = (outputTokens * AI_MODELS.TEXT.pricing.outputPerMillion) / 1_000_000;
     return (costInput + costOutput).toFixed(6);
   }
 

@@ -1,91 +1,43 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
+import { Injectable, Logger, Inject } from '@nestjs/common';
+import { I_AI_PROVIDER, IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
+import { I_TEMPLATE_LOADER, ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateLessonInput } from './generate-lesson.input';
 import { GenerateLessonOutput } from './generate-lesson.output';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import { LessonStudents } from '@/modules/ai/domain/value-objects/lesson-students.vo';
+import { LessonSchedule } from '@/modules/ai/domain/value-objects/lesson-schedule.vo';
 
 @Injectable()
 export class GenerateLessonUseCase {
   private readonly logger = new Logger(GenerateLessonUseCase.name);
 
-  constructor(private readonly geminiProvider: GeminiProvider) {}
+  constructor(
+    @Inject(I_AI_PROVIDER) private readonly aiProvider: IAiProvider,
+    @Inject(I_TEMPLATE_LOADER) private readonly templateLoader: ITemplateLoader,
+  ) {}
 
-  private loadPromptTemplate(filename: string): string {
+  async execute(payload: GenerateLessonInput): Promise<Result<GenerateLessonOutput>> {
     try {
-      // Usaremos o diretorio atual do arquivo ao compilar para acessar os prompts
-      const promptPath = path.join(__dirname, 'prompts', filename);
-      return fs.readFileSync(promptPath, 'utf8');
-    } catch (error) {
-      this.logger.error(`Could not load prompt file: ${filename}`, error);
-      throw new Error(`Failed to load prompt template: ${filename}`);
-    }
-  }
+      const studentsVo = LessonStudents.create(payload.students);
+      const scheduleVo = LessonSchedule.create(payload.days);
 
-  private buildStudentsContext(
-    students: GenerateLessonInput['students'],
-  ): string {
-    return students
-      .map(
-        (s) =>
-          `- NOME: ${s.name} | SÉRIE/ANO: ${s.grade || 'Não informada'} | PERFIL: ${s.profiles.join(', ')}`,
-      )
-      .join('\n');
-  }
-
-  private buildContentsContext(days: GenerateLessonInput['days']): string {
-    if (!days || days.length === 0) return '';
-    return days
-      .map(
-        (d) =>
-          `[${d.day}]\n` +
-          d.disciplines
-            .map((disc) => {
-              const obs = disc.observations
-                ? ` | Observações: ${disc.observations}`
-                : '';
-              return `  - ${disc.name} (Tema: ${disc.theme})${obs}\n`;
-            })
-            .join('') +
-          '\n',
-      )
-      .join('');
-  }
-
-  async execute(
-    payload: GenerateLessonInput,
-  ): Promise<Result<GenerateLessonOutput>> {
-    try {
-      const studentsString = this.buildStudentsContext(payload.students);
-      const contentsString = this.buildContentsContext(payload.days);
+      const studentsString = studentsVo.toPromptString();
+      const contentsString = scheduleVo.toPromptString();
 
       this.logger.log('Generating lesson via Gemini LLM...');
 
-      const systemInstruction = this.loadPromptTemplate(
-        'generate-lesson.system.md',
-      );
-      let promptText = this.loadPromptTemplate('generate-lesson.user.md');
+      const systemInstruction = await this.templateLoader.load('generate-lesson/prompts/generate-lesson.system.md');
+      let promptText = await this.templateLoader.load('generate-lesson/prompts/generate-lesson.user.md');
 
-      promptText = promptText
-        .replace('{{STUDENTS_STR}}', studentsString)
-        .replace('{{CONTENTS_STR}}', contentsString);
+      promptText = promptText.replace('{{STUDENTS_STR}}', studentsString).replace('{{CONTENTS_STR}}', contentsString);
 
-      const aiResponse = await this.geminiProvider.generateText(
-        systemInstruction,
-        promptText,
-        payload.imagePart,
-      );
+      const aiResponse = await this.aiProvider.generateText(systemInstruction, promptText, payload.imagePart);
 
-      return Result.ok<GenerateLessonOutput>(
-        aiResponse as GenerateLessonOutput,
-      );
+      return Result.ok<GenerateLessonOutput>(aiResponse as GenerateLessonOutput);
     } catch (error) {
       this.logger.error('Failed to generate lesson', error);
       return Result.fail<GenerateLessonOutput>(
-        error instanceof Error
-          ? error.message
-          : 'Unknown error generating lesson',
+        error instanceof Error ? error.message : 'Unknown error generating lesson',
       );
     }
   }

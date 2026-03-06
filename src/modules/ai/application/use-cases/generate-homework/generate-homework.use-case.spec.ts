@@ -2,14 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateHomeworkUseCase } from './generate-homework.use-case';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { I_MATERIAL_CACHE_REPOSITORY } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
-import * as fs from 'fs';
+import { I_AI_PROVIDER } from '@/modules/ai/domain/providers/ai-provider.interface';
+import { I_TEMPLATE_LOADER } from '@/modules/ai/domain/providers/template-loader.interface';
 
-jest.mock('fs');
 jest.mock('@/modules/ai/infra/integrations/gemini.provider');
 
 describe('GenerateHomeworkUseCase', () => {
   let useCase: GenerateHomeworkUseCase;
   let geminiProvider: jest.Mocked<GeminiProvider>;
+  let templateLoader: any;
   let materialCacheRepository: any;
 
   const mockPayload = {
@@ -30,10 +31,21 @@ describe('GenerateHomeworkUseCase', () => {
       save: jest.fn(),
     };
 
+    templateLoader = {
+      load: jest.fn().mockResolvedValue('PROMPT CONTENT'),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GenerateHomeworkUseCase,
-        GeminiProvider,
+        {
+          provide: I_AI_PROVIDER,
+          useClass: GeminiProvider,
+        },
+        {
+          provide: I_TEMPLATE_LOADER,
+          useValue: templateLoader,
+        },
         {
           provide: I_MATERIAL_CACHE_REPOSITORY,
           useValue: materialCacheRepository,
@@ -42,7 +54,7 @@ describe('GenerateHomeworkUseCase', () => {
     }).compile();
 
     useCase = module.get<GenerateHomeworkUseCase>(GenerateHomeworkUseCase);
-    geminiProvider = module.get(GeminiProvider) as jest.Mocked<GeminiProvider>;
+    geminiProvider = module.get(I_AI_PROVIDER) as jest.Mocked<GeminiProvider>;
 
     jest.clearAllMocks();
   });
@@ -66,8 +78,6 @@ describe('GenerateHomeworkUseCase', () => {
     it('should generate content, fetch images, and save to cache on a cache miss', async () => {
       geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2] as any);
       materialCacheRepository.findSimilar.mockResolvedValue(null);
-
-      (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
 
       const aiResult = {
         homework: {
@@ -95,7 +105,6 @@ describe('GenerateHomeworkUseCase', () => {
     it('should handle inner generateImage failure gracefully (fallback to undefined image)', async () => {
       geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2] as any);
       materialCacheRepository.findSimilar.mockResolvedValue(null);
-      (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
       geminiProvider.generateText.mockResolvedValue({
         homework: { title: 'a', instructions: 'b', imagePrompt: 'c' },
       } as any);
@@ -111,9 +120,7 @@ describe('GenerateHomeworkUseCase', () => {
     });
 
     it('should gracefully handle GeminiProvider failures', async () => {
-      geminiProvider.generateEmbeddings.mockRejectedValue(
-        new Error('API Down'),
-      );
+      geminiProvider.generateEmbeddings.mockRejectedValue(new Error('API Down'));
 
       const result = await useCase.execute(mockPayload);
 
@@ -124,7 +131,6 @@ describe('GenerateHomeworkUseCase', () => {
     it('should respect strategyOverride into context mapping', async () => {
       geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2] as any);
       materialCacheRepository.findSimilar.mockResolvedValue(null);
-      (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
       geminiProvider.generateText.mockResolvedValue({
         homework: {
           title: 'a',

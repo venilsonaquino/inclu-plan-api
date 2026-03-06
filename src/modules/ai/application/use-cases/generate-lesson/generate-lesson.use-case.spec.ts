@@ -1,16 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateLessonUseCase } from './generate-lesson.use-case';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import { I_AI_PROVIDER } from '@/modules/ai/domain/providers/ai-provider.interface';
+import { I_TEMPLATE_LOADER } from '@/modules/ai/domain/providers/template-loader.interface';
 
-jest.mock('node:fs');
-jest.mock('node:path');
 jest.mock('@/modules/ai/infra/integrations/gemini.provider');
 
 describe('GenerateLessonUseCase', () => {
   let useCase: GenerateLessonUseCase;
   let geminiProvider: jest.Mocked<GeminiProvider>;
+  let templateLoader: any;
 
   const mockPayload = {
     students: [{ name: 'Enzo', grade: '3º Ano', profiles: ['TEA', 'TDAH'] }],
@@ -29,38 +28,36 @@ describe('GenerateLessonUseCase', () => {
   };
 
   beforeEach(async () => {
+    templateLoader = {
+      load: jest.fn().mockImplementation((pathStr: string) => {
+        if (pathStr.includes('system.md')) return 'SYSTEM PROMPT';
+        if (pathStr.includes('user.md')) return 'USER PROMPT \\n {{CONTENTS_STR}} \\n {{STUDENTS_STR}}';
+        return 'mock prompt {{STUDENTS_STR}}';
+      }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [GenerateLessonUseCase, GeminiProvider],
+      providers: [
+        GenerateLessonUseCase,
+        {
+          provide: I_AI_PROVIDER,
+          useClass: GeminiProvider,
+        },
+        {
+          provide: I_TEMPLATE_LOADER,
+          useValue: templateLoader,
+        },
+      ],
     }).compile();
 
     useCase = module.get<GenerateLessonUseCase>(GenerateLessonUseCase);
-    geminiProvider = module.get(GeminiProvider) as jest.Mocked<GeminiProvider>;
+    geminiProvider = module.get(I_AI_PROVIDER) as jest.Mocked<GeminiProvider>;
 
     jest.clearAllMocks();
   });
 
-  describe('loadPromptTemplate', () => {
-    it('should throw an error if file reading fails', async () => {
-      (fs.readFileSync as jest.Mock).mockImplementation(() => {
-        throw new Error('File not found');
-      });
-
-      const result = await useCase.execute(mockPayload);
-      expect(result.isFailure).toBe(true);
-      expect(result.error).toContain('Failed to load prompt template');
-    });
-  });
-
   describe('execute', () => {
     it('should successfully build prompt strings and return AI result', async () => {
-      (path.join as jest.Mock).mockImplementation((...args) => args.join('/'));
-      (fs.readFileSync as jest.Mock).mockImplementation((pathStr: string) => {
-        if (pathStr.includes('system.md')) return 'SYSTEM PROMPT';
-        if (pathStr.includes('user.md'))
-          return 'USER PROMPT \\n {{CONTENTS_STR}} \\n {{STUDENTS_STR}}';
-        return '';
-      });
-
       const mockAiOutput = { days: [{ day: 'Segunda', subjects: [] }] };
       geminiProvider.generateText.mockResolvedValue(mockAiOutput as any);
 
@@ -74,18 +71,11 @@ describe('GenerateLessonUseCase', () => {
       // Arg 0 is system prompt
       expect(callArgs[0]).toBe('SYSTEM PROMPT');
       // Arg 1 is user prompt, verify that injected tags have been replaced
-      expect(callArgs[1]).toContain(
-        'Portal da Matemática (Tema: Frações) | Observações: Usar material dourado',
-      );
-      expect(callArgs[1]).toContain(
-        '- NOME: Enzo | SÉRIE/ANO: 3º Ano | PERFIL: TEA, TDAH',
-      );
+      expect(callArgs[1]).toContain('Portal da Matemática (Tema: Frações) | Observações: Usar material dourado');
+      expect(callArgs[1]).toContain('- NOME: Enzo | SÉRIE/ANO: 3º Ano | PERFIL: TEA, TDAH');
     });
 
     it('should handle students without grades', async () => {
-      (fs.readFileSync as jest.Mock).mockReturnValue(
-        'mock prompt {{STUDENTS_STR}}',
-      );
       geminiProvider.generateText.mockResolvedValue({} as any);
 
       const payloadNoGrade = {
@@ -100,7 +90,6 @@ describe('GenerateLessonUseCase', () => {
     });
 
     it('should return a failure Result if GeminiProvider throws an exception', async () => {
-      (fs.readFileSync as jest.Mock).mockReturnValue('mock prompt');
       geminiProvider.generateText.mockRejectedValue(new Error('AI is down'));
 
       const result = await useCase.execute(mockPayload);
@@ -110,7 +99,6 @@ describe('GenerateLessonUseCase', () => {
     });
 
     it('should return a fallback failure string if unknown error occurs', async () => {
-      (fs.readFileSync as jest.Mock).mockReturnValue('mock prompt');
       geminiProvider.generateText.mockRejectedValue('Strange String Error'); // Not an instance of Error
 
       const result = await useCase.execute(mockPayload);

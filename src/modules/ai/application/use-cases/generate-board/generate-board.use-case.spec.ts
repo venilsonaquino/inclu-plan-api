@@ -2,14 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateBoardUseCase } from './generate-board.use-case';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { I_MATERIAL_CACHE_REPOSITORY } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
-import * as fs from 'fs';
+import { I_AI_PROVIDER } from '@/modules/ai/domain/providers/ai-provider.interface';
+import { I_TEMPLATE_LOADER } from '@/modules/ai/domain/providers/template-loader.interface';
 
-jest.mock('fs');
 jest.mock('@/modules/ai/infra/integrations/gemini.provider');
 
 describe('GenerateBoardUseCase', () => {
   let useCase: GenerateBoardUseCase;
   let geminiProvider: jest.Mocked<GeminiProvider>;
+  let templateLoader: any;
   let materialCacheRepository: any;
 
   const mockPayload = {
@@ -30,10 +31,21 @@ describe('GenerateBoardUseCase', () => {
       save: jest.fn(),
     };
 
+    templateLoader = {
+      load: jest.fn().mockResolvedValue('PROMPT CONTENT'),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GenerateBoardUseCase,
-        GeminiProvider,
+        {
+          provide: I_AI_PROVIDER,
+          useClass: GeminiProvider,
+        },
+        {
+          provide: I_TEMPLATE_LOADER,
+          useValue: templateLoader,
+        },
         {
           provide: I_MATERIAL_CACHE_REPOSITORY,
           useValue: materialCacheRepository,
@@ -42,7 +54,7 @@ describe('GenerateBoardUseCase', () => {
     }).compile();
 
     useCase = module.get<GenerateBoardUseCase>(GenerateBoardUseCase);
-    geminiProvider = module.get(GeminiProvider) as jest.Mocked<GeminiProvider>;
+    geminiProvider = module.get(I_AI_PROVIDER) as jest.Mocked<GeminiProvider>;
 
     jest.clearAllMocks();
   });
@@ -69,8 +81,6 @@ describe('GenerateBoardUseCase', () => {
       geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2] as any);
       materialCacheRepository.findSimilar.mockResolvedValue(null);
 
-      (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
-
       const aiResult = {
         board: {
           title: 'Prancha Title',
@@ -96,7 +106,6 @@ describe('GenerateBoardUseCase', () => {
     it('should handle inner generateImage failure gracefully (fallback to undefined image)', async () => {
       geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2] as any);
       materialCacheRepository.findSimilar.mockResolvedValue(null);
-      (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
       geminiProvider.generateText.mockResolvedValue({
         board: { title: 'a', text: 'b', imagePrompt: 'c' },
       } as any);
@@ -114,7 +123,6 @@ describe('GenerateBoardUseCase', () => {
     it('should respect strategyOverride into context mapping', async () => {
       geminiProvider.generateEmbeddings.mockResolvedValue([0.1, 0.2] as any);
       materialCacheRepository.findSimilar.mockResolvedValue(null);
-      (fs.readFileSync as jest.Mock).mockReturnValue('PROMPT CONTENT');
       geminiProvider.generateText.mockResolvedValue({
         board: { title: 'a', text: 'b', imagePrompt: 'c' },
       } as any);

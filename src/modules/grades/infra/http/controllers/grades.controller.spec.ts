@@ -31,9 +31,7 @@ describe('GradesController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     } as any;
-    jest
-      .spyOn(useCase, 'execute')
-      .mockResolvedValue(Result.ok({ id: '1' } as any));
+    jest.spyOn(useCase, 'execute').mockResolvedValue(Result.ok({ id: '1' } as any));
     await controller.create({ name: 'test' }, mockRes);
     expect(mockRes.status).toHaveBeenCalledWith(201);
     expect(mockRes.json).toHaveBeenCalledWith({ id: '1' });
@@ -44,9 +42,7 @@ describe('GradesController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     } as any;
-    jest
-      .spyOn(useCase, 'execute')
-      .mockResolvedValue(Result.fail('Error message'));
+    jest.spyOn(useCase, 'execute').mockResolvedValue(Result.fail('Error message'));
     await controller.create({ name: 'test' }, mockRes);
     expect(mockRes.status).toHaveBeenCalledWith(400);
     expect(mockRes.json).toHaveBeenCalledWith({ message: 'Error message' });

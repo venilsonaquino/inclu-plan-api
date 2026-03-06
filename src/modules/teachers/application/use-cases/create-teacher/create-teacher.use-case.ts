@@ -12,13 +12,9 @@ export class CreateTeacherUseCase {
 
   constructor(private readonly teachersRepository: ITeachersRepository) {}
 
-  async execute(
-    input: CreateTeacherInput,
-  ): Promise<Result<CreateTeacherOutput>> {
+  async execute(input: CreateTeacherInput): Promise<Result<CreateTeacherOutput>> {
     try {
-      const existingTeacher = await this.teachersRepository.findByEmail(
-        input.email,
-      );
+      const existingTeacher = await this.teachersRepository.findByEmail(input.email);
 
       if (existingTeacher) {
         return Result.fail('Email already in use.');
@@ -44,13 +40,8 @@ export class CreateTeacherUseCase {
         createdAt: newTeacher.createdAt,
       });
     } catch (error) {
-      this.logger.error(
-        'Unexpected error creating teacher',
-        error instanceof Error ? error.stack : error,
-      );
-      return Result.fail(
-        'An unexpected error occurred while creating the teacher.',
-      );
+      this.logger.error('Unexpected error creating teacher', error instanceof Error ? error.stack : error);
+      return Result.fail('An unexpected error occurred while creating the teacher.');
     }
   }
 }

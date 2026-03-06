@@ -18,12 +18,8 @@ describe('LearningProfilesController', () => {
       ],
     }).compile();
 
-    controller = module.get<LearningProfilesController>(
-      LearningProfilesController,
-    );
-    useCase = module.get<CreateLearningProfileUseCase>(
-      CreateLearningProfileUseCase,
-    );
+    controller = module.get<LearningProfilesController>(LearningProfilesController);
+    useCase = module.get<CreateLearningProfileUseCase>(CreateLearningProfileUseCase);
   });
 
   it('should be defined', () => {
@@ -35,9 +31,7 @@ describe('LearningProfilesController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     } as any;
-    jest
-      .spyOn(useCase, 'execute')
-      .mockResolvedValue(Result.ok({ id: '1' } as any));
+    jest.spyOn(useCase, 'execute').mockResolvedValue(Result.ok({ id: '1' } as any));
     await controller.create({ name: 'TEA', description: 'desc' }, mockRes);
     expect(mockRes.status).toHaveBeenCalledWith(201);
   });
@@ -47,9 +41,7 @@ describe('LearningProfilesController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     } as any;
-    jest
-      .spyOn(useCase, 'execute')
-      .mockResolvedValue(Result.fail('Error message'));
+    jest.spyOn(useCase, 'execute').mockResolvedValue(Result.fail('Error message'));
     await controller.create({ name: 'TEA', description: 'desc' }, mockRes);
     expect(mockRes.status).toHaveBeenCalledWith(400);
   });

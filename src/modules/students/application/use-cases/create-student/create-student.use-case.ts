@@ -11,9 +11,7 @@ export class CreateStudentUseCase {
 
   constructor(private readonly studentsRepository: IStudentsRepository) {}
 
-  async execute(
-    input: CreateStudentInput,
-  ): Promise<Result<CreateStudentOutput>> {
+  async execute(input: CreateStudentInput): Promise<Result<CreateStudentOutput>> {
     try {
       const newStudent = new Student({
         id: crypto.randomUUID(),
@@ -37,13 +35,8 @@ export class CreateStudentUseCase {
         createdAt: newStudent.createdAt,
       });
     } catch (error) {
-      this.logger.error(
-        'Unexpected error creating student',
-        error instanceof Error ? error.stack : error,
-      );
-      return Result.fail(
-        'An unexpected error occurred while creating the student.',
-      );
+      this.logger.error('Unexpected error creating student', error instanceof Error ? error.stack : error);
+      return Result.fail('An unexpected error occurred while creating the student.');
     }
   }
 }

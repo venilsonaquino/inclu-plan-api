@@ -1,16 +1,22 @@
-Contexto da Atividade Original Planejada:
-Disciplina/Tema: {{THEME}}
-Objetivo: {{OBJECTIVE}}
-Descrição: {{DESCRIPTION}}
+Por favor, gere o material pedagógico exclusivo contendo a atividade baseada nos dados a seguir.
 
-DADOS DO ALUNO ALVO:
-Nome: {{STUDENT_NAME}}
-Série/Ano: {{STUDENT_GRADE}}
-Perfil Neurodivergente: {{STUDENT_PROFILE}}
+<ACTIVITY_CONTEXT>
+<THEME>{{THEME}}</THEME>
+<OBJECTIVE>{{OBJECTIVE}}</OBJECTIVE>
+<DESCRIPTION>{{DESCRIPTION}}</DESCRIPTION>
+</ACTIVITY_CONTEXT>
 
-Adaptação Sugerida no Plano de Aula:
+<STUDENT_TARGET>
+<NAME>{{STUDENT_NAME}}</NAME>
+<GRADE>{{STUDENT_GRADE}}</GRADE>
+<NEURO_PROFILE>{{STUDENT_PROFILE}}</NEURO_PROFILE>
+</STUDENT_TARGET>
+
+<ADAPTATION_GUIDELINE>
+O Plano de Aula Sugerido pelo sistema é o seguinte roteiro de adaptação inicial:
 {{STUDENT_ADAPTATION}}
 
 {{STRATEGY_OVERRIDE}}
+</ADAPTATION_GUIDELINE>
 
-Crie o material pedagógico exclusivo para este aluno, baseando-se na atividade original e expandindo a adaptação sugerida.
+Siga fielmente as restrições declaradas <CONSTRAINTS> da regra de Sistema e entregue o JSON no <OUTPUT_FORMAT> exigido. Omissão de campos acarreterá pânico analítico.

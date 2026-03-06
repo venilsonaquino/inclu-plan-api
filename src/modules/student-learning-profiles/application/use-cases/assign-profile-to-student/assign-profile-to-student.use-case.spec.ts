@@ -48,9 +48,7 @@ describe('AssignProfileToStudentUseCase', () => {
     const result = await useCase.execute(input);
 
     expect(result.isFailure).toBe(true);
-    expect(result.errorValue()).toBe(
-      'An unexpected error occurred while assigning the profile to the student.',
-    );
+    expect(result.errorValue()).toBe('An unexpected error occurred while assigning the profile to the student.');
   });
 
   it('should cover the fallback branch for non-Error thrown objects', async () => {

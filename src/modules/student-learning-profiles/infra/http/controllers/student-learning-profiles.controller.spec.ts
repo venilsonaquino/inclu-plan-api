@@ -18,12 +18,8 @@ describe('StudentLearningProfilesController', () => {
       ],
     }).compile();
 
-    controller = module.get<StudentLearningProfilesController>(
-      StudentLearningProfilesController,
-    );
-    useCase = module.get<AssignProfileToStudentUseCase>(
-      AssignProfileToStudentUseCase,
-    );
+    controller = module.get<StudentLearningProfilesController>(StudentLearningProfilesController);
+    useCase = module.get<AssignProfileToStudentUseCase>(AssignProfileToStudentUseCase);
   });
 
   it('should be defined', () => {
@@ -35,13 +31,8 @@ describe('StudentLearningProfilesController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     } as any;
-    jest
-      .spyOn(useCase, 'execute')
-      .mockResolvedValue(Result.ok({ id: '1' } as any));
-    await controller.assign(
-      { studentId: 'stu', learningProfileId: 'prof' },
-      mockRes,
-    );
+    jest.spyOn(useCase, 'execute').mockResolvedValue(Result.ok({ id: '1' } as any));
+    await controller.assign({ studentId: 'stu', learningProfileId: 'prof' }, mockRes);
     expect(mockRes.status).toHaveBeenCalledWith(201);
   });
 
@@ -51,10 +42,7 @@ describe('StudentLearningProfilesController', () => {
       json: jest.fn(),
     } as any;
     jest.spyOn(useCase, 'execute').mockResolvedValue(Result.fail('Error'));
-    await controller.assign(
-      { studentId: 'stu', learningProfileId: 'prof' },
-      mockRes,
-    );
+    await controller.assign({ studentId: 'stu', learningProfileId: 'prof' }, mockRes);
     expect(mockRes.status).toHaveBeenCalledWith(400);
   });
 });
