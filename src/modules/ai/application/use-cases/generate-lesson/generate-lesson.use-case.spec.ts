@@ -12,7 +12,7 @@ describe('GenerateLessonUseCase', () => {
   let templateLoader: any;
 
   const mockPayload = {
-    students: [{ name: 'Enzo', grade: '3º Ano', profiles: ['TEA', 'TDAH'] }],
+    students: [{ name: 'Enzo', grade: '3º Ano', neurodivergencies: ['TEA', 'TDAH'] }],
     days: [
       {
         day: 'Segunda-feira',
@@ -79,7 +79,7 @@ describe('GenerateLessonUseCase', () => {
       geminiProvider.generateText.mockResolvedValue({} as any);
 
       const payloadNoGrade = {
-        students: [{ name: 'Maria', grade: '', profiles: [] }],
+        students: [{ name: 'Maria', grade: '', neurodivergencies: [] }],
         days: [],
       };
 

@@ -9,17 +9,16 @@ import { Grade } from '@/modules/grades/domain/entities/grade.entity';
 export class CreateGradeUseCase {
   private readonly logger = new Logger(CreateGradeUseCase.name);
 
-  constructor(private readonly gradesRepository: IGradesRepository) {}
+  constructor(private readonly gradesRepository: IGradesRepository) { }
 
   async execute(input: CreateGradeInput): Promise<Result<CreateGradeOutput>> {
     try {
       const newGrade = new Grade({
-        id: crypto.randomUUID(),
         name: input.name,
         description: input.description,
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
+      }, crypto.randomUUID());
 
       await this.gradesRepository.create(newGrade);
 

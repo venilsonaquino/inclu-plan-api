@@ -36,7 +36,7 @@ export class StudentDto {
 
   @IsArray()
   @IsString({ each: true })
-  profiles: string[];
+  neurodivergencies: string[];
 }
 
 export class GenerateLessonInput {

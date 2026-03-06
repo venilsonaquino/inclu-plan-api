@@ -38,13 +38,12 @@ export class SchoolClassModel extends Model<SchoolClassModel> {
   // Domain Mapping Utils
   toDomain(): SchoolClass {
     return new SchoolClass({
-      id: this.id,
       name: this.name,
       teacherId: this.teacherId,
       isActive: this.isActive,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,
-    });
+    }, this.id);
   }
 }

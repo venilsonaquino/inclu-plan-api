@@ -30,11 +30,10 @@ export class GradeModel extends Model<GradeModel> {
   // Domain Mapping Utils
   toDomain(): Grade {
     return new Grade({
-      id: this.id,
       name: this.name,
       description: this.description,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
-    });
+    }, this.id);
   }
 }

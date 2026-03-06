@@ -19,7 +19,7 @@ describe('CreateStudentUseCase', () => {
     const input = {
       name: 'John Doe',
       gradeId: 'grade-123',
-      profiles: ['profile-1', 'profile-2'],
+      neurodivergencies: ['profile-1', 'profile-2'],
       schoolClassId: 'class-abc',
     };
 
@@ -33,14 +33,14 @@ describe('CreateStudentUseCase', () => {
     expect(output.id).toBeDefined();
     expect(output.name).toBe(input.name);
     expect(output.gradeId).toBe(input.gradeId);
-    expect(output.profiles).toEqual(input.profiles);
+    expect(output.neurodivergencies).toEqual(input.neurodivergencies);
     expect(output.schoolClassId).toBe(input.schoolClassId);
     expect(studentsRepository.create).toHaveBeenCalledTimes(1);
     expect(studentsRepository.create).toHaveBeenCalledWith(
       expect.objectContaining({
         name: input.name,
         gradeId: input.gradeId,
-        profiles: input.profiles,
+        neurodivergencies: input.neurodivergencies,
       }),
     );
   });
@@ -49,7 +49,7 @@ describe('CreateStudentUseCase', () => {
     const input = {
       name: 'John Doe',
       gradeId: 'grade-123',
-      profiles: [],
+      neurodivergencies: [],
     };
 
     studentsRepository.create.mockRejectedValue(new Error('DB Error'));
@@ -64,7 +64,7 @@ describe('CreateStudentUseCase', () => {
     const input = {
       name: 'John Doe',
       gradeId: 'grade-123',
-      profiles: [],
+      neurodivergencies: [],
     };
     studentsRepository.create.mockRejectedValue('String Error');
     const result = await useCase.execute(input);

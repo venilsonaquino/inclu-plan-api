@@ -4,16 +4,16 @@ import { CreateStudentUseCase } from '@/modules/students/application/use-cases/c
 import { IStudentsRepository } from '@/modules/students/domain/repositories/students.repository';
 import { SequelizeStudentsRepository } from '@/modules/students/infra/persistence/sequelize/repositories/sequelize-students.repository';
 import { StudentModel } from '@/modules/students/infra/persistence/sequelize/models/student.model';
-import { LearningProfileModel } from '@/modules/learning-profiles/infra/persistence/sequelize/models/learning-profile.model';
-import { StudentLearningProfileModel } from '@/modules/student-learning-profiles/infra/persistence/sequelize/models/student-learning-profile.model';
+import { NeurodivergencyModel } from '@/modules/neurodivergencies/infra/persistence/sequelize/models/neurodivergency.model';
+import { StudentNeurodivergencyModel } from '@/modules/student-neurodivergencies/infra/persistence/sequelize/models/student-neurodivergency.model';
 import { SequelizeModule } from '@nestjs/sequelize';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([
       StudentModel,
-      LearningProfileModel,
-      StudentLearningProfileModel,
+      NeurodivergencyModel,
+      StudentNeurodivergencyModel,
     ]),
   ],
   controllers: [StudentsController],
