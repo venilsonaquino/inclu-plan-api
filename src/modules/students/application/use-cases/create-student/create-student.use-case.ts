@@ -9,7 +9,7 @@ import { Student } from '@/modules/students/domain/entities/student.entity';
 export class CreateStudentUseCase {
   private readonly logger = new Logger(CreateStudentUseCase.name);
 
-  constructor(private readonly studentsRepository: IStudentsRepository) {}
+  constructor(private readonly studentsRepository: IStudentsRepository) { }
 
   async execute(input: CreateStudentInput): Promise<Result<CreateStudentOutput>> {
     try {
@@ -17,7 +17,7 @@ export class CreateStudentUseCase {
         id: crypto.randomUUID(),
         name: input.name,
         gradeId: input.gradeId,
-        profiles: input.profiles,
+        neurodivergencies: input.neurodivergencies,
         schoolClassId: input.schoolClassId,
         notes: input.notes,
         createdAt: new Date(),
@@ -30,7 +30,7 @@ export class CreateStudentUseCase {
         id: newStudent.id,
         name: newStudent.name,
         gradeId: newStudent.gradeId,
-        profiles: newStudent.profiles,
+        neurodivergencies: newStudent.neurodivergencies,
         schoolClassId: newStudent.schoolClassId,
         createdAt: newStudent.createdAt,
       });

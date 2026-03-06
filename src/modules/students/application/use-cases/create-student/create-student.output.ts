@@ -2,7 +2,7 @@ export class CreateStudentOutput {
   id: string;
   name: string;
   gradeId: string;
-  profiles: string[];
+  neurodivergencies: string[];
   schoolClassId?: string;
   createdAt: Date;
 }

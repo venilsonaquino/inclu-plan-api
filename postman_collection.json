@@ -21,7 +21,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"days\": [\n    {\n      \"day\": \"Quarta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Matemática\", \"theme\": \"Frações\", \"observations\": \"Usar materiais visuais\" }\n      ]\n    },\n    {\n      \"day\": \"Sexta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Português\", \"theme\": \"Substantivos Compostos\" }\n      ]\n    }\n  ],\n  \"students\": [\n    {\n      \"name\": \"Alice (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"profiles\": [\"Transtorno do Espectro Autista (Nível 1)\", \"TDAH\"]\n    },\n    {\n      \"name\": \"João (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"profiles\": [\"Dislexia\"]\n    }\n  ],\n  \"imagePart\": \"\" \n}"
+              "raw": "{\n  \"days\": [\n    {\n      \"day\": \"Quarta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Matemática\", \"theme\": \"Frações\", \"observations\": \"Usar materiais visuais\" }\n      ]\n    },\n    {\n      \"day\": \"Sexta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Português\", \"theme\": \"Substantivos Compostos\" }\n      ]\n    }\n  ],\n  \"students\": [\n    {\n      \"name\": \"Alice (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"neurodivergencies\": [\"Transtorno do Espectro Autista (Nível 1)\", \"TDAH\"]\n    },\n    {\n      \"name\": \"João (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"neurodivergencies\": [\"Dislexia\"]\n    }\n  ],\n  \"imagePart\": \"\" \n}"
             },
             "url": {
               "raw": "http://localhost:3000/api/ai/lesson-plan",
@@ -230,10 +230,10 @@
       ]
     },
     {
-      "name": "Perfis de Aprendizagem (Learning Profiles)",
+      "name": "Neurodivergências (Neurodivergencies)",
       "item": [
         {
-          "name": "Criar Perfil de Aprendizagem",
+          "name": "Criar Neurodivergência",
           "request": {
             "method": "POST",
             "header": [
@@ -247,7 +247,7 @@
               "raw": "{\n  \"name\": \"TEA\",\n  \"description\": \"Transtorno do Espectro Autista. O aluno necessita de previsibilidade, suporte visual claro e acomodações sensoriais.\"\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/learning-profiles",
+              "raw": "http://localhost:3000/api/neurodivergencies",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -277,7 +277,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Joãozinho (Exemplo)\",\n  \"gradeId\": \"COLE_O_ID_DA_SERIE_AQUI\",\n  \"schoolClassId\": \"COLE_O_ID_DA_TURMA_AQUI_OU_REMOVA\",\n  \"notes\": \"Aluno transferido recentemente. Tem bastante afinidade com artes.\"\n}"
+              "raw": "{\n  \"name\": \"Joãozinho (Exemplo)\",\n  \"gradeId\": \"ID_DA_SERIE\",\n  \"schoolClassId\": \"ID_DA_TURMA\",\n  \"neurodivergencies\": [\"ID_DA_NEURODIVERGENCIA_1\", \"ID_DA_NEURODIVERGENCIA_2\"],\n  \"notes\": \"Aluno transferido recentemente. Tem bastante afinidade com artes.\"\n}"
             },
             "url": {
               "raw": "http://localhost:3000/api/students",
@@ -296,10 +296,10 @@
       ]
     },
     {
-      "name": "Associação Alunos-Perfis (Student Learning Profiles)",
+      "name": "Associação Alunos-Neurodivergências (Student Neurodivergencies)",
       "item": [
         {
-          "name": "Atribuir Perfil ao Aluno",
+          "name": "Atribuir Neurodivergência ao Aluno",
           "request": {
             "method": "POST",
             "header": [
@@ -310,10 +310,10 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"studentId\": \"COLE_O_ID_DO_ALUNO_AQUI\",\n  \"learningProfileId\": \"COLE_O_ID_DO_PERFIL_AQUI\",\n  \"notes\": \"Ocasionalmente usa abafadores.\"\n}"
+              "raw": "{\n  \"studentId\": \"COLE_O_ID_DO_ALUNO_AQUI\",\n  \"neurodivergencyId\": \"COLE_O_ID_DO_PERFIL_AQUI\",\n  \"notes\": \"Ocasionalmente usa abafadores.\"\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/student-learning-profiles/assign",
+              "raw": "http://localhost:3000/api/student-neurodivergencies/assign",
               "protocol": "http",
               "host": [
                 "localhost"

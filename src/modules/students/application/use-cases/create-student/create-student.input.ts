@@ -11,7 +11,7 @@ export class CreateStudentInput {
 
   @IsArray()
   @IsString({ each: true })
-  profiles: string[];
+  neurodivergencies: string[];
 
   @IsString()
   @IsOptional()

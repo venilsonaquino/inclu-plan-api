@@ -2,7 +2,7 @@ export class Student {
   id: string;
   name: string;
   gradeId: string;
-  profiles: string[];
+  neurodivergencies: string[];
   schoolClassId?: string;
   notes?: string;
   isActive: boolean;
@@ -14,6 +14,6 @@ export class Student {
     Object.assign(this, props);
     // defaults
     if (this.isActive === undefined) this.isActive = true;
-    if (!this.profiles) this.profiles = [];
+    if (!this.neurodivergencies) this.neurodivergencies = [];
   }
 }

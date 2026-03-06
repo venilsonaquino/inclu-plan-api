@@ -4,18 +4,18 @@ import { IStudentsRepository } from '@/modules/students/domain/repositories/stud
 import { Student } from '@/modules/students/domain/entities/student.entity';
 import { Sequelize } from 'sequelize-typescript';
 import { StudentModel } from '@/modules/students/infra/persistence/sequelize/models/student.model';
-import { LearningProfileModel } from '@/modules/learning-profiles/infra/persistence/sequelize/models/learning-profile.model';
-import { StudentLearningProfileModel } from '@/modules/student-learning-profiles/infra/persistence/sequelize/models/student-learning-profile.model';
+import { NeurodivergencyModel } from '@/modules/neurodivergencies/infra/persistence/sequelize/models/neurodivergency.model';
+import { StudentNeurodivergencyModel } from '@/modules/student-neurodivergencies/infra/persistence/sequelize/models/student-neurodivergency.model';
 
 @Injectable()
 export class SequelizeStudentsRepository implements IStudentsRepository {
   constructor(
     @InjectModel(StudentModel)
     private readonly studentModel: typeof StudentModel,
-    @InjectModel(LearningProfileModel)
-    private readonly learningProfileModel: typeof LearningProfileModel,
-    @InjectModel(StudentLearningProfileModel)
-    private readonly pivotModel: typeof StudentLearningProfileModel,
+    @InjectModel(NeurodivergencyModel)
+    private readonly neurodivergencyModel: typeof NeurodivergencyModel,
+    @InjectModel(StudentNeurodivergencyModel)
+    private readonly pivotModel: typeof StudentNeurodivergencyModel,
     private readonly sequelize: Sequelize,
   ) { }
 
@@ -36,17 +36,11 @@ export class SequelizeStudentsRepository implements IStudentsRepository {
         { transaction },
       );
 
-      if (student.profiles && student.profiles.length > 0) {
-        // Find profile IDs by name
-        const profiles = await this.learningProfileModel.findAll({
-          where: { name: student.profiles },
-          transaction,
-        });
-
-        // Create associations
-        const associations = profiles.map((p) => ({
+      if (student.neurodivergencies && student.neurodivergencies.length > 0) {
+        // Create associations directly using provided IDs
+        const associations = student.neurodivergencies.map((id) => ({
           studentId: student.id,
-          learningProfileId: p.id,
+          neurodivergencyId: id,
           notes: 'Auto-linked on student creation',
         }));
 
@@ -62,7 +56,7 @@ export class SequelizeStudentsRepository implements IStudentsRepository {
 
   async findById(id: string): Promise<Student | null> {
     const model = await this.studentModel.findByPk(id, {
-      include: [LearningProfileModel],
+      include: [NeurodivergencyModel],
     });
     if (!model) return null;
     return model.toDomain();
@@ -71,7 +65,7 @@ export class SequelizeStudentsRepository implements IStudentsRepository {
   async findByClassId(schoolClassId: string): Promise<Student[]> {
     const models = await this.studentModel.findAll({
       where: { schoolClassId },
-      include: [LearningProfileModel],
+      include: [NeurodivergencyModel],
     });
     return models.map((model) => model.toDomain());
   }

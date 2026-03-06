@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType, BelongsToMany } from 'sequelize-typescript';
 import { Student } from '@/modules/students/domain/entities/student.entity';
-import { LearningProfileModel } from '@/modules/learning-profiles/infra/persistence/sequelize/models/learning-profile.model';
-import { StudentLearningProfileModel } from '@/modules/student-learning-profiles/infra/persistence/sequelize/models/student-learning-profile.model';
+import { NeurodivergencyModel } from '@/modules/neurodivergencies/infra/persistence/sequelize/models/neurodivergency.model';
+import { StudentNeurodivergencyModel } from '@/modules/student-neurodivergencies/infra/persistence/sequelize/models/student-neurodivergency.model';
 
 @Table({
   tableName: 'students',
@@ -49,18 +49,16 @@ export class StudentModel extends Model<StudentModel> {
   })
   declare isActive: boolean;
 
-  @BelongsToMany(() => LearningProfileModel, () => StudentLearningProfileModel)
-  learningProfiles: LearningProfileModel[];
+  @BelongsToMany(() => NeurodivergencyModel, () => StudentNeurodivergencyModel)
+  neurodivergencies: NeurodivergencyModel[];
 
   // Domain Mapping Utils
   toDomain(): Student {
-    // Note: The 'profiles' array will require a relationship mapping when reading from DB.
-    // For now, based on the basic `student` table data, we map what we have.
     return new Student({
       id: this.id,
       name: this.name,
       gradeId: this.gradeId,
-      profiles: this.learningProfiles ? this.learningProfiles.map(p => p.name) : [],
+      neurodivergencies: this.neurodivergencies ? this.neurodivergencies.map(p => p.id) : [],
       schoolClassId: this.schoolClassId,
       notes: this.notes,
       isActive: this.isActive,
