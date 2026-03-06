@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IStudentsRepository } from '@/modules/students/domain/repositories/students.repository';
 import { CreateStudentInput } from './create-student.input';
 import { CreateStudentOutput } from './create-student.output';
@@ -7,9 +7,13 @@ import { Student } from '@/modules/students/domain/entities/student.entity';
 
 @Injectable()
 export class CreateStudentUseCase {
-  constructor(private readonly studentsRepository: IStudentsRepository) { }
+  private readonly logger = new Logger(CreateStudentUseCase.name);
 
-  async execute(input: CreateStudentInput): Promise<Result<CreateStudentOutput>> {
+  constructor(private readonly studentsRepository: IStudentsRepository) {}
+
+  async execute(
+    input: CreateStudentInput,
+  ): Promise<Result<CreateStudentOutput>> {
     try {
       const newStudent = new Student({
         id: crypto.randomUUID(),
@@ -19,7 +23,7 @@ export class CreateStudentUseCase {
         schoolClassId: input.schoolClassId,
         notes: input.notes,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
 
       await this.studentsRepository.create(newStudent);
@@ -30,11 +34,16 @@ export class CreateStudentUseCase {
         gradeId: newStudent.gradeId,
         profiles: newStudent.profiles,
         schoolClassId: newStudent.schoolClassId,
-        createdAt: newStudent.createdAt
+        createdAt: newStudent.createdAt,
       });
-
     } catch (error) {
-      return Result.fail('An unexpected error occurred while creating the student.');
+      this.logger.error(
+        'Unexpected error creating student',
+        error instanceof Error ? error.stack : error,
+      );
+      return Result.fail(
+        'An unexpected error occurred while creating the student.',
+      );
     }
   }
 }

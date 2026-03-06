@@ -17,7 +17,7 @@ describe('CreateTeacherUseCase', () => {
     const input: CreateTeacherInput = {
       name: 'John Doe',
       email: 'john@example.com',
-      password: 'strongpassword123'
+      password: 'strongpassword123',
     };
 
     const result = await useCase.execute(input);
@@ -37,7 +37,10 @@ describe('CreateTeacherUseCase', () => {
     expect(savedTeacher?.passwordHash).toContain(':'); // checking our salt:key format
 
     // Verify hash actually matches using util
-    const isMatch = await CryptoUtil.compare(input.password, savedTeacher!.passwordHash);
+    const isMatch = await CryptoUtil.compare(
+      input.password,
+      savedTeacher!.passwordHash,
+    );
     expect(isMatch).toBe(true);
   });
 
@@ -45,7 +48,7 @@ describe('CreateTeacherUseCase', () => {
     const input: CreateTeacherInput = {
       name: 'John Doe',
       email: 'john@example.com',
-      password: 'strongpassword123'
+      password: 'strongpassword123',
     };
 
     // First creation
@@ -55,13 +58,41 @@ describe('CreateTeacherUseCase', () => {
     const duplicateInput: CreateTeacherInput = {
       name: 'Jane Doe',
       email: 'john@example.com', // same email
-      password: 'anotherpassword456'
+      password: 'anotherpassword456',
     };
 
     const result = await useCase.execute(duplicateInput);
 
     expect(result.isFailure).toBe(true);
     expect(result.errorValue()).toBe('Email already in use.');
+  });
+
+  it('should fail when repository throws an error', async () => {
+    const input: CreateTeacherInput = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'strongpassword123',
+    };
+    jest.spyOn(repository, 'create').mockRejectedValueOnce(new Error('DB Error'));
+
+    const result = await useCase.execute(input);
+
+    expect(result.isFailure).toBe(true);
+    expect(result.errorValue()).toBe(
+      'An unexpected error occurred while creating the teacher.',
+    );
+  });
+
+  it('should cover the fallback branch for non-Error thrown objects', async () => {
+    const input: CreateTeacherInput = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      password: 'strongpassword123',
+    };
+    jest.spyOn(repository, 'create').mockRejectedValueOnce('String Error');
+
+    const result = await useCase.execute(input);
+    expect(result.isFailure).toBe(true);
   });
 });
 

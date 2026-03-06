@@ -5,17 +5,24 @@ import { AI_MODELS, AiMetricsUtil } from './ai-models.config';
 @Injectable()
 export class GeminiProvider {
   private readonly logger = new Logger(GeminiProvider.name);
-  private readonly baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
+  private readonly baseUrl =
+    'https://generativelanguage.googleapis.com/v1beta/models';
 
   private getApiKey(): string {
     const key = process.env.GEMINI_API_KEY;
     if (!key) {
-      throw new Error('GEMINI_API_KEY is not defined in environment variables.');
+      throw new Error(
+        'GEMINI_API_KEY is not defined in environment variables.',
+      );
     }
     return key;
   }
 
-  async generateText(systemInstruction: string, promptText: string, imagePartBase64?: string): Promise<any> {
+  async generateText(
+    systemInstruction: string,
+    promptText: string,
+    imagePartBase64?: string,
+  ): Promise<any> {
     const apiKey = this.getApiKey();
     const url = `${this.baseUrl}/${AI_MODELS.TEXT.name}:generateContent?key=${apiKey}`;
 
@@ -25,7 +32,7 @@ export class GeminiProvider {
         inlineData: {
           mimeType: 'image/jpeg',
           data: imagePartBase64,
-        }
+        },
       });
     }
 
@@ -57,21 +64,32 @@ export class GeminiProvider {
       const totalTokens = usage.totalTokenCount || 0;
 
       // Pricing logic moved to AiMetricsUtil to respect Clean Code
-      const totalCost = AiMetricsUtil.calculateTextCost(promptTokens, generatedTokens);
+      const totalCost = AiMetricsUtil.calculateTextCost(
+        promptTokens,
+        generatedTokens,
+      );
 
       this.logger.log(
-        `[${AI_MODELS.TEXT.name}] Latency: ${latencyMs}ms | Status: ${finishReason} | Tokens: ${totalTokens} | Est. Cost: $${totalCost} USD`
+        `[${AI_MODELS.TEXT.name}] Latency: ${latencyMs}ms | Status: ${finishReason} | Tokens: ${totalTokens} | Est. Cost: $${totalCost} USD`,
       );
 
       if (!rawText) {
-        throw new Error(`AI generation failed or was blocked. Reason: ${finishReason}`);
+        throw new Error(
+          `AI generation failed or was blocked. Reason: ${finishReason}`,
+        );
       }
 
       return JSON.parse(rawText);
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
-        this.logger.error(`Gemini API error: ${error.response.status}`, error.response.data);
-        throw new Error(error.response.data?.error?.message || `Gemini API error: ${error.response.status}`);
+        this.logger.error(
+          `Gemini API error: ${error.response.status}`,
+          error.response.data,
+        );
+        throw new Error(
+          error.response.data?.error?.message ||
+            `Gemini API error: ${error.response.status}`,
+        );
       }
       this.logger.error('Error in generateText', error);
       throw error;
@@ -84,7 +102,7 @@ export class GeminiProvider {
     const url = `${this.baseUrl}/${AI_MODELS.IMAGE.name}:generateContent?key=${apiKey}`;
 
     const requestBody = {
-      contents: [{ parts: [{ text: imagePrompt }] }]
+      contents: [{ parts: [{ text: imagePrompt }] }],
     };
 
     const startTime = performance.now();
@@ -99,7 +117,9 @@ export class GeminiProvider {
 
       // Pricing logic moved to AiMetricsUtil
       const cost = AiMetricsUtil.calculateImageCost(1);
-      this.logger.log(`[${AI_MODELS.IMAGE.name}] Latency: ${latencyMs}ms | Generated 1 image | Est. Cost: $${cost} USD`);
+      this.logger.log(
+        `[${AI_MODELS.IMAGE.name}] Latency: ${latencyMs}ms | Generated 1 image | Est. Cost: $${cost} USD`,
+      );
 
       // O Nano Banana devolve a imagem no corpo de parts -> inlineData -> data (base64)
       const candidateParts = data.candidates?.[0]?.content?.parts || [];
@@ -112,13 +132,64 @@ export class GeminiProvider {
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
         this.logger.warn(
-          `[${AI_MODELS.IMAGE.name}] API failed with status: ${error.response.status} (Latency: ${Math.round(performance.now() - startTime)}ms)`
+          `[${AI_MODELS.IMAGE.name}] API failed with status: ${error.response.status} (Latency: ${Math.round(performance.now() - startTime)}ms)}`,
         );
-        this.logger.error(`[${AI_MODELS.IMAGE.name}] Details: ${JSON.stringify(error.response.data)}`);
+        this.logger.error(
+          `[${AI_MODELS.IMAGE.name}] Details: ${JSON.stringify(error.response.data)}`,
+        );
       } else {
         this.logger.error('Error generating image', error);
       }
-      return null;
+    }
+    return null;
+  }
+
+  async generateEmbeddings(text: string): Promise<number[]> {
+    const apiKey = this.getApiKey();
+    const url = `${this.baseUrl}/${AI_MODELS.EMBEDDING.name}:embedContent?key=${apiKey}`;
+
+    const requestBody = {
+      model: `models/${AI_MODELS.EMBEDDING.name}`,
+      content: {
+        parts: [{ text }],
+      },
+    };
+
+    try {
+      const startTime = performance.now();
+      const response = await axios.post(url, requestBody, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const latencyMs = Math.round(performance.now() - startTime);
+      const data = response.data;
+
+      const embeddingArray = data.embedding?.values;
+
+      if (!embeddingArray || !Array.isArray(embeddingArray)) {
+        throw new Error(
+          'Failed to extract embedding array from Google AI response.',
+        );
+      }
+
+      this.logger.log(
+        `[${AI_MODELS.EMBEDDING.name}] Latency: ${latencyMs}ms | Generated Vector[${embeddingArray.length}]`,
+      );
+
+      return embeddingArray;
+    } catch (error: any) {
+      if (axios.isAxiosError(error) && error.response) {
+        this.logger.error(
+          `Embedding API error: ${error.response.status}`,
+          error.response.data,
+        );
+        throw new Error(
+          error.response.data?.error?.message ||
+            `Embedding API error: ${error.response.status}`,
+        );
+      }
+      this.logger.error('Error in generateEmbeddings', error);
+      throw error;
     }
   }
 }

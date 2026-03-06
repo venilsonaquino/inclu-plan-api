@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, IsArray, ValidateNested, IsOptional, ArrayMinSize, } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsArray,
+  ValidateNested,
+  IsOptional,
+  ArrayMinSize,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class DisciplineInput {

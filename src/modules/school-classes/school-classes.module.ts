@@ -13,6 +13,6 @@ import { InMemorySchoolClassesRepository } from '@/modules/school-classes/infra/
       useClass: InMemorySchoolClassesRepository,
     },
   ],
-  exports: [ISchoolClassesRepository]
+  exports: [ISchoolClassesRepository],
 })
-export class SchoolClassesModule { }
+export class SchoolClassesModule {}

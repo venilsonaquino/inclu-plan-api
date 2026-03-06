@@ -5,7 +5,9 @@ import { Response } from 'express';
 
 @Controller('school-classes')
 export class SchoolClassesController {
-  constructor(private readonly createSchoolClassUseCase: CreateSchoolClassUseCase) { }
+  constructor(
+    private readonly createSchoolClassUseCase: CreateSchoolClassUseCase,
+  ) {}
 
   @Post()
   async create(@Body() input: CreateSchoolClassInput, @Res() res: Response) {
@@ -14,7 +16,9 @@ export class SchoolClassesController {
     if (result.isSuccess) {
       return res.status(HttpStatus.CREATED).json(result.getValue());
     } else {
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: result.errorValue() });
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: result.errorValue() });
     }
   }
 }

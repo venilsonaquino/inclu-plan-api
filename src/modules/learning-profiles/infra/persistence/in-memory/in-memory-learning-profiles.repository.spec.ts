@@ -9,7 +9,11 @@ describe('InMemoryLearningProfilesRepository', () => {
   });
 
   it('should create and retrieve', async () => {
-    const profile = new LearningProfile({ id: '1', name: 'TEA', description: 'desc' });
+    const profile = new LearningProfile({
+      id: '1',
+      name: 'TEA',
+      description: 'desc',
+    });
     await repository.create(profile);
     const found = await repository.findById('1');
     expect(found?.name).toBe('TEA');

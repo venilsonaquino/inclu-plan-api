@@ -50,7 +50,7 @@ describe('AiMetricsUtil', () => {
       expect(AI_MODELS).toBeDefined();
       expect(AI_MODELS.TEXT.name).toBe('gemini-2.5-flash');
       expect(AI_MODELS.TEXT.pricing.inputPerMillion).toBe(0.075);
-      expect(AI_MODELS.TEXT.pricing.outputPerMillion).toBe(0.30);
+      expect(AI_MODELS.TEXT.pricing.outputPerMillion).toBe(0.3);
 
       expect(AI_MODELS.IMAGE.name).toBe('gemini-3.1-flash-image-preview');
       expect(AI_MODELS.IMAGE.pricing.perImage).toBe(0.003);

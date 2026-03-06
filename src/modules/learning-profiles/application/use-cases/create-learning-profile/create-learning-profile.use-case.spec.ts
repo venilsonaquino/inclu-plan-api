@@ -45,7 +45,19 @@ describe('CreateLearningProfileUseCase', () => {
     const result = await useCase.execute(input);
 
     expect(result.isFailure).toBe(true);
-    expect(result.errorValue()).toBe('An unexpected error occurred while creating the learning profile.');
+    expect(result.errorValue()).toBe(
+      'An unexpected error occurred while creating the learning profile.',
+    );
+  });
+
+  it('should cover the fallback branch for non-Error thrown objects', async () => {
+    const input = {
+      name: 'TEA',
+      description: 'Transtorno do Espectro Autista',
+    };
+    repository.create.mockRejectedValue('String Error');
+    const result = await useCase.execute(input);
+    expect(result.isFailure).toBe(true);
   });
 });
 

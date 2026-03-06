@@ -38,7 +38,7 @@
       "response": []
     },
     {
-      "name": "Gerar Material Pedagógico (Material Generation)",
+      "name": "Gerar Material Pedagógico (Cartões)",
       "request": {
         "method": "POST",
         "header": [
@@ -49,10 +49,10 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"activityText\": \"Aula sobre o Sistema Solar. Os alunos vão aprender a ordem dos planetas e as características principais do Sol e da Terra mediante leitura compartilhada e pintura.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\"\n  }\n}"
+          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte VISUAL usando pictogramas claros, rotinas visuais estruturadas e pouca poluição.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
         },
         "url": {
-          "raw": "http://localhost:3000/api/ai/pedagogical-material",
+          "raw": "http://localhost:3000/api/ai/pedagogical-material/cards",
           "protocol": "http",
           "host": [
             "localhost"
@@ -61,10 +61,75 @@
           "path": [
             "api",
             "ai",
-            "pedagogical-material"
+            "pedagogical-material",
+            "cards"
           ]
         },
-        "description": "Testa a geração paralela de material pedagógico individual adaptado. Nota: Se as chaves do Imagen estiverem ativas, a resposta voltará com Base64 de imagens nos cards."
+        "description": "Geração de Cartões Visuais Adaptados para o Professor."
+      },
+      "response": []
+    },
+    {
+      "name": "Gerar Material Pedagógico (Prancha)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte COGNITIVO usando instruções curtas, passo-a-passo simplificado e evite metáforas.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/ai/pedagogical-material/board",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "ai",
+            "pedagogical-material",
+            "board"
+          ]
+        },
+        "description": "Geração de Prancha Visual Resumida para o Aluno."
+      },
+      "response": []
+    },
+    {
+      "name": "Gerar Material Pedagógico (Lição de Casa)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte SENSORIO-MOTOR usando texturas imaginárias, movimento corporal e manipulação tátil.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/ai/pedagogical-material/homework",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "ai",
+            "pedagogical-material",
+            "homework"
+          ]
+        },
+        "description": "Geração de Atividade Lúdica para os Pais fazerem em casa com a criança."
       },
       "response": []
     }

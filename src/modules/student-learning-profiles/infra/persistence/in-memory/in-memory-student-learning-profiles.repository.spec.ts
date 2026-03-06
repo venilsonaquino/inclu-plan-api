@@ -9,7 +9,11 @@ describe('InMemoryStudentLearningProfilesRepository', () => {
   });
 
   it('should assign and retrieve by studentId or profileId', async () => {
-    const assoc = new StudentLearningProfile({ id: '1', studentId: 's1', learningProfileId: 'p1' });
+    const assoc = new StudentLearningProfile({
+      id: '1',
+      studentId: 's1',
+      learningProfileId: 'p1',
+    });
     await repository.assign(assoc);
 
     const byStudent = await repository.findByStudentId('s1');
@@ -20,7 +24,11 @@ describe('InMemoryStudentLearningProfilesRepository', () => {
   });
 
   it('should remove connection', async () => {
-    const assoc = new StudentLearningProfile({ id: '1', studentId: 's1', learningProfileId: 'p1' });
+    const assoc = new StudentLearningProfile({
+      id: '1',
+      studentId: 's1',
+      learningProfileId: 'p1',
+    });
     await repository.assign(assoc);
     await repository.remove('s1', 'p1');
 

@@ -13,6 +13,6 @@ import { InMemoryLearningProfilesRepository } from '@/modules/learning-profiles/
       useClass: InMemoryLearningProfilesRepository,
     },
   ],
-  exports: [ILearningProfilesRepository]
+  exports: [ILearningProfilesRepository],
 })
-export class LearningProfilesModule { }
+export class LearningProfilesModule {}

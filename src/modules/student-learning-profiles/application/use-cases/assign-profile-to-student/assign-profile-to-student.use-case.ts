@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IStudentLearningProfilesRepository } from '@/modules/student-learning-profiles/domain/repositories/student-learning-profiles.repository';
 import { AssignProfileInput } from './assign-profile.input';
 import { AssignProfileOutput } from './assign-profile.output';
@@ -7,16 +7,22 @@ import { StudentLearningProfile } from '@/modules/student-learning-profiles/doma
 
 @Injectable()
 export class AssignProfileToStudentUseCase {
-  constructor(private readonly repository: IStudentLearningProfilesRepository) { }
+  private readonly logger = new Logger(AssignProfileToStudentUseCase.name);
 
-  async execute(input: AssignProfileInput): Promise<Result<AssignProfileOutput>> {
+  constructor(
+    private readonly repository: IStudentLearningProfilesRepository,
+  ) {}
+
+  async execute(
+    input: AssignProfileInput,
+  ): Promise<Result<AssignProfileOutput>> {
     try {
       const association = new StudentLearningProfile({
         id: crypto.randomUUID(),
         studentId: input.studentId,
         learningProfileId: input.learningProfileId,
         notes: input.notes,
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       await this.repository.assign(association);
@@ -26,11 +32,16 @@ export class AssignProfileToStudentUseCase {
         studentId: association.studentId,
         learningProfileId: association.learningProfileId,
         notes: association.notes,
-        createdAt: association.createdAt
+        createdAt: association.createdAt,
       });
-
     } catch (error) {
-      return Result.fail('An unexpected error occurred while assigning the profile to the student.');
+      this.logger.error(
+        'Unexpected error assigning profile',
+        error instanceof Error ? error.stack : error,
+      );
+      return Result.fail(
+        'An unexpected error occurred while assigning the profile to the student.',
+      );
     }
   }
 }

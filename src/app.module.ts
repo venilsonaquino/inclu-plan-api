@@ -17,9 +17,9 @@ import { StudentLearningProfilesModule } from './modules/student-learning-profil
     SchoolClassesModule,
     GradesModule,
     LearningProfilesModule,
-    StudentLearningProfilesModule
+    StudentLearningProfilesModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}
