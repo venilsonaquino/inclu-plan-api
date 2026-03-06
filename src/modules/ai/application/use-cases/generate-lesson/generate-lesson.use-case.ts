@@ -3,69 +3,30 @@ import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider'
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateLessonInput } from './generate-lesson.input';
 import { GenerateLessonOutput } from './generate-lesson.output';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import { PromptUtil } from '../../utils/prompt.util';
+import { LessonStudents } from '@/modules/ai/domain/value-objects/lesson-students.vo';
+import { LessonSchedule } from '@/modules/ai/domain/value-objects/lesson-schedule.vo';
 
 @Injectable()
 export class GenerateLessonUseCase {
   private readonly logger = new Logger(GenerateLessonUseCase.name);
 
-  constructor(private readonly geminiProvider: GeminiProvider) {}
-
-  private loadPromptTemplate(filename: string): string {
-    try {
-      // Usaremos o diretorio atual do arquivo ao compilar para acessar os prompts
-      const promptPath = path.join(__dirname, 'prompts', filename);
-      return fs.readFileSync(promptPath, 'utf8');
-    } catch (error) {
-      this.logger.error(`Could not load prompt file: ${filename}`, error);
-      throw new Error(`Failed to load prompt template: ${filename}`);
-    }
-  }
-
-  private buildStudentsContext(
-    students: GenerateLessonInput['students'],
-  ): string {
-    return students
-      .map(
-        (s) =>
-          `- NOME: ${s.name} | SÉRIE/ANO: ${s.grade || 'Não informada'} | PERFIL: ${s.profiles.join(', ')}`,
-      )
-      .join('\n');
-  }
-
-  private buildContentsContext(days: GenerateLessonInput['days']): string {
-    if (!days || days.length === 0) return '';
-    return days
-      .map(
-        (d) =>
-          `[${d.day}]\n` +
-          d.disciplines
-            .map((disc) => {
-              const obs = disc.observations
-                ? ` | Observações: ${disc.observations}`
-                : '';
-              return `  - ${disc.name} (Tema: ${disc.theme})${obs}\n`;
-            })
-            .join('') +
-          '\n',
-      )
-      .join('');
-  }
+  constructor(private readonly geminiProvider: GeminiProvider) { }
 
   async execute(
     payload: GenerateLessonInput,
   ): Promise<Result<GenerateLessonOutput>> {
     try {
-      const studentsString = this.buildStudentsContext(payload.students);
-      const contentsString = this.buildContentsContext(payload.days);
+      const studentsVo = LessonStudents.create(payload.students);
+      const scheduleVo = LessonSchedule.create(payload.days);
+
+      const studentsString = studentsVo.toPromptString();
+      const contentsString = scheduleVo.toPromptString();
 
       this.logger.log('Generating lesson via Gemini LLM...');
 
-      const systemInstruction = this.loadPromptTemplate(
-        'generate-lesson.system.md',
-      );
-      let promptText = this.loadPromptTemplate('generate-lesson.user.md');
+      const systemInstruction = PromptUtil.loadPromptTemplate(__dirname, 'generate-lesson.system.md');
+      let promptText = PromptUtil.loadPromptTemplate(__dirname, 'generate-lesson.user.md');
 
       promptText = promptText
         .replace('{{STUDENTS_STR}}', studentsString)

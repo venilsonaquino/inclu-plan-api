@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Logger } from '@nestjs/common';
+import { PromptPayloadDto } from '../dtos/prompt-payload.dto';
 
 const logger = new Logger('PromptUtil');
 
@@ -17,18 +18,7 @@ export class PromptUtil {
 
   static buildPromptContext(
     template: string,
-    payload: {
-      strategyOverride?: string;
-      theme: string;
-      objective: string;
-      description: string;
-      studentData: {
-        name: string;
-        grade: string;
-        profile: string;
-        adaptation: string;
-      };
-    },
+    payload: PromptPayloadDto,
   ): string {
     const override = payload.strategyOverride
       ? `\nDIRETRIZ OBRIGATÓRIA OVERRIDE:\n${payload.strategyOverride}\n`

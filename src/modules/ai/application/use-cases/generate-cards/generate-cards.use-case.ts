@@ -4,6 +4,7 @@ import { Result } from '@/shared/domain/utils/result';
 import { GenerateCardsInput } from './generate-cards.input';
 import { GenerateCardsOutput } from './generate-cards.output';
 import { PromptUtil } from '../../utils/prompt.util';
+import { SemanticContext } from '@/modules/ai/domain/value-objects/semantic-context.vo';
 import {
   I_MATERIAL_CACHE_REPOSITORY,
   IMaterialCacheRepository,
@@ -18,7 +19,7 @@ export class GenerateCardsUseCase {
     private readonly geminiProvider: GeminiProvider,
     @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
-  ) {}
+  ) { }
 
   private async fetchImagesForCards(
     cardsData: GenerateCardsOutput,
@@ -45,13 +46,13 @@ export class GenerateCardsUseCase {
     payload: GenerateCardsInput,
   ): Promise<Result<GenerateCardsOutput>> {
     try {
-      const contextHash = payload.strategyOverride
-        ? `${payload.strategyOverride}-${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-CARDS`
-        : `${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-CARDS`;
-
-      const semanticContextStr = payload.strategyOverride
-        ? `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Estratégia Substituta: ${payload.strategyOverride}. Adaptação: ${payload.studentData.adaptation}. Contexto: Cartões Visuais.`
-        : `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Adaptação: ${payload.studentData.adaptation}. Contexto: Cartões Visuais.`;
+      const semanticContext = new SemanticContext({
+        ...payload,
+        typeIdentifier: 'CARDS',
+        contextDescription: 'Cartões Visuais',
+      });
+      const contextHash = semanticContext.hash;
+      const semanticContextStr = semanticContext.semanticString;
 
       this.logger.log(`Checking semantic cache for Cards...`);
       const payloadEmbedding =

@@ -4,6 +4,7 @@ import { Result } from '@/shared/domain/utils/result';
 import { GenerateBoardInput } from './generate-board.input';
 import { GenerateBoardOutput } from './generate-board.output';
 import { PromptUtil } from '../../utils/prompt.util';
+import { SemanticContext } from '@/modules/ai/domain/value-objects/semantic-context.vo';
 import {
   I_MATERIAL_CACHE_REPOSITORY,
   IMaterialCacheRepository,
@@ -18,19 +19,19 @@ export class GenerateBoardUseCase {
     private readonly geminiProvider: GeminiProvider,
     @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
-  ) {}
+  ) { }
 
   async execute(
     payload: GenerateBoardInput,
   ): Promise<Result<GenerateBoardOutput>> {
     try {
-      const contextHash = payload.strategyOverride
-        ? `${payload.strategyOverride}-${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-BOARD`
-        : `${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-BOARD`;
-
-      const semanticContextStr = payload.strategyOverride
-        ? `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Estratégia Substituta: ${payload.strategyOverride}. Adaptação: ${payload.studentData.adaptation}. Contexto: Prancha Visual.`
-        : `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Adaptação: ${payload.studentData.adaptation}. Contexto: Prancha Visual.`;
+      const semanticContext = new SemanticContext({
+        ...payload,
+        typeIdentifier: 'BOARD',
+        contextDescription: 'Prancha Visual',
+      });
+      const contextHash = semanticContext.hash;
+      const semanticContextStr = semanticContext.semanticString;
 
       this.logger.log(`Checking semantic cache for Board...`);
       const payloadEmbedding =

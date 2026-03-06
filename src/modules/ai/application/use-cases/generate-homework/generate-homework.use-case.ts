@@ -4,6 +4,7 @@ import { Result } from '@/shared/domain/utils/result';
 import { GenerateHomeworkInput } from './generate-homework.input';
 import { GenerateHomeworkOutput } from './generate-homework.output';
 import { PromptUtil } from '../../utils/prompt.util';
+import { SemanticContext } from '@/modules/ai/domain/value-objects/semantic-context.vo';
 import {
   I_MATERIAL_CACHE_REPOSITORY,
   IMaterialCacheRepository,
@@ -18,19 +19,19 @@ export class GenerateHomeworkUseCase {
     private readonly geminiProvider: GeminiProvider,
     @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
-  ) {}
+  ) { }
 
   async execute(
     payload: GenerateHomeworkInput,
   ): Promise<Result<GenerateHomeworkOutput>> {
     try {
-      const contextHash = payload.strategyOverride
-        ? `${payload.strategyOverride}-${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-HOMEWORK`
-        : `${payload.theme}-${payload.studentData.grade}-${payload.studentData.profile}-HOMEWORK`;
-
-      const semanticContextStr = payload.strategyOverride
-        ? `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Estratégia Substituta: ${payload.strategyOverride}. Adaptação: ${payload.studentData.adaptation}. Contexto: Lição de Casa.`
-        : `Objetivo: ${payload.objective}. Descrição: ${payload.description}. Adaptação: ${payload.studentData.adaptation}. Contexto: Lição de Casa.`;
+      const semanticContext = new SemanticContext({
+        ...payload,
+        typeIdentifier: 'HOMEWORK',
+        contextDescription: 'Lição de Casa',
+      });
+      const contextHash = semanticContext.hash;
+      const semanticContextStr = semanticContext.semanticString;
 
       this.logger.log(`Checking semantic cache for Homework...`);
       const payloadEmbedding =
