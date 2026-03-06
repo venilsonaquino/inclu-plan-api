@@ -9,7 +9,7 @@ export class SequelizeGradesRepository implements IGradesRepository {
   constructor(
     @InjectModel(GradeModel)
     private readonly gradeModel: typeof GradeModel,
-  ) { }
+  ) {}
 
   async create(grade: Grade): Promise<void> {
     await this.gradeModel.create({
@@ -29,7 +29,7 @@ export class SequelizeGradesRepository implements IGradesRepository {
 
   async findAll(): Promise<Grade[]> {
     const models = await this.gradeModel.findAll();
-    return models.map((model) => model.toDomain());
+    return models.map(model => model.toDomain());
   }
 
   async findByName(name: string): Promise<Grade | null> {

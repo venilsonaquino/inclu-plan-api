@@ -18,4 +18,4 @@ import { IGradesRepository } from '@/modules/grades/domain/repositories/grades.r
   ],
   exports: [IGradesRepository],
 })
-export class GradesModule { }
+export class GradesModule {}
