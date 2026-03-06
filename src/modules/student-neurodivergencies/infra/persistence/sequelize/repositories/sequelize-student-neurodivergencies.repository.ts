@@ -25,14 +25,14 @@ export class SequelizeStudentNeurodivergenciesRepository implements IStudentNeur
     const models = await this.model.findAll({
       where: { studentId },
     });
-    return models.map((m) => new StudentNeurodivergency(m.get({ plain: true })));
+    return models.map((m) => this.toDomain(m));
   }
 
   async findByNeurodivergencyId(neurodivergencyId: string): Promise<StudentNeurodivergency[]> {
     const models = await this.model.findAll({
       where: { neurodivergencyId },
     });
-    return models.map((m) => new StudentNeurodivergency(m.get({ plain: true })));
+    return models.map((m) => this.toDomain(m));
   }
 
   async remove(studentId: string, neurodivergencyId: string): Promise<void> {
@@ -41,6 +41,14 @@ export class SequelizeStudentNeurodivergenciesRepository implements IStudentNeur
         studentId,
         neurodivergencyId,
       },
+    });
+  }
+
+  private toDomain(model: StudentNeurodivergencyModel): StudentNeurodivergency {
+    const plain = model.get({ plain: true }) as any;
+    return new StudentNeurodivergency({
+      ...plain,
+      createdAt: plain.created_at,
     });
   }
 }
