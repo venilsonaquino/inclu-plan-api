@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { AI_MODELS, AiMetricsUtil } from './ai-models.config';
+import { IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
 
 @Injectable()
-export class GeminiProvider {
+export class GeminiProvider implements IAiProvider {
   private readonly logger = new Logger(GeminiProvider.name);
   private readonly baseUrl =
     'https://generativelanguage.googleapis.com/v1beta/models';
@@ -88,7 +89,7 @@ export class GeminiProvider {
         );
         throw new Error(
           error.response.data?.error?.message ||
-            `Gemini API error: ${error.response.status}`,
+          `Gemini API error: ${error.response.status}`,
         );
       }
       this.logger.error('Error in generateText', error);
@@ -185,7 +186,7 @@ export class GeminiProvider {
         );
         throw new Error(
           error.response.data?.error?.message ||
-            `Embedding API error: ${error.response.status}`,
+          `Embedding API error: ${error.response.status}`,
         );
       }
       this.logger.error('Error in generateEmbeddings', error);

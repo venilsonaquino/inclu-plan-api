@@ -1,5 +1,5 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
-import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
+import { I_AI_PROVIDER, IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateBoardInput } from './generate-board.input';
 import { GenerateBoardOutput } from './generate-board.output';
@@ -16,7 +16,8 @@ export class GenerateBoardUseCase {
   private readonly logger = new Logger(GenerateBoardUseCase.name);
 
   constructor(
-    private readonly geminiProvider: GeminiProvider,
+    @Inject(I_AI_PROVIDER)
+    private readonly aiProvider: IAiProvider,
     @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
   ) { }
@@ -35,7 +36,7 @@ export class GenerateBoardUseCase {
 
       this.logger.log(`Checking semantic cache for Board...`);
       const payloadEmbedding =
-        await this.geminiProvider.generateEmbeddings(semanticContextStr);
+        await this.aiProvider.generateEmbeddings(semanticContextStr);
 
       const cachedMaterial = await this.materialCache.findSimilar(
         contextHash,
@@ -60,7 +61,7 @@ export class GenerateBoardUseCase {
       );
       const promptText = PromptUtil.buildPromptContext(basePrompt, payload);
 
-      const rawAiResponse = await this.geminiProvider.generateText(
+      const rawAiResponse = await this.aiProvider.generateText(
         systemInstruction,
         promptText,
       );
@@ -70,7 +71,7 @@ export class GenerateBoardUseCase {
         this.logger.log(`Fetching AI Images for Board...`);
         try {
           boardData.board.generatedImage =
-            await this.geminiProvider.generateImage(
+            await this.aiProvider.generateImage(
               boardData.board.imagePrompt,
             );
         } catch (e) {

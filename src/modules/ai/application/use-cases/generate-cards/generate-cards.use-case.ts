@@ -1,5 +1,5 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
-import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
+import { I_AI_PROVIDER, IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateCardsInput } from './generate-cards.input';
 import { GenerateCardsOutput } from './generate-cards.output';
@@ -16,7 +16,8 @@ export class GenerateCardsUseCase {
   private readonly logger = new Logger(GenerateCardsUseCase.name);
 
   constructor(
-    private readonly geminiProvider: GeminiProvider,
+    @Inject(I_AI_PROVIDER)
+    private readonly aiProvider: IAiProvider,
     @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
   ) { }
@@ -29,7 +30,7 @@ export class GenerateCardsUseCase {
     const promises = cardsData.cards
       .filter((card) => card.imagePrompt)
       .map((card) =>
-        this.geminiProvider
+        this.aiProvider
           .generateImage(card.imagePrompt)
           .then((base64) => {
             card.generatedImage = base64;
@@ -56,7 +57,7 @@ export class GenerateCardsUseCase {
 
       this.logger.log(`Checking semantic cache for Cards...`);
       const payloadEmbedding =
-        await this.geminiProvider.generateEmbeddings(semanticContextStr);
+        await this.aiProvider.generateEmbeddings(semanticContextStr);
 
       const cachedMaterial = await this.materialCache.findSimilar(
         contextHash,
@@ -81,7 +82,7 @@ export class GenerateCardsUseCase {
       );
       const promptText = PromptUtil.buildPromptContext(basePrompt, payload);
 
-      const rawAiResponse = await this.geminiProvider.generateText(
+      const rawAiResponse = await this.aiProvider.generateText(
         systemInstruction,
         promptText,
       );

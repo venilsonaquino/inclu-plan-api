@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
+import { Injectable, Logger, Inject } from '@nestjs/common';
+import { I_AI_PROVIDER, IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateLessonInput } from './generate-lesson.input';
 import { GenerateLessonOutput } from './generate-lesson.output';
@@ -11,7 +11,9 @@ import { LessonSchedule } from '@/modules/ai/domain/value-objects/lesson-schedul
 export class GenerateLessonUseCase {
   private readonly logger = new Logger(GenerateLessonUseCase.name);
 
-  constructor(private readonly geminiProvider: GeminiProvider) { }
+  constructor(
+    @Inject(I_AI_PROVIDER) private readonly aiProvider: IAiProvider,
+  ) { }
 
   async execute(
     payload: GenerateLessonInput,
@@ -32,7 +34,7 @@ export class GenerateLessonUseCase {
         .replace('{{STUDENTS_STR}}', studentsString)
         .replace('{{CONTENTS_STR}}', contentsString);
 
-      const aiResponse = await this.geminiProvider.generateText(
+      const aiResponse = await this.aiProvider.generateText(
         systemInstruction,
         promptText,
         payload.imagePart,
