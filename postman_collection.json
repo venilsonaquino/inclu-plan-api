@@ -1,137 +1,333 @@
 {
   "info": {
     "_postman_id": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    "name": "IncluPlanAI - AI Module Tests",
-    "description": "Coleção para testar as rotas do módulo de Inteligência Artificial do IncluPlan.",
+    "name": "IncluPlanAI - Completo",
+    "description": "Coleção para testar todas as rotas do IncluPlanAI, incluindo Banco de Dados (Sequelize) e Módulo de Inteligência Artificial.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Gerar Planejamento de Aula (Lesson Plan)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
+      "name": "Inteligência Artificial (AI)",
+      "item": [
+        {
+          "name": "Gerar Planejamento de Aula (Lesson Plan)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"days\": [\n    {\n      \"day\": \"Quarta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Matemática\", \"theme\": \"Frações\", \"observations\": \"Usar materiais visuais\" }\n      ]\n    },\n    {\n      \"day\": \"Sexta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Português\", \"theme\": \"Substantivos Compostos\" }\n      ]\n    }\n  ],\n  \"students\": [\n    {\n      \"name\": \"Alice (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"neurodivergencies\": [\"Transtorno do Espectro Autista (Nível 1)\", \"TDAH\"]\n    },\n    {\n      \"name\": \"João (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"neurodivergencies\": [\"Dislexia\"]\n    }\n  ],\n  \"imagePart\": \"\" \n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/ai/lesson-plan",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "ai",
+                "lesson-plan"
+              ]
+            }
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"days\": [\n    {\n      \"day\": \"Quarta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Matemática\", \"theme\": \"Frações\", \"observations\": \"Usar materiais visuais\" }\n      ]\n    },\n    {\n      \"day\": \"Sexta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Português\", \"theme\": \"Substantivos Compostos\" }\n      ]\n    }\n  ],\n  \"students\": [\n    {\n      \"name\": \"Alice (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"profiles\": [\"Transtorno do Espectro Autista (Nível 1)\", \"TDAH\"]\n    },\n    {\n      \"name\": \"João (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"profiles\": [\"Dislexia\"]\n    }\n  ],\n  \"imagePart\": \"\" \n}"
         },
-        "url": {
-          "raw": "http://localhost:3000/api/ai/lesson-plan",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3000",
-          "path": [
-            "api",
-            "ai",
-            "lesson-plan"
-          ]
+        {
+          "name": "Gerar Material Pedagógico (Cartões)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte VISUAL usando pictogramas claros, rotinas visuais estruturadas e pouca poluição.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/ai/pedagogical-material/cards",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "ai",
+                "pedagogical-material",
+                "cards"
+              ]
+            }
+          }
         },
-        "description": "Testa a rota de geração do planejamento semanal para a turma. O campo `imagePart` é opcional e pode conter o Base64 de uma imagem enviada pelo professor."
-      },
-      "response": []
+        {
+          "name": "Gerar Material Pedagógico (Prancha)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte COGNITIVO usando instruções curtas, passo-a-passo simplificado e evite metáforas.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/ai/pedagogical-material/board",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "ai",
+                "pedagogical-material",
+                "board"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Gerar Material Pedagógico (Lição de Casa)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte SENSORIO-MOTOR usando texturas imaginárias, movimento corporal e manipulação tátil.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/ai/pedagogical-material/homework",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "ai",
+                "pedagogical-material",
+                "homework"
+              ]
+            }
+          }
+        }
+      ]
     },
     {
-      "name": "Gerar Material Pedagógico (Cartões)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
+      "name": "Professores (Teachers)",
+      "item": [
+        {
+          "name": "Criar Professor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Maria Silva\",\n  \"email\": \"maria.silva@escola.com.br\",\n  \"password\": \"senha123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/teachers",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "teachers"
+              ]
+            }
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte VISUAL usando pictogramas claros, rotinas visuais estruturadas e pouca poluição.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
-        },
-        "url": {
-          "raw": "http://localhost:3000/api/ai/pedagogical-material/cards",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3000",
-          "path": [
-            "api",
-            "ai",
-            "pedagogical-material",
-            "cards"
-          ]
-        },
-        "description": "Geração de Cartões Visuais Adaptados para o Professor."
-      },
-      "response": []
+        }
+      ]
     },
     {
-      "name": "Gerar Material Pedagógico (Prancha)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
+      "name": "Séries / Níveis (Grades)",
+      "item": [
+        {
+          "name": "Criar Série",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"3º Ano\",\n  \"description\": \"Ensino Fundamental I\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/grades",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "grades"
+              ]
+            }
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte COGNITIVO usando instruções curtas, passo-a-passo simplificado e evite metáforas.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
-        },
-        "url": {
-          "raw": "http://localhost:3000/api/ai/pedagogical-material/board",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3000",
-          "path": [
-            "api",
-            "ai",
-            "pedagogical-material",
-            "board"
-          ]
-        },
-        "description": "Geração de Prancha Visual Resumida para o Aluno."
-      },
-      "response": []
+        }
+      ]
     },
     {
-      "name": "Gerar Material Pedagógico (Lição de Casa)",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
+      "name": "Turmas (School Classes)",
+      "item": [
+        {
+          "name": "Criar Turma",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"3º Ano B\",\n  \"teacherId\": \"COLE_O_ID_DO_PROFESSOR_AQUI\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/school-classes",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "school-classes"
+              ]
+            }
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte SENSORIO-MOTOR usando texturas imaginárias, movimento corporal e manipulação tátil.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
-        },
-        "url": {
-          "raw": "http://localhost:3000/api/ai/pedagogical-material/homework",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3000",
-          "path": [
-            "api",
-            "ai",
-            "pedagogical-material",
-            "homework"
-          ]
-        },
-        "description": "Geração de Atividade Lúdica para os Pais fazerem em casa com a criança."
-      },
-      "response": []
+        }
+      ]
+    },
+    {
+      "name": "Neurodivergências (Neurodivergencies)",
+      "item": [
+        {
+          "name": "Criar Neurodivergência",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"TEA\",\n  \"description\": \"Transtorno do Espectro Autista. O aluno necessita de previsibilidade, suporte visual claro e acomodações sensoriais.\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/neurodivergencies",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "learning-profiles"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alunos (Students)",
+      "item": [
+        {
+          "name": "Criar Aluno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Joãozinho (Exemplo)\",\n  \"gradeId\": \"ID_DA_SERIE\",\n  \"schoolClassId\": \"ID_DA_TURMA\",\n  \"neurodivergencies\": [\"ID_DA_NEURODIVERGENCIA_1\", \"ID_DA_NEURODIVERGENCIA_2\"],\n  \"notes\": \"Aluno transferido recentemente. Tem bastante afinidade com artes.\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/students",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "students"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Associação Alunos-Neurodivergências (Student Neurodivergencies)",
+      "item": [
+        {
+          "name": "Atribuir Neurodivergência ao Aluno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"COLE_O_ID_DO_ALUNO_AQUI\",\n  \"neurodivergencyId\": \"COLE_O_ID_DO_PERFIL_AQUI\",\n  \"notes\": \"Ocasionalmente usa abafadores.\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/student-neurodivergencies/assign",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "student-learning-profiles",
+                "assign"
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

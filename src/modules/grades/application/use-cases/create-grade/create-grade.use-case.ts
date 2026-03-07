@@ -13,13 +13,15 @@ export class CreateGradeUseCase {
 
   async execute(input: CreateGradeInput): Promise<Result<CreateGradeOutput>> {
     try {
-      const newGrade = new Grade({
-        id: crypto.randomUUID(),
-        name: input.name,
-        description: input.description,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      const newGrade = new Grade(
+        {
+          name: input.name,
+          description: input.description,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        crypto.randomUUID(),
+      );
 
       await this.gradesRepository.create(newGrade);
 

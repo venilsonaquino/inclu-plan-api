@@ -9,11 +9,13 @@ describe('InMemorySchoolClassesRepository', () => {
   });
 
   it('should create and retrieve by id', async () => {
-    const schoolClass = new SchoolClass({
-      id: '1',
-      name: 'Class',
-      teacherId: 't1',
-    });
+    const schoolClass = new SchoolClass(
+      {
+        name: 'Class',
+        teacherId: 't1',
+      },
+      '1',
+    );
     await repository.create(schoolClass);
     const found = await repository.findById('1');
     expect(found?.name).toBe('Class');
@@ -25,9 +27,9 @@ describe('InMemorySchoolClassesRepository', () => {
   });
 
   it('should retrieve by teacherId', async () => {
-    await repository.create(new SchoolClass({ id: '1', teacherId: 't1' }));
-    await repository.create(new SchoolClass({ id: '2', teacherId: 't1' }));
-    await repository.create(new SchoolClass({ id: '3', teacherId: 't2' }));
+    await repository.create(new SchoolClass({ teacherId: 't1' }, '1'));
+    await repository.create(new SchoolClass({ teacherId: 't1' }, '2'));
+    await repository.create(new SchoolClass({ teacherId: 't2' }, '3'));
     const all = await repository.findByTeacherId('t1');
     expect(all.length).toBe(2);
   });

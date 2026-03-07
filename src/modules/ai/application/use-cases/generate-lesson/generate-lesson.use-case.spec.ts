@@ -12,7 +12,7 @@ describe('GenerateLessonUseCase', () => {
   let templateLoader: any;
 
   const mockPayload = {
-    students: [{ name: 'Enzo', grade: '3º Ano', profiles: ['TEA', 'TDAH'] }],
+    students: [{ name: 'Enzo', grade: '3º Ano', neurodivergencies: ['TEA', 'TDAH'] }],
     days: [
       {
         day: 'Segunda-feira',
@@ -71,15 +71,15 @@ describe('GenerateLessonUseCase', () => {
       // Arg 0 is system prompt
       expect(callArgs[0]).toBe('SYSTEM PROMPT');
       // Arg 1 is user prompt, verify that injected tags have been replaced
-      expect(callArgs[1]).toContain('Portal da Matemática (Tema: Frações) | Observações: Usar material dourado');
-      expect(callArgs[1]).toContain('- NOME: Enzo | SÉRIE/ANO: 3º Ano | PERFIL: TEA, TDAH');
+      expect(callArgs[1]).toContain('- Portal da Matemática (Tema: Frações) | Observações: Usar material dourado');
+      expect(callArgs[1]).toContain('- NOME: Enzo | SÉRIE/ANO: 3º Ano | NEURODIVERGÊNCIA: TEA, TDAH');
     });
 
     it('should handle students without grades', async () => {
       geminiProvider.generateText.mockResolvedValue({} as any);
 
       const payloadNoGrade = {
-        students: [{ name: 'Maria', grade: '', profiles: [] }],
+        students: [{ name: 'Maria', grade: '', neurodivergencies: [] }],
         days: [],
       };
 

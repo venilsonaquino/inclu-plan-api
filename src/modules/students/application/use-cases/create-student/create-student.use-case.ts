@@ -13,16 +13,18 @@ export class CreateStudentUseCase {
 
   async execute(input: CreateStudentInput): Promise<Result<CreateStudentOutput>> {
     try {
-      const newStudent = new Student({
-        id: crypto.randomUUID(),
-        name: input.name,
-        gradeId: input.gradeId,
-        profiles: input.profiles,
-        schoolClassId: input.schoolClassId,
-        notes: input.notes,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      const newStudent = new Student(
+        {
+          name: input.name,
+          gradeId: input.gradeId,
+          neurodivergencies: input.neurodivergencies,
+          schoolClassId: input.schoolClassId,
+          notes: input.notes,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        crypto.randomUUID(),
+      );
 
       await this.studentsRepository.create(newStudent);
 
@@ -30,7 +32,7 @@ export class CreateStudentUseCase {
         id: newStudent.id,
         name: newStudent.name,
         gradeId: newStudent.gradeId,
-        profiles: newStudent.profiles,
+        neurodivergencies: newStudent.neurodivergencies,
         schoolClassId: newStudent.schoolClassId,
         createdAt: newStudent.createdAt,
       });

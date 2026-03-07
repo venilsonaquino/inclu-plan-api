@@ -13,13 +13,16 @@ export class CreateSchoolClassUseCase {
 
   async execute(input: CreateSchoolClassInput): Promise<Result<CreateSchoolClassOutput>> {
     try {
-      const newClass = new SchoolClass({
-        id: crypto.randomUUID(),
-        name: input.name,
-        teacherId: input.teacherId, // In the future, parsed from authentication token
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+      const newClass = new SchoolClass(
+        {
+          name: input.name,
+          teacherId: input.teacherId, // In the future, parsed from authentication token
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        crypto.randomUUID(),
+      );
 
       await this.schoolClassesRepository.create(newClass);
 
