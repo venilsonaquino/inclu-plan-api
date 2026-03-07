@@ -6,7 +6,6 @@ import { I_LESSON_PLAN_REPOSITORY } from '@/modules/ai/domain/repositories/lesso
 import { IStudentsRepository } from '@/modules/students/domain/repositories/students.repository';
 import { IGradesRepository } from '@/modules/grades/domain/repositories/grades.repository';
 import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain/repositories/neurodivergencies.repository';
-import { Result } from '@/shared/domain/utils/result';
 
 describe('GenerateLessonUseCase', () => {
   let useCase: GenerateLessonUseCase;
