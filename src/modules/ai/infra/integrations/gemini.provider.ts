@@ -35,7 +35,7 @@ export class GeminiProvider implements IAiProvider {
       contents: [{ parts: contentsPart }],
       generationConfig: {
         responseMimeType: 'application/json',
-        temperature: 0.7,
+        temperature: 0.2,
         maxOutputTokens: 8192,
       },
     };
@@ -69,7 +69,12 @@ export class GeminiProvider implements IAiProvider {
         throw new Error(`AI generation failed or was blocked. Reason: ${finishReason}`);
       }
 
-      return JSON.parse(rawText);
+      try {
+        return JSON.parse(rawText);
+      } catch (parseError) {
+        this.logger.error(`JSON Parse Error at position: ${rawText.length} chars. Sample: ${rawText.substring(0, 100)}...${rawText.substring(rawText.length - 200)}`);
+        throw parseError;
+      }
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
         this.logger.error(`Gemini API error: ${error.response.status}`, error.response.data);

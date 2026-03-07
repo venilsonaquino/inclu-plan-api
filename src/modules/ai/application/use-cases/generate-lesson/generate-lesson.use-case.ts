@@ -9,6 +9,8 @@ import { IGradesRepository } from '@/modules/grades/domain/repositories/grades.r
 import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain/repositories/neurodivergencies.repository';
 import { LessonPromptBuilder } from '@/modules/ai/domain/services/lesson-prompt-builder';
 import { ILessonGenerationBatchResponse } from '@/modules/ai/domain/interfaces/lesson-generation-response.interface';
+import { I_LESSON_PLAN_REPOSITORY, ILessonPlanRepository } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class GenerateLessonUseCase {
@@ -17,6 +19,7 @@ export class GenerateLessonUseCase {
   constructor(
     @Inject(I_AI_PROVIDER) private readonly aiProvider: IAiProvider,
     @Inject(I_TEMPLATE_LOADER) private readonly templateLoader: ITemplateLoader,
+    @Inject(I_LESSON_PLAN_REPOSITORY) private readonly lessonPlanRepository: ILessonPlanRepository,
     private readonly studentsRepository: IStudentsRepository,
     private readonly gradesRepository: IGradesRepository,
     private readonly neurodivergenciesRepository: INeurodivergenciesRepository,
@@ -40,7 +43,9 @@ export class GenerateLessonUseCase {
         payload.imagePart,
       )) as ILessonGenerationBatchResponse;
 
-      this.logger.log(`Step 4/4: Generation complete.`);
+      this.logger.log(`Step 4/4: Persisting ${aiResponse.lessons.length} results to database...`);
+      await this.persistResults(payload, aiResponse);
+
       return Result.ok<ILessonGenerationBatchResponse>(aiResponse);
     } catch (error) {
       this.logger.error('Failed to generate lessons flow', error);
@@ -102,5 +107,34 @@ export class GenerateLessonUseCase {
     );
 
     return userTemplate.replace('{{LESSONS_BATCH_STR}}', batchString);
+  }
+
+  private async persistResults(payload: GenerateLessonInput, aiResponse: ILessonGenerationBatchResponse): Promise<void> {
+    const records: any[] = payload.lessons.flatMap((lessonReq, lessonIndex) => {
+      const aiLesson = aiResponse.lessons[lessonIndex];
+      if (!aiLesson) return [];
+
+      return lessonReq.students.map((studentId, studentIndex) => {
+        const adaptation = aiLesson.adaptations[studentIndex];
+        if (!adaptation) return null;
+
+        return {
+          id: randomUUID(),
+          teacherId: payload.teacherId,
+          studentId: studentId,
+          discipline: lessonReq.discipline.name,
+          theme: lessonReq.discipline.theme,
+          lessonResult: aiLesson,
+          adaptationDetails: {
+            strategy: adaptation.strategy,
+            behavioral_tips: adaptation.behavioral_tips,
+          },
+        };
+      });
+    }).filter(Boolean);
+
+    if (records.length > 0) {
+      await this.lessonPlanRepository.saveBatch(records);
+    }
   }
 }

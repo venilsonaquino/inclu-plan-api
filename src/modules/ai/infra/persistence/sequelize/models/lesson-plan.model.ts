@@ -62,7 +62,13 @@ export class LessonPlanModel extends Model<LessonPlanModel> {
     type: DataType.TEXT,
     allowNull: false,
   })
-  declare description: string;
+  declare duration: string;
+
+  @Column({
+    type: DataType.TEXT,
+    allowNull: false,
+  })
+  declare activitySteps: string;
 
   @Column({
     type: DataType.TEXT,
@@ -80,5 +86,29 @@ export class LessonPlanModel extends Model<LessonPlanModel> {
     type: DataType.TEXT,
     allowNull: false,
   })
-  declare adaptation: string;
+  declare udlRepresentation: string;
+
+  @Column({
+    type: DataType.TEXT,
+    allowNull: false,
+  })
+  declare udlActionExpression: string;
+
+  @Column({
+    type: DataType.TEXT,
+    allowNull: false,
+  })
+  declare udlEngagement: string;
+
+  @Column({
+    type: DataType.TEXT,
+    allowNull: false,
+  })
+  declare adaptationStrategy: string;
+
+  @Column({
+    type: DataType.TEXT,
+    allowNull: true,
+  })
+  declare behavioralTips: string;
 }

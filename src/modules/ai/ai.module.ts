@@ -12,6 +12,8 @@ import { FileTemplateLoader } from './infra/providers/file-template-loader.provi
 import { LessonPlanModel } from './infra/persistence/sequelize/models/lesson-plan.model';
 import { I_MATERIAL_CACHE_REPOSITORY } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
 import { InMemoryMaterialCacheRepository } from '@/modules/ai/infra/persistence/in-memory/in-memory-material-cache.repository';
+import { I_LESSON_PLAN_REPOSITORY } from './domain/repositories/lesson-plan.repository.interface';
+import { SequelizeLessonPlanRepository } from './infra/persistence/sequelize/sequelize-lesson-plan.repository';
 
 import { StudentsModule } from '@/modules/students/students.module';
 import { GradesModule } from '@/modules/grades/grades.module';
@@ -41,6 +43,10 @@ import { NeurodivergenciesModule } from '@/modules/neurodivergencies/neurodiverg
     {
       provide: I_MATERIAL_CACHE_REPOSITORY,
       useClass: InMemoryMaterialCacheRepository,
+    },
+    {
+      provide: I_LESSON_PLAN_REPOSITORY,
+      useClass: SequelizeLessonPlanRepository,
     },
   ],
 })
