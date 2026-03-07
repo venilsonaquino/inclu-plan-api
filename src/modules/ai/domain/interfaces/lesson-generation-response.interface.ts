@@ -1,4 +1,4 @@
-export interface RawAiLesson {
+export interface ILessonGenerationResponse {
   objective: string;
   bncc: {
     code: string;
@@ -20,6 +20,6 @@ export interface RawAiLesson {
   }>;
 }
 
-export interface RawAiBatchResponse {
-  lessons: RawAiLesson[];
+export interface ILessonGenerationBatchResponse {
+  lessons: ILessonGenerationResponse[];
 }

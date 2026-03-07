@@ -8,7 +8,7 @@ import { IStudentsRepository } from '@/modules/students/domain/repositories/stud
 import { IGradesRepository } from '@/modules/grades/domain/repositories/grades.repository';
 import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain/repositories/neurodivergencies.repository';
 import { LessonPromptBuilder } from '@/modules/ai/domain/services/lesson-prompt-builder';
-import { RawAiBatchResponse } from './raw-ai-response.interface';
+import { ILessonGenerationBatchResponse } from '@/modules/ai/domain/interfaces/lesson-generation-response.interface';
 
 @Injectable()
 export class GenerateLessonUseCase {
@@ -22,62 +22,85 @@ export class GenerateLessonUseCase {
     private readonly neurodivergenciesRepository: INeurodivergenciesRepository,
   ) { }
 
-  async execute(payload: GenerateLessonInput): Promise<Result<RawAiBatchResponse>> {
+  async execute(payload: GenerateLessonInput): Promise<Result<ILessonGenerationBatchResponse>> {
     try {
-      this.logger.log(`Processing ${payload.lessons.length} lesson(s) for teacher ${payload.teacherId}...`);
-
-      const systemInstruction = await this.templateLoader.load('generate-lesson/prompts/generate-lesson.system.md');
-
-      const allStudentIds = [...new Set(payload.lessons.flatMap(l => l.students))];
-      const students = await this.studentsRepository.findByIds(allStudentIds);
-      const studentMap = new Map(students.map(s => [s.id, s]));
-
-      const gradeIds = [...new Set(students.map(s => s.gradeId))];
-      const neuroIds = [...new Set(students.flatMap(s => s.neurodivergencies))];
-
-      const [grades, neuros] = await Promise.all([
-        this.gradesRepository.findByIds(gradeIds),
-        this.neurodivergenciesRepository.findByIds(neuroIds),
+      this.logger.log(`Step 1/4: Loading templates and pedagogical context...`);
+      const [templates, context] = await Promise.all([
+        this.loadTemplates(),
+        this.getStudentContext(payload),
       ]);
 
-      const gradeMap = new Map(grades.map(g => [g.id, g.name]));
-      const neuroMap = new Map(neuros.map(n => [n.id, n.name]));
+      this.logger.log(`Step 2/4: Building specialized batch prompt...`);
+      const fullUserPrompt = this.prepareBatchPrompt(payload, templates.userBase, context);
 
-      const requestedLessons = payload.lessons.map(lessonReq => {
-        const { name: disciplineName, theme, observations } = lessonReq.discipline;
-        const lessonStudents = lessonReq.students.map(id => studentMap.get(id)).filter(Boolean) as Student[];
-        return {
-          discipline: { name: disciplineName, theme },
-          observations,
-          students: lessonStudents,
-        };
-      });
+      this.logger.log(`Step 3/4: Calling AI Provider for ${payload.lessons.length} lessons...`);
+      const aiResponse = (await this.aiProvider.generateText(
+        templates.system,
+        fullUserPrompt,
+        payload.imagePart,
+      )) as ILessonGenerationBatchResponse;
 
-      const lessonsBatchString = LessonPromptBuilder.buildBatchPrompt(
-        requestedLessons.map(l => ({
-          discipline: l.discipline.name,
-          theme: l.discipline.theme,
-          observations: l.observations,
-          students: l.students,
-        })),
-        gradeMap,
-        neuroMap,
-      );
-
-      let promptText = await this.templateLoader.load('generate-lesson/prompts/generate-lesson.user.md');
-      promptText = promptText.replace('{{LESSONS_BATCH_STR}}', lessonsBatchString);
-
-      console.log(promptText);
-      console.log(systemInstruction);
-
-      const aiResponse = (await this.aiProvider.generateText(systemInstruction, promptText, payload.imagePart)) as RawAiBatchResponse;
-
-      return Result.ok<RawAiBatchResponse>(aiResponse);
+      this.logger.log(`Step 4/4: Generation complete.`);
+      return Result.ok<ILessonGenerationBatchResponse>(aiResponse);
     } catch (error) {
-      this.logger.error('Failed to generate lessons', error);
-      return Result.fail<RawAiBatchResponse>(
-        error instanceof Error ? error.message : 'Unknown error generating lessons',
+      this.logger.error('Failed to generate lessons flow', error);
+      return Result.fail<ILessonGenerationBatchResponse>(
+        error instanceof Error ? error.message : 'Unknown error in generation pipeline',
       );
     }
+  }
+
+  private async loadTemplates() {
+    const [system, userBase] = await Promise.all([
+      this.templateLoader.load('generate-lesson/prompts/generate-lesson.system.md'),
+      this.templateLoader.load('generate-lesson/prompts/generate-lesson.user.md'),
+    ]);
+    return { system, userBase };
+  }
+
+  private async getStudentContext(payload: GenerateLessonInput) {
+    const allStudentIds = [...new Set(payload.lessons.flatMap(l => l.students))];
+    const students = await this.studentsRepository.findByIds(allStudentIds);
+    const studentMap = new Map(students.map(s => [s.id, s]));
+
+    const gradeIds = [...new Set(students.map(s => s.gradeId))];
+    const neuroIds = [...new Set(students.flatMap(s => s.neurodivergencies))];
+
+    const [grades, neuros] = await Promise.all([
+      this.gradesRepository.findByIds(gradeIds),
+      this.neurodivergenciesRepository.findByIds(neuroIds),
+    ]);
+
+    return {
+      studentMap,
+      gradeMap: new Map(grades.map(g => [g.id, g.name])),
+      neuroMap: new Map(neuros.map(n => [n.id, n.name])),
+    };
+  }
+
+  private prepareBatchPrompt(
+    payload: GenerateLessonInput,
+    userTemplate: string,
+    context: { studentMap: Map<string, Student>; gradeMap: Map<string, string>; neuroMap: Map<string, string> },
+  ): string {
+    const requestedLessons = payload.lessons.map(lessonReq => {
+      const { name, theme, observations } = lessonReq.discipline;
+      const lessonStudents = lessonReq.students.map(id => context.studentMap.get(id)).filter(Boolean) as Student[];
+
+      return {
+        discipline: name,
+        theme,
+        observations,
+        students: lessonStudents,
+      };
+    });
+
+    const batchString = LessonPromptBuilder.buildBatchPrompt(
+      requestedLessons,
+      context.gradeMap,
+      context.neuroMap,
+    );
+
+    return userTemplate.replace('{{LESSONS_BATCH_STR}}', batchString);
   }
 }

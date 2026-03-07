@@ -1,10 +1,10 @@
-import { GenerateLessonOutput } from '@/modules/ai/application/use-cases/generate-lesson/generate-lesson.output';
+import { ILessonGenerationResponse } from '@/modules/ai/domain/interfaces/lesson-generation-response.interface';
 
 export interface LessonPlanRecord {
   id: string;
   studentContextHash: string;
   contentEmbedding: number[];
-  lessonResult: GenerateLessonOutput;
+  lessonResult: ILessonGenerationResponse;
 }
 
 export const I_LESSON_PLAN_REPOSITORY = 'ILessonPlanRepository';

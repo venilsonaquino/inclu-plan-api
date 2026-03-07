@@ -27,7 +27,7 @@ Schema:
       "activity_steps": "string (Passo a passo detalhado)",
       "udl_strategies": {
         "representation": "string (Estratégias de representação)",
-        "action_expression": "string (Estratégias de ação e expressão)",
+        "action_and_expression": "string (Estratégias de ação e expressão)",
         "engagement": "string (Estratégias de engajamento)"
       },
       "resources": "string (Materiais necessários)",
