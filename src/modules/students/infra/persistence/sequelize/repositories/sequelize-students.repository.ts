@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { IStudentsRepository } from '@/modules/students/domain/repositories/students.repository';
 import { Student } from '@/modules/students/domain/entities/student.entity';
 import { Sequelize } from 'sequelize-typescript';
+import { Op } from 'sequelize';
 import { StudentModel } from '@/modules/students/infra/persistence/sequelize/models/student.model';
 import { NeurodivergencyModel } from '@/modules/neurodivergencies/infra/persistence/sequelize/models/neurodivergency.model';
 import { StudentNeurodivergencyModel } from '@/modules/student-neurodivergencies/infra/persistence/sequelize/models/student-neurodivergency.model';
@@ -17,7 +18,7 @@ export class SequelizeStudentsRepository implements IStudentsRepository {
     @InjectModel(StudentNeurodivergencyModel)
     private readonly pivotModel: typeof StudentNeurodivergencyModel,
     private readonly sequelize: Sequelize,
-  ) {}
+  ) { }
 
   async create(student: Student): Promise<void> {
     const transaction = await this.sequelize.transaction();
@@ -60,6 +61,14 @@ export class SequelizeStudentsRepository implements IStudentsRepository {
     });
     if (!model) return null;
     return model.toDomain();
+  }
+
+  async findByIds(ids: string[]): Promise<Student[]> {
+    const models = await this.studentModel.findAll({
+      where: { id: { [Op.in]: ids } },
+      include: [NeurodivergencyModel],
+    });
+    return models.map(model => model.toDomain());
   }
 
   async findByClassId(schoolClassId: string): Promise<Student[]> {

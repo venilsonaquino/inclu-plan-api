@@ -13,9 +13,8 @@ export class FileTemplateLoader implements ITemplateLoader {
 
   async load(templatePath: string): Promise<string> {
     try {
-      // In a real scenario we'd centralize all prompts in a 'src/modules/ai/infra/templates' folder
-      // But for backward compatibility we will accept absolute paths or relative paths.
-      const fullPath = join(process.cwd(), 'src/modules/ai/application/use-cases', templatePath);
+      // Resolve path relative to this file to work in both 'src' and 'dist'
+      const fullPath = join(__dirname, '..', '..', 'application', 'use-cases', templatePath);
       return readFileSync(fullPath, 'utf8');
     } catch (error) {
       this.logger.error(`Could not load template file: ${templatePath}`, error);

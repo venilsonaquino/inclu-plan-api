@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsString, IsArray, ValidateNested, IsOptional, ArrayMinSize } from 'class-validator';
+import { IsNotEmpty, IsString, IsArray, ArrayMinSize, IsUUID, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class DisciplineInput {
+export class DisciplineRequest {
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -10,46 +10,33 @@ export class DisciplineInput {
   @IsNotEmpty()
   theme: string;
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   observations?: string;
 }
 
-export class DayInput {
-  @IsString()
-  @IsNotEmpty()
-  day: string;
+export class LessonRequest {
+  @ValidateNested()
+  @Type(() => DisciplineRequest)
+  discipline: DisciplineRequest;
 
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => DisciplineInput)
-  disciplines: DisciplineInput[];
-}
-
-export class StudentDto {
-  @IsString()
-  name: string;
-
-  @IsString()
-  @IsOptional()
-  grade?: string;
-
-  @IsArray()
-  @IsString({ each: true })
-  neurodivergencies: string[];
+  @IsUUID('4', { each: true })
+  @ArrayMinSize(1)
+  students: string[]; // IDs dos alunos
 }
 
 export class GenerateLessonInput {
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => DayInput)
-  days: DayInput[];
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => StudentDto)
+  @Type(() => LessonRequest)
   @ArrayMinSize(1)
-  students: StudentDto[];
+  lessons: LessonRequest[];
+
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID('4')
+  teacherId: string;
 
   @IsString()
   @IsOptional()
