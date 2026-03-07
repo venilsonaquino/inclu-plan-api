@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
 import { SequelizeGradesRepository } from './sequelize-grades.repository';
 import { GradeModel } from '../models/grade.model';
 import { Grade } from '@/modules/grades/domain/entities/grade.entity';
@@ -84,6 +85,24 @@ describe('SequelizeGradesRepository', () => {
       const result = await repository.findAll();
 
       expect(gradeModelMock.findAll).toHaveBeenCalled();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({ id: '1', name: '1º Ano' });
+    });
+  });
+
+  describe('findByIds', () => {
+    it('should return multiple grades by ids', async () => {
+      const mockModel = {
+        toDomain: jest.fn().mockReturnValue({ id: '1', name: '1º Ano' }),
+      };
+      gradeModelMock.findAll.mockResolvedValue([mockModel]);
+
+      const ids = ['1', '2'];
+      const result = await repository.findByIds(ids);
+
+      expect(gradeModelMock.findAll).toHaveBeenCalledWith({
+        where: { id: { [Op.in]: ids } },
+      });
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({ id: '1', name: '1º Ano' });
     });

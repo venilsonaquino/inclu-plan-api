@@ -10,7 +10,7 @@ import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain
 import { LessonPromptBuilder } from '@/modules/ai/domain/services/lesson-prompt-builder';
 import { ILessonGenerationBatchResponse } from '@/modules/ai/domain/interfaces/lesson-generation-response.interface';
 import { I_LESSON_PLAN_REPOSITORY, ILessonPlanRepository } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 @Injectable()
 export class GenerateLessonUseCase {
@@ -90,7 +90,7 @@ export class GenerateLessonUseCase {
   ): string {
     const requestedLessons = payload.lessons.map(lessonReq => {
       const { name, theme, observations } = lessonReq.discipline;
-      const lessonStudents = lessonReq.students.map(id => context.studentMap.get(id)).filter(Boolean) as Student[];
+      const lessonStudents = lessonReq.students.map(id => context.studentMap.get(id)).filter(Boolean);
 
       return {
         discipline: name,

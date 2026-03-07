@@ -40,6 +40,9 @@ export class SequelizeLessonPlanRepository implements ILessonPlanRepository {
     return null;
   }
 
-  clear(): void { }
+  clear(): void {
+    return null;
+  }
+
   count(): number { return 0; }
 }

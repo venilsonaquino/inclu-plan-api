@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
 import { SequelizeNeurodivergenciesRepository } from './sequelize-neurodivergencies.repository';
 import { NeurodivergencyModel } from '../models/neurodivergency.model';
 import { Neurodivergency } from '@/modules/neurodivergencies/domain/entities/neurodivergency.entity';
@@ -83,6 +84,24 @@ describe('SequelizeNeurodivergenciesRepository', () => {
       const result = await repository.findAll();
 
       expect(neurodivergencyModelMock.findAll).toHaveBeenCalled();
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({ id: '1', name: 'Autismo' });
+    });
+  });
+
+  describe('findByIds', () => {
+    it('should return multiple neurodivergencies by ids', async () => {
+      const mockModel = {
+        toDomain: jest.fn().mockReturnValue({ id: '1', name: 'Autismo' }),
+      };
+      neurodivergencyModelMock.findAll.mockResolvedValue([mockModel]);
+
+      const ids = ['1', '2'];
+      const result = await repository.findByIds(ids);
+
+      expect(neurodivergencyModelMock.findAll).toHaveBeenCalledWith({
+        where: { id: { [Op.in]: ids } },
+      });
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({ id: '1', name: 'Autismo' });
     });

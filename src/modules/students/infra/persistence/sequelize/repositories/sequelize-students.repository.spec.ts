@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize-typescript';
+import { Op } from 'sequelize';
 import { SequelizeStudentsRepository } from './sequelize-students.repository';
 import { StudentModel } from '../models/student.model';
 import { NeurodivergencyModel } from '@/modules/neurodivergencies/infra/persistence/sequelize/models/neurodivergency.model';
@@ -158,6 +159,25 @@ describe('SequelizeStudentsRepository', () => {
 
       expect(studentModelMock.findAll).toHaveBeenCalledWith({
         where: { schoolClassId: 'c1' },
+        include: [NeurodivergencyModel],
+      });
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({ id: '1', name: 'John' });
+    });
+  });
+
+  describe('findByIds', () => {
+    it('should return multiple students by ids', async () => {
+      const mockModel = {
+        toDomain: jest.fn().mockReturnValue({ id: '1', name: 'John' }),
+      };
+      studentModelMock.findAll.mockResolvedValue([mockModel]);
+
+      const ids = ['1', '2'];
+      const result = await repository.findByIds(ids);
+
+      expect(studentModelMock.findAll).toHaveBeenCalledWith({
+        where: { id: { [Op.in]: ids } },
         include: [NeurodivergencyModel],
       });
       expect(result).toHaveLength(1);
