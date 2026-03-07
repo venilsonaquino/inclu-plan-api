@@ -10,6 +10,7 @@ describe('CreateGradeUseCase', () => {
     repository = {
       create: jest.fn(),
       findById: jest.fn(),
+      findByIds: jest.fn(),
       findAll: jest.fn(),
     };
     useCase = new CreateGradeUseCase(repository);

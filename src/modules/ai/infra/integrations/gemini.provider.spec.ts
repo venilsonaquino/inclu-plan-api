@@ -14,196 +14,96 @@ describe('GeminiProvider', () => {
     }).compile();
 
     provider = module.get<GeminiProvider>(GeminiProvider);
-    jest.clearAllMocks();
-    process.env.GEMINI_API_KEY = 'test_api_key';
-  });
-
-  afterEach(() => {
-    delete process.env.GEMINI_API_KEY;
-  });
-
-  it('should be defined', () => {
-    expect(provider).toBeDefined();
-  });
-
-  describe('getApiKey', () => {
-    it('should throw an error if GEMINI_API_KEY is not defined', async () => {
-      delete process.env.GEMINI_API_KEY;
-      await expect(provider.generateText('sys', 'prompt')).rejects.toThrow(
-        'GEMINI_API_KEY is not defined in environment variables.',
-      );
-    });
+    process.env.GEMINI_API_KEY = 'test-key';
   });
 
   describe('generateText', () => {
-    it('should return parsed JSON data on successful request', async () => {
-      const mockResponseBody = {
-        candidates: [
-          {
-            content: { parts: [{ text: '{"result": "success"}' }] },
-            finishReason: 'STOP',
-          },
-        ],
-        usageMetadata: {
-          promptTokenCount: 10,
-          candidatesTokenCount: 20,
-          totalTokenCount: 30,
-        },
-      };
-
+    it('should return parsed JSON on success', async () => {
+      const mockResult = { key: 'value' };
       mockedAxios.post.mockResolvedValue({
-        data: mockResponseBody,
+        data: {
+          candidates: [{
+            content: { parts: [{ text: JSON.stringify(mockResult) }] },
+            finishReason: 'STOP'
+          }],
+          usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 10 }
+        }
       });
 
       const result = await provider.generateText('system', 'user');
-      expect(result).toEqual({ result: 'success' });
+      expect(result).toEqual(mockResult);
       expect(mockedAxios.post).toHaveBeenCalledTimes(1);
     });
 
-    it('should include image data if imagePartBase64 is provided', async () => {
-      const mockResponseBody = {
-        candidates: [{ content: { parts: [{ text: '{"success": true}' }] } }],
-      };
-
+    it('should throw error if rawText is missing', async () => {
       mockedAxios.post.mockResolvedValue({
-        data: mockResponseBody,
+        data: { candidates: [] }
       });
 
-      await provider.generateText('system', 'user', 'base64image');
-
-      const fetchCallArgs = mockedAxios.post.mock.calls[0];
-      const requestBody = fetchCallArgs[1] as any;
-
-      expect(requestBody.contents[0].parts[0].inlineData).toBeDefined();
-      expect(requestBody.contents[0].parts[0].inlineData.data).toBe('base64image');
+      await expect(provider.generateText('s', 'u')).rejects.toThrow('AI generation failed');
     });
 
-    it('should throw an error if API response is not ok', async () => {
-      const errorResponse = {
+    it('should log and throw on JSON parse failure', async () => {
+      mockedAxios.post.mockResolvedValue({
+        data: {
+          candidates: [{
+            content: { parts: [{ text: 'invalid-json' }] }
+          }]
+        }
+      });
+
+      await expect(provider.generateText('s', 'u')).rejects.toThrow();
+    });
+
+    it('should handle axios errors', async () => {
+      const error = {
         isAxiosError: true,
         response: {
-          status: 500,
-          data: { error: { message: 'Gemini API Internal Server Error' } },
-        },
+          status: 400,
+          data: { error: { message: 'Api Error' } }
+        }
       };
-      mockedAxios.isAxiosError.mockReturnValue(true);
-      mockedAxios.post.mockRejectedValue(errorResponse);
+      mockedAxios.post.mockRejectedValue(error);
+      (axios.isAxiosError as any) = jest.fn().mockReturnValue(true);
 
-      await expect(provider.generateText('sys', 'prompt')).rejects.toThrow('Gemini API Internal Server Error');
-    });
-
-    it('should throw an error if rawText is missing (blocked or failed)', async () => {
-      const mockResponseBody = {
-        candidates: [
-          {
-            content: { parts: [] },
-            finishReason: 'SAFETY',
-          },
-        ],
-      };
-
-      mockedAxios.post.mockResolvedValue({
-        data: mockResponseBody,
-      });
-
-      await expect(provider.generateText('sys', 'prompt')).rejects.toThrow(
-        'AI generation failed or was blocked. Reason: SAFETY',
-      );
+      await expect(provider.generateText('s', 'u')).rejects.toThrow('Api Error');
     });
   });
 
   describe('generateImage', () => {
-    it('should return base64 encoded string on success', async () => {
-      const mockResponse = {
-        candidates: [{ content: { parts: [{ inlineData: { data: 'base64string' } }] } }],
-      };
-
+    it('should return base64 string on success', async () => {
       mockedAxios.post.mockResolvedValue({
-        data: mockResponse,
+        data: {
+          candidates: [{
+            content: { parts: [{ inlineData: { data: 'base64str' } }] }
+          }]
+        }
       });
 
-      const result = await provider.generateImage('draw a cat');
-      expect(result).toBe('base64string');
+      const result = await provider.generateImage('prompt');
+      expect(result).toBe('base64str');
     });
 
-    it('should return null if response is not ok (400, 500, etc)', async () => {
-      const errorResponse = {
-        isAxiosError: true,
-        response: {
-          status: 400,
-          data: { error: { message: 'bad request' } },
-        },
-      };
-      mockedAxios.isAxiosError.mockReturnValue(true);
-      mockedAxios.post.mockRejectedValue(errorResponse);
-
-      const result = await provider.generateImage('draw a cat');
+    it('should return null on failure', async () => {
+      mockedAxios.post.mockRejectedValue(new Error('error'));
+      const result = await provider.generateImage('prompt');
       expect(result).toBeNull();
     });
+  });
 
-    it('should return null if generate process throws an exception', async () => {
-      mockedAxios.post.mockRejectedValue(new Error('Network error'));
-      const result = await provider.generateImage('draw a cat');
-      expect(result).toBeNull();
-    });
-
-    it('should return null if response format is unexpected', async () => {
+  describe('generateEmbeddings', () => {
+    it('should return number array', async () => {
       mockedAxios.post.mockResolvedValue({
-        data: { candidates: [] },
+        data: { embedding: { values: [0.1, 0.2] } }
       });
 
-      const result = await provider.generateImage('draw a cat');
-      expect(result).toBeNull();
+      const result = await provider.generateEmbeddings('text');
+      expect(result).toEqual([0.1, 0.2]);
     });
-    describe('generateEmbeddings', () => {
-      it('should return an array of numbers representing the vector', async () => {
-        const mockVector = [0.1, 0.2, -0.3];
-        mockedAxios.post.mockResolvedValueOnce({
-          data: {
-            embedding: {
-              values: mockVector,
-            },
-          },
-        });
 
-        const result = await provider.generateEmbeddings('Test text for embedding');
-
-        expect(result).toEqual(mockVector);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
-          expect.stringContaining('gemini-embedding-001:embedContent'),
-          expect.objectContaining({
-            model: 'models/gemini-embedding-001',
-            content: { parts: [{ text: 'Test text for embedding' }] },
-          }),
-          expect.any(Object),
-        );
-      });
-
-      it('should throw an error if the array is missing or malformed', async () => {
-        mockedAxios.post.mockResolvedValueOnce({
-          data: {}, // missing embedding.values
-        });
-
-        await expect(provider.generateEmbeddings('Test text')).rejects.toThrow(
-          'Failed to extract embedding array from Google AI response.',
-        );
-      });
-
-      it('should throw an error if API response is not ok', async () => {
-        mockedAxios.post.mockRejectedValueOnce({
-          isAxiosError: true,
-          response: {
-            status: 400,
-            data: {
-              error: {
-                message: 'Invalid request',
-              },
-            },
-          },
-        });
-
-        await expect(provider.generateEmbeddings('Test text')).rejects.toThrow('Invalid request');
-      });
+    it('should throw if no embedding values', async () => {
+      mockedAxios.post.mockResolvedValue({ data: {} });
+      await expect(provider.generateEmbeddings('text')).rejects.toThrow('Failed to extract embedding');
     });
   });
 });

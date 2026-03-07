@@ -10,6 +10,7 @@ describe('CreateStudentUseCase', () => {
     studentsRepository = {
       create: jest.fn(),
       findById: jest.fn(),
+      findByIds: jest.fn(),
       findByClassId: jest.fn(),
     };
     useCase = new CreateStudentUseCase(studentsRepository);
