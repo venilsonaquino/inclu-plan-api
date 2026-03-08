@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateLessonUseCase } from './generate-lesson.use-case';
-import { I_AI_PROVIDER } from '@/modules/ai/domain/providers/ai-provider.interface';
-import { I_TEMPLATE_LOADER } from '@/modules/ai/domain/providers/template-loader.interface';
-import { I_LESSON_PLAN_REPOSITORY } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
+import { IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
+import { ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
+import { ILessonPlanRepository } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
 import { IStudentsRepository } from '@/modules/students/domain/repositories/students.repository';
 import { IGradesRepository } from '@/modules/grades/domain/repositories/grades.repository';
 import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain/repositories/neurodivergencies.repository';
@@ -45,9 +45,9 @@ describe('GenerateLessonUseCase', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GenerateLessonUseCase,
-        { provide: I_AI_PROVIDER, useValue: aiProvider },
-        { provide: I_TEMPLATE_LOADER, useValue: templateLoader },
-        { provide: I_LESSON_PLAN_REPOSITORY, useValue: lessonPlanRepository },
+        { provide: IAiProvider, useValue: aiProvider },
+        { provide: ITemplateLoader, useValue: templateLoader },
+        { provide: ILessonPlanRepository, useValue: lessonPlanRepository },
         { provide: IStudentsRepository, useValue: studentsRepository },
         { provide: IGradesRepository, useValue: gradesRepository },
         { provide: INeurodivergenciesRepository, useValue: neurosRepository },

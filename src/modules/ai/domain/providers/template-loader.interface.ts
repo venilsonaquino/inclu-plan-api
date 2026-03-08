@@ -1,8 +1,6 @@
-export const I_TEMPLATE_LOADER = 'ITemplateLoader';
-
-export interface ITemplateLoader {
+export abstract class ITemplateLoader {
   /**
    * Loads a template by its name/path identifier
    */
-  load(templateName: string): Promise<string>;
+  abstract load(templateName: string): Promise<string>;
 }

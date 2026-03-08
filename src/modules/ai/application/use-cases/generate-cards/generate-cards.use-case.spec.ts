@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateCardsUseCase } from './generate-cards.use-case';
 import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
-import { I_MATERIAL_CACHE_REPOSITORY } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
-import { I_AI_PROVIDER } from '@/modules/ai/domain/providers/ai-provider.interface';
-import { I_TEMPLATE_LOADER } from '@/modules/ai/domain/providers/template-loader.interface';
+import { IMaterialCacheRepository } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
+import { IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
+import { ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
 
 jest.mock('@/modules/ai/infra/integrations/gemini.provider');
 
@@ -39,22 +39,22 @@ describe('GenerateCardsUseCase', () => {
       providers: [
         GenerateCardsUseCase,
         {
-          provide: I_AI_PROVIDER,
+          provide: IAiProvider,
           useClass: GeminiProvider,
         },
         {
-          provide: I_TEMPLATE_LOADER,
+          provide: ITemplateLoader,
           useValue: templateLoader,
         },
         {
-          provide: I_MATERIAL_CACHE_REPOSITORY,
+          provide: IMaterialCacheRepository,
           useValue: materialCacheRepository,
         },
       ],
     }).compile();
 
     useCase = module.get<GenerateCardsUseCase>(GenerateCardsUseCase);
-    geminiProvider = module.get(I_AI_PROVIDER) as jest.Mocked<GeminiProvider>;
+    geminiProvider = module.get(IAiProvider) as jest.Mocked<GeminiProvider>;
 
     jest.clearAllMocks();
   });

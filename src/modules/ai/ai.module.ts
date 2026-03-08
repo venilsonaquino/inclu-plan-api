@@ -5,14 +5,14 @@ import { GenerateLessonUseCase } from './application/use-cases/generate-lesson/g
 import { GenerateCardsUseCase } from './application/use-cases/generate-cards/generate-cards.use-case';
 import { GenerateBoardUseCase } from './application/use-cases/generate-board/generate-board.use-case';
 import { GenerateHomeworkUseCase } from './application/use-cases/generate-homework/generate-homework.use-case';
+import { IAiProvider } from './domain/providers/ai-provider.interface';
+import { ITemplateLoader } from './domain/providers/template-loader.interface';
 import { GeminiProvider } from './infra/integrations/gemini.provider';
-import { I_AI_PROVIDER } from './domain/providers/ai-provider.interface';
-import { I_TEMPLATE_LOADER } from './domain/providers/template-loader.interface';
 import { FileTemplateLoader } from './infra/providers/file-template-loader.provider';
 import { LessonPlanModel } from './infra/persistence/sequelize/models/lesson-plan.model';
-import { I_MATERIAL_CACHE_REPOSITORY } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
+import { IMaterialCacheRepository } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
 import { InMemoryMaterialCacheRepository } from '@/modules/ai/infra/persistence/in-memory/in-memory-material-cache.repository';
-import { I_LESSON_PLAN_REPOSITORY } from './domain/repositories/lesson-plan.repository.interface';
+import { ILessonPlanRepository } from './domain/repositories/lesson-plan.repository.interface';
 import { SequelizeLessonPlanRepository } from './infra/persistence/sequelize/sequelize-lesson-plan.repository';
 
 import { StudentsModule } from '@/modules/students/students.module';
@@ -33,19 +33,19 @@ import { NeurodivergenciesModule } from '@/modules/neurodivergencies/neurodiverg
     GenerateBoardUseCase,
     GenerateHomeworkUseCase,
     {
-      provide: I_AI_PROVIDER,
+      provide: IAiProvider,
       useClass: GeminiProvider,
     },
     {
-      provide: I_TEMPLATE_LOADER,
+      provide: ITemplateLoader,
       useClass: FileTemplateLoader,
     },
     {
-      provide: I_MATERIAL_CACHE_REPOSITORY,
+      provide: IMaterialCacheRepository,
       useClass: InMemoryMaterialCacheRepository,
     },
     {
-      provide: I_LESSON_PLAN_REPOSITORY,
+      provide: ILessonPlanRepository,
       useClass: SequelizeLessonPlanRepository,
     },
   ],

@@ -13,14 +13,12 @@ export interface LessonPlanRecord {
   };
 }
 
-export const I_LESSON_PLAN_REPOSITORY = 'ILessonPlanRepository';
-
-export interface ILessonPlanRepository {
-  findSimilar(studentHash: string, contentVector: number[], threshold: number): Promise<LessonPlanRecord | null>;
-  save(record: LessonPlanRecord): Promise<void>;
-  saveBatch(records: LessonPlanRecord[]): Promise<void>;
+export abstract class ILessonPlanRepository {
+  abstract findSimilar(studentHash: string, contentVector: number[], threshold: number): Promise<LessonPlanRecord | null>;
+  abstract save(record: LessonPlanRecord): Promise<void>;
+  abstract saveBatch(records: LessonPlanRecord[]): Promise<void>;
 
   // For testing purposes
-  clear(): void;
-  count(): number;
+  abstract clear(): void;
+  abstract count(): number;
 }
