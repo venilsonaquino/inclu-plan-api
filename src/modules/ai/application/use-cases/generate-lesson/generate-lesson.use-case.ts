@@ -9,7 +9,8 @@ import { IGradesRepository } from '@/modules/grades/domain/repositories/grades.r
 import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain/repositories/neurodivergencies.repository';
 import { LessonPromptBuilder } from '@/modules/ai/domain/services/lesson-prompt-builder';
 import { ILessonGenerationBatchResponse } from '@/modules/ai/domain/interfaces/lesson-generation-response.interface';
-import { ILessonPlanRepository } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
+import { ILessonPlanRepository } from '@/modules/lessons/domain/repositories/lesson-plan.repository.interface';
+import { LessonPlan, StudentAdaptation } from '@/modules/lessons/domain/entities/lesson-plan.entity';
 import { randomUUID } from 'node:crypto';
 import { UseCase } from '@/shared/domain/interfaces/use-case';
 
@@ -44,13 +45,13 @@ export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILess
         payload.imagePart,
       )) as ILessonGenerationBatchResponse;
 
-      // if (!aiResponse || !Array.isArray(aiResponse.disciplines)) {
-      //   this.logger.error(`Invalid AI response structure. Received: ${JSON.stringify(aiResponse)}`);
-      //   throw new Error(`AI returned an unexpected format. Expected { disciplines: [...] }.`);
-      // }
+      if (!aiResponse || !Array.isArray(aiResponse.disciplines)) {
+        this.logger.error(`Invalid AI response structure. Received: ${JSON.stringify(aiResponse)}`);
+        throw new Error(`AI returned an unexpected format. Expected { disciplines: [...] }.`);
+      }
 
-      // this.logger.log(`Step 4/4: Persisting results for ${aiResponse.disciplines.length} disciplines to database...`);
-      // await this.persistResults(payload, aiResponse);
+      this.logger.log(`Step 4/4: Persisting results for ${aiResponse.disciplines.length} disciplines to database...`);
+      await this.persistResults(payload, aiResponse);
 
       return Result.ok<ILessonGenerationBatchResponse>(aiResponse);
     } catch (error) {
@@ -116,49 +117,95 @@ export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILess
   }
 
   private async persistResults(payload: GenerateLessonInput, aiResponse: ILessonGenerationBatchResponse): Promise<void> {
-    const records: any[] = payload.lessons.flatMap((lessonReq, discIndex) => {
-      // Procuramos a disciplina correspondente no aiResponse pelo nome ou índice
+    const lessonPlans: LessonPlan[] = [];
+    const context = await this.getStudentContext(payload);
+
+    payload.lessons.forEach((lessonReq, discIndex) => {
       const aiDiscipline = aiResponse.disciplines.find(d => d.name === lessonReq.discipline.name) || aiResponse.disciplines[discIndex];
 
       if (!aiDiscipline) {
         this.logger.warn(`No AI discipline found for ${lessonReq.discipline.name}. Skipping.`);
-        return [];
+        return;
       }
 
-      return aiDiscipline.lessons.flatMap((aiLesson, lessonIndex) => {
-        const adaptations = Array.isArray(aiLesson.adaptations) ? aiLesson.adaptations : [];
+      const disciplinePlans = aiDiscipline.lessons.map(aiLesson =>
+        this.mapAiLessonToAggregate(payload.teacherId, lessonReq, aiDiscipline, aiLesson, context.studentMap)
+      );
 
-        return lessonReq.students.map((studentId) => {
-          // Procuramos a adaptação específica para este aluno nesta lição
-          const adaptation = adaptations.find(a => a.student_name.includes(studentId)) || adaptations[0];
+      lessonPlans.push(...disciplinePlans);
+    });
 
-          if (!adaptation) {
-            this.logger.warn(`No adaptation found for studentId=${studentId} in lesson ${lessonIndex} of ${aiDiscipline.name}.`);
-            return null;
-          }
-
-          return {
-            id: randomUUID(),
-            teacherId: payload.teacherId,
-            studentId: studentId,
-            discipline: aiDiscipline.name,
-            theme: lessonReq.discipline.theme,
-            lessonResult: aiLesson,
-            adaptationDetails: {
-              strategy: adaptation.strategy,
-              behavioral_tips: adaptation.behavioral_tips,
-              support_level: adaptation.support_level,
-              success_indicators: adaptation.success_indicators,
-            },
-          };
-        });
-      });
-    }).filter(Boolean);
-
-    if (records.length > 0) {
-      await this.lessonPlanRepository.saveBatch(records);
+    if (lessonPlans.length > 0) {
+      await this.lessonPlanRepository.saveBatch(lessonPlans);
     } else {
-      this.logger.warn('No valid records to persist after processing AI response.');
+      this.logger.warn('No valid lesson plans to persist after processing AI response.');
     }
+  }
+
+  private mapAiLessonToAggregate(
+    teacherId: string,
+    lessonReq: any,
+    aiDiscipline: any,
+    aiLesson: any,
+    studentMap: Map<string, Student>
+  ): LessonPlan {
+    const planId = randomUUID();
+    const adaptations = this.buildStudentAdaptations(aiLesson.adaptations, lessonReq.students, studentMap);
+
+    return LessonPlan.create({
+      teacherId,
+      discipline: aiDiscipline.name,
+      theme: lessonReq.discipline.theme,
+      lessonTitle: aiDiscipline.lesson_title,
+      estimatedPrepTime: aiDiscipline.estimated_prep_time,
+      lessonNumber: aiLesson.lesson_number,
+      objective: aiLesson.objective,
+      learningObjects: aiLesson.learning_objects,
+      bnccCode: aiLesson.bncc?.code,
+      bnccDescription: aiLesson.bncc?.description,
+      duration: aiLesson.duration,
+      activitySteps: aiLesson.activity_steps,
+      udlRepresentation: aiLesson.udl_strategies?.representation,
+      udlActionExpression: aiLesson.udl_strategies?.action_and_expression,
+      udlEngagement: aiLesson.udl_strategies?.engagement,
+      resources: aiLesson.resources,
+      evaluation: aiLesson.evaluation,
+      adaptations
+    }, planId);
+  }
+
+  private buildStudentAdaptations(
+    aiAdaptations: any[],
+    requestedStudentIds: string[],
+    studentMap: Map<string, Student>
+  ): StudentAdaptation[] {
+    const lessonAdaptations = Array.isArray(aiAdaptations) ? aiAdaptations : [];
+    const result: StudentAdaptation[] = [];
+
+    requestedStudentIds.forEach(studentId => {
+      const student = studentMap.get(studentId);
+      if (!student) return;
+
+      const adaptation = lessonAdaptations.find(a =>
+        a.student_name && a.student_name.toLowerCase().trim() === student.name.toLowerCase().trim()
+      );
+
+      if (adaptation) {
+        result.push(StudentAdaptation.create({
+          studentId: studentId,
+          studentName: student.name,
+          studentGrade: adaptation.student_grade,
+          studentNeurodivergencies: adaptation.student_neurodivergencies,
+          strategy: adaptation.strategy,
+          behavioralTips: adaptation.behavioral_tips,
+          supportLevel: adaptation.support_level,
+          successIndicators: adaptation.success_indicators,
+        }, randomUUID()));
+      } else {
+        this.logger.warn(`No specific adaptation found for student ${student.name} (ID: ${studentId}). Skipping individual adaptation.`);
+      }
+    });
+
+    return result;
   }
 }

@@ -2,7 +2,7 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Drop existing table to ensure clean slate with rich columns
+    // Drop table if exists to ensure clean state
     await queryInterface.dropTable('lesson_plans').catch(() => { });
 
     await queryInterface.createTable('lesson_plans', {
@@ -19,13 +19,6 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      student_id: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: { model: 'students', key: 'id' },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-      },
       discipline: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -34,51 +27,59 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      lesson_title: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      estimated_prep_time: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      lesson_number: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
       objective: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: true,
+      },
+      learning_objects: {
+        type: Sequelize.TEXT,
+        allowNull: true,
       },
       bncc_code: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       bncc_description: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
       duration: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       activity_steps: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      resources: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      evaluation: {
-        type: Sequelize.TEXT,
-        allowNull: false,
+        type: Sequelize.JSONB,
+        allowNull: true,
       },
       udl_representation: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
       udl_action_expression: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
       udl_engagement: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
-      adaptation_strategy: {
+      resources: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
-      behavioral_tips: {
+      evaluation: {
         type: Sequelize.TEXT,
         allowNull: true,
       },

@@ -1,13 +1,17 @@
-import { IMaterialCacheRepository, MaterialCacheEntry } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
+import { Injectable } from '@nestjs/common';
+import { IMaterialCacheRepository, MaterialCacheEntry } from '../../../domain/repositories/material-cache.repository.interface';
 
+@Injectable()
 export class InMemoryMaterialCacheRepository implements IMaterialCacheRepository {
-  private cache: MaterialCacheEntry[] = [];
+  private entries: MaterialCacheEntry[] = [];
 
   async save(entry: MaterialCacheEntry): Promise<void> {
-    this.cache.push({
-      ...entry,
-      createdAt: new Date(),
-    });
+    const index = this.entries.findIndex((e) => e.id === entry.id);
+    if (index !== -1) {
+      this.entries[index] = entry;
+    } else {
+      this.entries.push(entry);
+    }
   }
 
   async findSimilar(
@@ -15,39 +19,11 @@ export class InMemoryMaterialCacheRepository implements IMaterialCacheRepository
     embedding: number[],
     threshold: number,
   ): Promise<MaterialCacheEntry | null> {
-    // Filtra pelo mesmo hash de contexto primeiro (mais rápido)
-    const candidates = this.cache.filter((item) => item.contextHash === contextHash);
-
-    for (const item of candidates) {
-      const similarity = this.cosineSimilarity(embedding, item.payloadEmbedding);
-      if (similarity >= threshold) {
-        return item;
-      }
-    }
-
-    return null;
+    // Busca simples por contexto, já que é in-memory mockado
+    return this.entries.find((e) => e.contextHash === contextHash) || null;
   }
 
   async clear(): Promise<void> {
-    this.cache = [];
-  }
-
-  private cosineSimilarity(vecA: number[], vecB: number[]): number {
-    if (vecA.length !== vecB.length) return 0;
-
-    let dotProduct = 0;
-    let normA = 0;
-    let normB = 0;
-
-    for (let i = 0; i < vecA.length; i++) {
-      dotProduct += vecA[i] * vecB[i];
-      normA += vecA[i] * vecA[i];
-      normB += vecB[i] * vecB[i];
-    }
-
-    const magnitude = Math.sqrt(normA) * Math.sqrt(normB);
-    if (magnitude === 0) return 0;
-
-    return dotProduct / magnitude;
+    this.entries = [];
   }
 }

@@ -8,6 +8,7 @@ import { SchoolClassesModule } from './modules/school-classes/school-classes.mod
 import { GradesModule } from './modules/grades/grades.module';
 import { NeurodivergenciesModule } from './modules/neurodivergencies/neurodivergencies.module';
 import { StudentNeurodivergenciesModule } from './modules/student-neurodivergencies/student-neurodivergencies.module';
+import { LessonsModule } from './modules/lessons/lessons.module';
 
 @Module({
   imports: [
@@ -34,8 +35,9 @@ import { StudentNeurodivergenciesModule } from './modules/student-neurodivergenc
     GradesModule,
     NeurodivergenciesModule,
     StudentNeurodivergenciesModule,
+    LessonsModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

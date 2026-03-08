@@ -9,22 +9,20 @@ import { IAiProvider } from './domain/providers/ai-provider.interface';
 import { ITemplateLoader } from './domain/providers/template-loader.interface';
 import { GeminiProvider } from './infra/integrations/gemini.provider';
 import { FileTemplateLoader } from './infra/providers/file-template-loader.provider';
-import { LessonPlanModel } from './infra/persistence/sequelize/models/lesson-plan.model';
-import { IMaterialCacheRepository } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
-import { InMemoryMaterialCacheRepository } from '@/modules/ai/infra/persistence/in-memory/in-memory-material-cache.repository';
-import { ILessonPlanRepository } from './domain/repositories/lesson-plan.repository.interface';
-import { SequelizeLessonPlanRepository } from './infra/persistence/sequelize/sequelize-lesson-plan.repository';
+import { IMaterialCacheRepository } from './domain/repositories/material-cache.repository.interface';
+import { InMemoryMaterialCacheRepository } from './infra/persistence/in-memory/in-memory-material-cache.repository';
 
 import { StudentsModule } from '@/modules/students/students.module';
 import { GradesModule } from '@/modules/grades/grades.module';
 import { NeurodivergenciesModule } from '@/modules/neurodivergencies/neurodivergencies.module';
+import { LessonsModule } from '../lessons/lessons.module';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([LessonPlanModel]),
     StudentsModule,
     GradesModule,
     NeurodivergenciesModule,
+    LessonsModule,
   ],
   controllers: [AiController],
   providers: [
@@ -43,10 +41,6 @@ import { NeurodivergenciesModule } from '@/modules/neurodivergencies/neurodiverg
     {
       provide: IMaterialCacheRepository,
       useClass: InMemoryMaterialCacheRepository,
-    },
-    {
-      provide: ILessonPlanRepository,
-      useClass: SequelizeLessonPlanRepository,
     },
   ],
 })
