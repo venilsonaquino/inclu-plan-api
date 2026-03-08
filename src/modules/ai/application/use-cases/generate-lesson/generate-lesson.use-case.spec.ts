@@ -1,110 +1,101 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateLessonUseCase } from './generate-lesson.use-case';
-import { GeminiProvider } from '@/modules/ai/infra/integrations/gemini.provider';
 import { I_AI_PROVIDER } from '@/modules/ai/domain/providers/ai-provider.interface';
 import { I_TEMPLATE_LOADER } from '@/modules/ai/domain/providers/template-loader.interface';
-
-jest.mock('@/modules/ai/infra/integrations/gemini.provider');
+import { I_LESSON_PLAN_REPOSITORY } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
+import { IStudentsRepository } from '@/modules/students/domain/repositories/students.repository';
+import { IGradesRepository } from '@/modules/grades/domain/repositories/grades.repository';
+import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain/repositories/neurodivergencies.repository';
 
 describe('GenerateLessonUseCase', () => {
   let useCase: GenerateLessonUseCase;
-  let geminiProvider: jest.Mocked<GeminiProvider>;
+  let aiProvider: any;
   let templateLoader: any;
+  let studentsRepository: any;
+  let gradesRepository: any;
+  let neurosRepository: any;
+  let lessonPlanRepository: any;
+
+  const mockStudent = {
+    id: 'student-1',
+    name: 'Joana',
+    gradeId: 'grade-1',
+    neurodivergencies: ['neuro-1'],
+    notes: 'Precisa de apoio visual'
+  };
 
   const mockPayload = {
-    students: [{ name: 'Enzo', grade: '3º Ano', neurodivergencies: ['TEA', 'TDAH'] }],
-    days: [
+    teacherId: 'teacher-1',
+    lessons: [
       {
-        day: 'Segunda-feira',
-        disciplines: [
-          {
-            name: 'Portal da Matemática',
-            theme: 'Frações',
-            observations: 'Usar material dourado',
-          },
-        ],
-      },
-    ],
+        discipline: { name: 'Matemática', theme: 'Frações', observations: 'Usar pizza' },
+        students: ['student-1']
+      }
+    ]
   };
 
   beforeEach(async () => {
-    templateLoader = {
-      load: jest.fn().mockImplementation((pathStr: string) => {
-        if (pathStr.includes('system.md')) return 'SYSTEM PROMPT';
-        if (pathStr.includes('user.md')) return 'USER PROMPT \\n {{CONTENTS_STR}} \\n {{STUDENTS_STR}}';
-        return 'mock prompt {{STUDENTS_STR}}';
-      }),
-    };
+    aiProvider = { generateText: jest.fn() };
+    templateLoader = { load: jest.fn().mockResolvedValue('MOCK TEMPLATE {{LESSONS_BATCH_STR}}') };
+    studentsRepository = { findByIds: jest.fn().mockResolvedValue([mockStudent]) };
+    gradesRepository = { findByIds: jest.fn().mockResolvedValue([{ id: 'grade-1', name: '3º Ano' }]) };
+    neurosRepository = { findByIds: jest.fn().mockResolvedValue([{ id: 'neuro-1', name: 'TEA' }]) };
+    lessonPlanRepository = { saveBatch: jest.fn().mockResolvedValue(undefined) };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GenerateLessonUseCase,
-        {
-          provide: I_AI_PROVIDER,
-          useClass: GeminiProvider,
-        },
-        {
-          provide: I_TEMPLATE_LOADER,
-          useValue: templateLoader,
-        },
+        { provide: I_AI_PROVIDER, useValue: aiProvider },
+        { provide: I_TEMPLATE_LOADER, useValue: templateLoader },
+        { provide: I_LESSON_PLAN_REPOSITORY, useValue: lessonPlanRepository },
+        { provide: IStudentsRepository, useValue: studentsRepository },
+        { provide: IGradesRepository, useValue: gradesRepository },
+        { provide: INeurodivergenciesRepository, useValue: neurosRepository },
       ],
     }).compile();
 
     useCase = module.get<GenerateLessonUseCase>(GenerateLessonUseCase);
-    geminiProvider = module.get(I_AI_PROVIDER) as jest.Mocked<GeminiProvider>;
-
-    jest.clearAllMocks();
   });
 
   describe('execute', () => {
-    it('should successfully build prompt strings and return AI result', async () => {
-      const mockAiOutput = { days: [{ day: 'Segunda', subjects: [] }] };
-      geminiProvider.generateText.mockResolvedValue(mockAiOutput as any);
+    it('should successfully generate and persist lessons', async () => {
+      const mockAiResponse = {
+        lessons: [{
+          objective: 'Obj',
+          bncc: { code: 'BNCC', description: 'Desc' },
+          duration: '45min',
+          activity_steps: 'Steps',
+          udl_strategies: { representation: 'R', action_and_expression: 'AE', engagement: 'E' },
+          resources: 'Res',
+          evaluation: 'Eval',
+          adaptations: [{ student_neurodivergencies: 'TEA', strategy: 'S', behavioral_tips: 'B' }]
+        }]
+      };
+      aiProvider.generateText.mockResolvedValue(mockAiResponse);
 
       const result = await useCase.execute(mockPayload);
 
       expect(result.isSuccess).toBe(true);
-      expect(result.getValue()).toEqual(mockAiOutput);
-      expect(geminiProvider.generateText).toHaveBeenCalledTimes(1);
-
-      const callArgs = geminiProvider.generateText.mock.calls[0];
-      // Arg 0 is system prompt
-      expect(callArgs[0]).toBe('SYSTEM PROMPT');
-      // Arg 1 is user prompt, verify that injected tags have been replaced
-      expect(callArgs[1]).toContain('- Portal da Matemática (Tema: Frações) | Observações: Usar material dourado');
-      expect(callArgs[1]).toContain('- NOME: Enzo | SÉRIE/ANO: 3º Ano | NEURODIVERGÊNCIA: TEA, TDAH');
+      expect(result.getValue()).toEqual(mockAiResponse);
+      expect(lessonPlanRepository.saveBatch).toHaveBeenCalledTimes(1);
     });
 
-    it('should handle students without grades', async () => {
-      geminiProvider.generateText.mockResolvedValue({} as any);
-
-      const payloadNoGrade = {
-        students: [{ name: 'Maria', grade: '', neurodivergencies: [] }],
-        days: [],
-      };
-
-      await useCase.execute(payloadNoGrade);
-
-      const callArgs = geminiProvider.generateText.mock.calls[0];
-      expect(callArgs[1]).toContain('SÉRIE/ANO: Não informada');
-    });
-
-    it('should return a failure Result if GeminiProvider throws an exception', async () => {
-      geminiProvider.generateText.mockRejectedValue(new Error('AI is down'));
+    it('should return failure if AI fails', async () => {
+      aiProvider.generateText.mockRejectedValue(new Error('AI Error'));
 
       const result = await useCase.execute(mockPayload);
 
       expect(result.isFailure).toBe(true);
-      expect(result.error).toBe('AI is down');
+      expect(result.error).toBe('AI Error');
     });
 
-    it('should return a fallback failure string if unknown error occurs', async () => {
-      geminiProvider.generateText.mockRejectedValue('Strange String Error'); // Not an instance of Error
+    it('should handle unknown error objects', async () => {
+      aiProvider.generateText.mockRejectedValue('Strange error');
 
       const result = await useCase.execute(mockPayload);
 
       expect(result.isFailure).toBe(true);
-      expect(result.error).toBe('Unknown error generating lesson');
+      expect(result.error).toBe('Unknown error in generation pipeline');
     });
   });
 });

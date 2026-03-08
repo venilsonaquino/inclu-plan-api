@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Op } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
 import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain/repositories/neurodivergencies.repository';
 import { Neurodivergency } from '@/modules/neurodivergencies/domain/entities/neurodivergency.entity';
@@ -9,7 +10,7 @@ export class SequelizeNeurodivergenciesRepository implements INeurodivergenciesR
   constructor(
     @InjectModel(NeurodivergencyModel)
     private readonly neurodivergencyModel: typeof NeurodivergencyModel,
-  ) {}
+  ) { }
 
   async create(neurodivergency: Neurodivergency): Promise<void> {
     await this.neurodivergencyModel.create({
@@ -25,6 +26,13 @@ export class SequelizeNeurodivergenciesRepository implements INeurodivergenciesR
     const model = await this.neurodivergencyModel.findByPk(id);
     if (!model) return null;
     return model.toDomain();
+  }
+
+  async findByIds(ids: string[]): Promise<Neurodivergency[]> {
+    const models = await this.neurodivergencyModel.findAll({
+      where: { id: { [Op.in]: ids } },
+    });
+    return models.map(model => model.toDomain());
   }
 
   async findAll(): Promise<Neurodivergency[]> {

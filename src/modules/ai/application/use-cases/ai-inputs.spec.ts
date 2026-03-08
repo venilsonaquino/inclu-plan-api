@@ -65,21 +65,14 @@ describe('AI Use Case Inputs', () => {
   describe('GenerateLessonInput', () => {
     it('should validate correctly', async () => {
       const input = plainToInstance(GenerateLessonInput, {
-        days: [
+        teacherId: '5958c7e3-79ac-493d-b594-29b35831d394',
+        lessons: [
           {
-            day: 'Monday',
-            disciplines: [
-              {
-                name: 'Math',
-                theme: 'Addition',
-              },
-            ],
-          },
-        ],
-        students: [
-          {
-            name: 'John',
-            neurodivergencies: ['ASD'],
+            discipline: {
+              name: 'Math',
+              theme: 'Addition',
+            },
+            students: ['e4ba6be0-b3cb-47ac-9e17-4f6b257efaf9'],
           },
         ],
       });

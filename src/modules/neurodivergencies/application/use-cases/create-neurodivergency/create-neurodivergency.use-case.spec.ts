@@ -9,6 +9,7 @@ describe('CreateNeurodivergencyUseCase', () => {
     repository = {
       create: jest.fn().mockResolvedValue(undefined),
       findById: jest.fn(),
+      findByIds: jest.fn(),
       findAll: jest.fn(),
     } as any;
     useCase = new CreateNeurodivergencyUseCase(repository);

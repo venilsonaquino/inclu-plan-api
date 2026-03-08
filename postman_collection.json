@@ -21,7 +21,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"days\": [\n    {\n      \"day\": \"Quarta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Matemática\", \"theme\": \"Frações\", \"observations\": \"Usar materiais visuais\" }\n      ]\n    },\n    {\n      \"day\": \"Sexta-feira\",\n      \"disciplines\": [\n        { \"name\": \"Português\", \"theme\": \"Substantivos Compostos\" }\n      ]\n    }\n  ],\n  \"students\": [\n    {\n      \"name\": \"Alice (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"neurodivergencies\": [\"Transtorno do Espectro Autista (Nível 1)\", \"TDAH\"]\n    },\n    {\n      \"name\": \"João (Exemplo)\",\n      \"grade\": \"3º Ano\",\n      \"neurodivergencies\": [\"Dislexia\"]\n    }\n  ],\n  \"imagePart\": \"\" \n}"
+              "raw": "{\n  \"teacherId\": \"COLE_O_ID_DO_PROFESSOR_AQUI\",\n  \"lessons\": [\n    {\n      \"discipline\": {\n        \"name\": \"Matemática\",\n        \"theme\": \"Frações\",\n        \"observations\": \"Usar materiais visuais\"\n      },\n      \"students\": [\n        \"ID_ALUNO_1_AQUI\",\n        \"ID_ALUNO_2_AQUI\"\n      ]\n    }\n  ],\n  \"imagePart\": \"\"\n}"
             },
             "url": {
               "raw": "http://localhost:3000/api/ai/lesson-plan",

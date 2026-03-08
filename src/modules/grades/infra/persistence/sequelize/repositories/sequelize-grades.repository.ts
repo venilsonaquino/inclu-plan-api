@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Op } from 'sequelize';
 import { InjectModel } from '@nestjs/sequelize';
 import { IGradesRepository } from '@/modules/grades/domain/repositories/grades.repository';
 import { Grade } from '@/modules/grades/domain/entities/grade.entity';
@@ -9,7 +10,7 @@ export class SequelizeGradesRepository implements IGradesRepository {
   constructor(
     @InjectModel(GradeModel)
     private readonly gradeModel: typeof GradeModel,
-  ) {}
+  ) { }
 
   async create(grade: Grade): Promise<void> {
     await this.gradeModel.create({
@@ -25,6 +26,13 @@ export class SequelizeGradesRepository implements IGradesRepository {
     const model = await this.gradeModel.findByPk(id);
     if (!model) return null;
     return model.toDomain();
+  }
+
+  async findByIds(ids: string[]): Promise<Grade[]> {
+    const models = await this.gradeModel.findAll({
+      where: { id: { [Op.in]: ids } },
+    });
+    return models.map(model => model.toDomain());
   }
 
   async findAll(): Promise<Grade[]> {

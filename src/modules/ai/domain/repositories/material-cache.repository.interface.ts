@@ -1,21 +1,19 @@
-export interface MaterialCacheRecord<T = any> {
+export const I_MATERIAL_CACHE_REPOSITORY = 'IMaterialCacheRepository';
+
+export interface MaterialCacheEntry {
   id: string;
   contextHash: string;
   payloadEmbedding: number[];
-  materialResult: T;
+  materialResult: any;
+  createdAt?: Date;
 }
 
-export const I_MATERIAL_CACHE_REPOSITORY = 'IMaterialCacheRepository';
-
 export interface IMaterialCacheRepository {
-  findSimilar<T = any>(
+  save(entry: MaterialCacheEntry): Promise<void>;
+  findSimilar(
     contextHash: string,
-    payloadVector: number[],
+    embedding: number[],
     threshold: number,
-  ): Promise<MaterialCacheRecord<T> | null>;
-  save<T = any>(record: MaterialCacheRecord<T>): Promise<void>;
-
-  // For testing purposes
-  clear(): void;
-  count(): number;
+  ): Promise<MaterialCacheEntry | null>;
+  clear(): Promise<void>;
 }
