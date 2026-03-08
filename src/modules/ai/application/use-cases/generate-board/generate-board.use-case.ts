@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
 import { ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
 import { Result } from '@/shared/domain/utils/result';
