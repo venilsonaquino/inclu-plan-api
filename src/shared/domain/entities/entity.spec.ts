@@ -1,6 +1,6 @@
 import { Entity } from './entity';
 
-class StubEntity extends Entity<{ name: string }> {}
+class StubEntity extends Entity<{ name: string }> { }
 
 describe('Entity', () => {
   it('should create an entity with provided id', () => {
@@ -14,6 +14,31 @@ describe('Entity', () => {
     const entity = new StubEntity({ name: 'test' });
     expect(entity.id).toBeDefined();
     expect(typeof entity.id).toBe('string');
+  });
+
+  it('should initialize created_at and updated_at with current date if not provided', () => {
+    const before = new Date();
+    const entity = new StubEntity({ name: 'test' });
+    const after = new Date();
+
+    expect(entity.created_at.getTime()).toBeGreaterThanOrEqual(before.getTime());
+    expect(entity.created_at.getTime()).toBeLessThanOrEqual(after.getTime());
+
+    expect(entity.updated_at.getTime()).toBeGreaterThanOrEqual(before.getTime());
+    expect(entity.updated_at.getTime()).toBeLessThanOrEqual(after.getTime());
+
+    expect(entity.deleted_at).toBeUndefined();
+  });
+
+  it('should accept provided created_at, updated_at, and deleted_at', () => {
+    const created_at = new Date('2023-01-01T00:00:00Z');
+    const updated_at = new Date('2023-01-02T00:00:00Z');
+    const deleted_at = new Date('2023-01-03T00:00:00Z');
+    const entity = new StubEntity({ name: 'test' }, undefined, created_at, updated_at, deleted_at);
+
+    expect(entity.created_at).toBe(created_at);
+    expect(entity.updated_at).toBe(updated_at);
+    expect(entity.deleted_at).toBe(deleted_at);
   });
 
   describe('equals', () => {

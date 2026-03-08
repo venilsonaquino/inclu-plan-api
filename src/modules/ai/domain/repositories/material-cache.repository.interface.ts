@@ -1,5 +1,3 @@
-export const I_MATERIAL_CACHE_REPOSITORY = 'IMaterialCacheRepository';
-
 export interface MaterialCacheEntry {
   id: string;
   contextHash: string;
@@ -8,12 +6,12 @@ export interface MaterialCacheEntry {
   createdAt?: Date;
 }
 
-export interface IMaterialCacheRepository {
-  save(entry: MaterialCacheEntry): Promise<void>;
-  findSimilar(
+export abstract class IMaterialCacheRepository {
+  abstract save(entry: MaterialCacheEntry): Promise<void>;
+  abstract findSimilar(
     contextHash: string,
     embedding: number[],
     threshold: number,
   ): Promise<MaterialCacheEntry | null>;
-  clear(): Promise<void>;
+  abstract clear(): Promise<void>;
 }

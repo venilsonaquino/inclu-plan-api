@@ -1,6 +1,6 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
-import { I_AI_PROVIDER, IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
-import { I_TEMPLATE_LOADER, ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
+import { Injectable, Logger } from '@nestjs/common';
+import { IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
+import { ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateLessonInput } from './generate-lesson.input';
 import { Student } from '@/modules/students/domain/entities/student.entity';
@@ -9,17 +9,18 @@ import { IGradesRepository } from '@/modules/grades/domain/repositories/grades.r
 import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain/repositories/neurodivergencies.repository';
 import { LessonPromptBuilder } from '@/modules/ai/domain/services/lesson-prompt-builder';
 import { ILessonGenerationBatchResponse } from '@/modules/ai/domain/interfaces/lesson-generation-response.interface';
-import { I_LESSON_PLAN_REPOSITORY, ILessonPlanRepository } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
+import { ILessonPlanRepository } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
 import { randomUUID } from 'node:crypto';
+import { UseCase } from '@/shared/domain/interfaces/use-case';
 
 @Injectable()
-export class GenerateLessonUseCase {
+export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILessonGenerationBatchResponse> {
   private readonly logger = new Logger(GenerateLessonUseCase.name);
 
   constructor(
-    @Inject(I_AI_PROVIDER) private readonly aiProvider: IAiProvider,
-    @Inject(I_TEMPLATE_LOADER) private readonly templateLoader: ITemplateLoader,
-    @Inject(I_LESSON_PLAN_REPOSITORY) private readonly lessonPlanRepository: ILessonPlanRepository,
+    private readonly aiProvider: IAiProvider,
+    private readonly templateLoader: ITemplateLoader,
+    private readonly lessonPlanRepository: ILessonPlanRepository,
     private readonly studentsRepository: IStudentsRepository,
     private readonly gradesRepository: IGradesRepository,
     private readonly neurodivergenciesRepository: INeurodivergenciesRepository,

@@ -1,15 +1,12 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
-import { I_AI_PROVIDER, IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
-import { I_TEMPLATE_LOADER, ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
+import { Injectable, Logger } from '@nestjs/common';
+import { IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
+import { ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
 import { Result } from '@/shared/domain/utils/result';
 import { GenerateCardsInput } from './generate-cards.input';
 import { GenerateCardsOutput } from './generate-cards.output';
 import { PromptUtil } from '../../utils/prompt.util';
 import { SemanticContext } from '@/modules/ai/domain/value-objects/semantic-context.vo';
-import {
-  I_MATERIAL_CACHE_REPOSITORY,
-  IMaterialCacheRepository,
-} from '@/modules/ai/domain/repositories/material-cache.repository.interface';
+import { IMaterialCacheRepository } from '@/modules/ai/domain/repositories/material-cache.repository.interface';
 import { randomUUID } from 'node:crypto';
 
 @Injectable()
@@ -17,13 +14,10 @@ export class GenerateCardsUseCase {
   private readonly logger = new Logger(GenerateCardsUseCase.name);
 
   constructor(
-    @Inject(I_AI_PROVIDER)
     private readonly aiProvider: IAiProvider,
-    @Inject(I_TEMPLATE_LOADER)
     private readonly templateLoader: ITemplateLoader,
-    @Inject(I_MATERIAL_CACHE_REPOSITORY)
     private readonly materialCache: IMaterialCacheRepository,
-  ) {}
+  ) { }
 
   private async fetchImagesForCards(cardsData: GenerateCardsOutput): Promise<void> {
     if (!cardsData || !Array.isArray(cardsData.cards)) return;
