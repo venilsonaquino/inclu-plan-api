@@ -44,6 +44,11 @@ export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILess
         payload.imagePart,
       )) as ILessonGenerationBatchResponse;
 
+      if (!aiResponse || !Array.isArray(aiResponse.lessons)) {
+        this.logger.error(`Invalid AI response structure. Received: ${JSON.stringify(aiResponse)}`);
+        throw new Error(`AI returned an unexpected format. Expected { lessons: [...] }.`);
+      }
+
       this.logger.log(`Step 4/4: Persisting ${aiResponse.lessons.length} results to database...`);
       await this.persistResults(payload, aiResponse);
 
@@ -113,11 +118,22 @@ export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILess
   private async persistResults(payload: GenerateLessonInput, aiResponse: ILessonGenerationBatchResponse): Promise<void> {
     const records: any[] = payload.lessons.flatMap((lessonReq, lessonIndex) => {
       const aiLesson = aiResponse.lessons[lessonIndex];
-      if (!aiLesson) return [];
+      if (!aiLesson) {
+        this.logger.warn(`No AI lesson found at index ${lessonIndex}. Skipping.`);
+        return [];
+      }
+
+      const adaptations = Array.isArray(aiLesson.adaptations) ? aiLesson.adaptations : [];
+      if (adaptations.length === 0) {
+        this.logger.warn(`Lesson at index ${lessonIndex} has no adaptations array. AI lesson data: ${JSON.stringify(aiLesson)}`);
+      }
 
       return lessonReq.students.map((studentId, studentIndex) => {
-        const adaptation = aiLesson.adaptations[studentIndex];
-        if (!adaptation) return null;
+        const adaptation = adaptations[studentIndex];
+        if (!adaptation) {
+          this.logger.warn(`No adaptation found for studentId=${studentId} at index ${studentIndex} in lesson ${lessonIndex}. Skipping.`);
+          return null;
+        }
 
         return {
           id: randomUUID(),
@@ -136,6 +152,8 @@ export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILess
 
     if (records.length > 0) {
       await this.lessonPlanRepository.saveBatch(records);
+    } else {
+      this.logger.warn('No valid records to persist after processing AI response.');
     }
   }
 }
