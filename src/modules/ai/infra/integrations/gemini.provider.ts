@@ -35,7 +35,7 @@ export class GeminiProvider implements IAiProvider {
       contents: [{ parts: contentsPart }],
       generationConfig: {
         responseMimeType: 'application/json',
-        temperature: 0.2,
+        temperature: 0.7,
         maxOutputTokens: 8192,
       },
     };
