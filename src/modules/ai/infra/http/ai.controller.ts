@@ -7,6 +7,8 @@ import { GenerateCardsInput } from '@/modules/ai/application/use-cases/generate-
 import { GenerateBoardInput } from '@/modules/ai/application/use-cases/generate-board/generate-board.input';
 import { GenerateHomeworkInput } from '@/modules/ai/application/use-cases/generate-homework/generate-homework.input';
 
+import { GenerateLessonInput } from '@/modules/ai/application/use-cases/generate-lesson/generate-lesson.input';
+
 @Controller('ai')
 export class AiController {
   constructor(
@@ -14,10 +16,10 @@ export class AiController {
     private readonly generateCardsUseCase: GenerateCardsUseCase,
     private readonly generateBoardUseCase: GenerateBoardUseCase,
     private readonly generateHomeworkUseCase: GenerateHomeworkUseCase,
-  ) {}
+  ) { }
 
   @Post('lesson-plan')
-  async generateLessonPlan(@Body() body: any) {
+  async generateLessonPlan(@Body() body: GenerateLessonInput) {
     const result = await this.generateLessonUseCase.execute(body);
     if (result.isFailure) {
       throw new HttpException(result.errorValue(), HttpStatus.INTERNAL_SERVER_ERROR);

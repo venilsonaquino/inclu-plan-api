@@ -1,3 +1,5 @@
+import { Result } from '@/shared/domain/utils/result';
+
 interface StudentProps {
   name: string;
   grade?: string;
@@ -7,15 +9,15 @@ interface StudentProps {
 export class LessonStudents {
   private readonly _students: StudentProps[];
 
-  constructor(students: StudentProps[]) {
-    if (!students || students.length === 0) {
-      throw new Error('LessonStudents must have at least one student.');
-    }
+  private constructor(students: StudentProps[]) {
     this._students = students;
   }
 
-  static create(students: StudentProps[]): LessonStudents {
-    return new LessonStudents(students);
+  static create(students: StudentProps[]): Result<LessonStudents> {
+    if (!students || students.length === 0) {
+      return Result.fail<LessonStudents>('LessonStudents must have at least one student.');
+    }
+    return Result.ok<LessonStudents>(new LessonStudents(students));
   }
 
   get students(): StudentProps[] {

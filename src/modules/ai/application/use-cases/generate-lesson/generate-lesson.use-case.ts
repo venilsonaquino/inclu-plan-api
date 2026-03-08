@@ -47,7 +47,9 @@ export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILess
 
       if (!aiResponse || !Array.isArray(aiResponse.disciplines)) {
         this.logger.error(`Invalid AI response structure. Received: ${JSON.stringify(aiResponse)}`);
-        throw new Error(`AI returned an unexpected format. Expected { disciplines: [...] }.`);
+        return Result.fail<ILessonGenerationBatchResponse>(
+          `AI returned an unexpected format. Expected { disciplines: [...] }.`
+        );
       }
 
       this.logger.log(`Step 4/4: Persisting results for ${aiResponse.disciplines.length} disciplines to database...`);
