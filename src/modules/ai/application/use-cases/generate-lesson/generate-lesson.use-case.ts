@@ -10,8 +10,8 @@ import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain
 import { LessonPromptBuilder } from '@/modules/ai/domain/services/lesson-prompt-builder';
 import { ILessonGenerationBatchResponse } from '@/modules/ai/domain/interfaces/lesson-generation-response.interface';
 import { ILessonPlanRepository } from '@/modules/lessons/domain/repositories/lesson-plan.repository.interface';
-import { LessonPlan, StudentAdaptation } from '@/modules/lessons/domain/entities/lesson-plan.entity';
-import { randomUUID } from 'node:crypto';
+import { LessonPlan } from '@/modules/lessons/domain/entities/lesson-plan.entity';
+import { GenerateLessonMapper } from './generate-lesson.mapper';
 import { UseCase } from '@/shared/domain/interfaces/use-case';
 
 @Injectable()
@@ -129,7 +129,7 @@ export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILess
       }
 
       const disciplinePlans = aiDiscipline.lessons.map(aiLesson =>
-        this.mapAiLessonToAggregate(payload.teacherId, lessonReq, aiDiscipline, aiLesson, context.studentMap)
+        GenerateLessonMapper.mapAiLessonToAggregate(payload.teacherId, lessonReq, aiDiscipline, aiLesson, context.studentMap)
       );
 
       lessonPlans.push(...disciplinePlans);
@@ -140,72 +140,5 @@ export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILess
     } else {
       this.logger.warn('No valid lesson plans to persist after processing AI response.');
     }
-  }
-
-  private mapAiLessonToAggregate(
-    teacherId: string,
-    lessonReq: any,
-    aiDiscipline: any,
-    aiLesson: any,
-    studentMap: Map<string, Student>
-  ): LessonPlan {
-    const planId = randomUUID();
-    const adaptations = this.buildStudentAdaptations(aiLesson.adaptations, lessonReq.students, studentMap);
-
-    return LessonPlan.create({
-      teacherId,
-      discipline: aiDiscipline.name,
-      theme: lessonReq.discipline.theme,
-      lessonTitle: aiDiscipline.lesson_title,
-      estimatedPrepTime: aiDiscipline.estimated_prep_time,
-      lessonNumber: aiLesson.lesson_number,
-      objective: aiLesson.objective,
-      learningObjects: aiLesson.learning_objects,
-      bnccCode: aiLesson.bncc?.code,
-      bnccDescription: aiLesson.bncc?.description,
-      duration: aiLesson.duration,
-      activitySteps: aiLesson.activity_steps,
-      udlRepresentation: aiLesson.udl_strategies?.representation,
-      udlActionExpression: aiLesson.udl_strategies?.action_and_expression,
-      udlEngagement: aiLesson.udl_strategies?.engagement,
-      resources: aiLesson.resources,
-      evaluation: aiLesson.evaluation,
-      adaptations
-    }, planId);
-  }
-
-  private buildStudentAdaptations(
-    aiAdaptations: any[],
-    requestedStudentIds: string[],
-    studentMap: Map<string, Student>
-  ): StudentAdaptation[] {
-    const lessonAdaptations = Array.isArray(aiAdaptations) ? aiAdaptations : [];
-    const result: StudentAdaptation[] = [];
-
-    requestedStudentIds.forEach(studentId => {
-      const student = studentMap.get(studentId);
-      if (!student) return;
-
-      const adaptation = lessonAdaptations.find(a =>
-        a.student_name && a.student_name.toLowerCase().trim() === student.name.toLowerCase().trim()
-      );
-
-      if (adaptation) {
-        result.push(StudentAdaptation.create({
-          studentId: studentId,
-          studentName: student.name,
-          studentGrade: adaptation.student_grade,
-          studentNeurodivergencies: adaptation.student_neurodivergencies,
-          strategy: adaptation.strategy,
-          behavioralTips: adaptation.behavioral_tips,
-          supportLevel: adaptation.support_level,
-          successIndicators: adaptation.success_indicators,
-        }, randomUUID()));
-      } else {
-        this.logger.warn(`No specific adaptation found for student ${student.name} (ID: ${studentId}). Skipping individual adaptation.`);
-      }
-    });
-
-    return result;
   }
 }
