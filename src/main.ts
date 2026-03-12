@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.enableCors();
-  await app.listen(3000);
+  await app.listen(8080);
 
   const end = Date.now();
   console.log(`Application is running on: ${end - start}ms`);

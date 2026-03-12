@@ -39,7 +39,7 @@ RUN adduser -D -H -s "/sbin/nologin" -g "NodeUser" nodeuser
 USER nodeuser
 
 # Expõe a porta que a aplicação NestJS usa por padrão
-EXPOSE 3000
+EXPOSE 8080
 
 # Comando para iniciar a aplicação em produção
 CMD ["node", "dist/main"]

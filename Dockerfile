@@ -29,7 +29,7 @@ COPY --from=builder /usr/src/app/src/database ./src/database
 # Garante permissão de execução para o script
 RUN chmod +x start.sh
 
-EXPOSE 3000
+EXPOSE 8080
 
 # Executa o script de inicialização
 CMD ["./start.sh"]
