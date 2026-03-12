@@ -9,6 +9,7 @@ import { GradesModule } from './modules/grades/grades.module';
 import { NeurodivergenciesModule } from './modules/neurodivergencies/neurodivergencies.module';
 import { StudentNeurodivergenciesModule } from './modules/student-neurodivergencies/student-neurodivergencies.module';
 import { LessonsModule } from './modules/lessons/lessons.module';
+import { IdentityModule } from './modules/identity/identity.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { LessonsModule } from './modules/lessons/lessons.module';
     NeurodivergenciesModule,
     StudentNeurodivergenciesModule,
     LessonsModule,
+    IdentityModule,
   ],
   controllers: [],
   providers: [],

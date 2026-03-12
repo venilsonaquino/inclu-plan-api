@@ -35,9 +35,9 @@ describe('SequelizeTeachersRepository', () => {
   describe('create', () => {
     it('should create a teacher', async () => {
       const teacher = new Teacher({
+        id: '1',
         name: 'Jane Smith',
-        email: 'jane@example.com',
-        passwordHash: 'hashed_password',
+        userId: 'user-001',
       });
 
       await repository.create(teacher);
@@ -45,33 +45,10 @@ describe('SequelizeTeachersRepository', () => {
       expect(teacherModelMock.create).toHaveBeenCalledWith({
         id: teacher.id,
         name: teacher.name,
-        email: teacher.email,
-        passwordHash: teacher.passwordHash,
+        userId: teacher.userId,
         createdAt: teacher.createdAt,
         updatedAt: teacher.updatedAt,
       });
-    });
-  });
-
-  describe('findByEmail', () => {
-    it('should return a teacher if found', async () => {
-      const mockModel = {
-        toDomain: jest.fn().mockReturnValue({ id: '1', email: 'jane@example.com' }),
-      };
-      teacherModelMock.findOne.mockResolvedValue(mockModel);
-
-      const result = await repository.findByEmail('jane@example.com');
-
-      expect(teacherModelMock.findOne).toHaveBeenCalledWith({ where: { email: 'jane@example.com' } });
-      expect(result).toEqual({ id: '1', email: 'jane@example.com' });
-    });
-
-    it('should return null if not found', async () => {
-      teacherModelMock.findOne.mockResolvedValue(null);
-
-      const result = await repository.findByEmail('jane@example.com');
-
-      expect(result).toBeNull();
     });
   });
 

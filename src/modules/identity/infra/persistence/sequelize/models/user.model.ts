@@ -1,13 +1,13 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
-import { Teacher } from '@/modules/teachers/domain/entities/teacher.entity';
+import { User } from '@/modules/identity/domain/entities/user.entity';
 
 @Table({
-  tableName: 'teachers',
+  tableName: 'users',
   timestamps: true,
   underscored: true,
   paranoid: true, // handles deleted_at
 })
-export class TeacherModel extends Model<TeacherModel> {
+export class UserModel extends Model<UserModel> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -23,18 +23,25 @@ export class TeacherModel extends Model<TeacherModel> {
   declare name: string;
 
   @Column({
-    type: DataType.UUID,
+    type: DataType.STRING,
     allowNull: false,
-    field: 'user_id',
+    unique: true,
   })
-  declare userId: string;
+  declare email: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  declare passwordHash: string;
 
   // Domain Mapping Utils
-  toDomain(): Teacher {
-    return new Teacher({
+  toDomain(): User {
+    return new User({
       id: this.id,
-      userId: this.userId,
       name: this.name,
+      email: this.email,
+      passwordHash: this.passwordHash,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.deletedAt,

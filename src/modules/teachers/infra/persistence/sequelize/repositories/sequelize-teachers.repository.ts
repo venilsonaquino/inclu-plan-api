@@ -14,18 +14,11 @@ export class SequelizeTeachersRepository implements ITeachersRepository {
   async create(teacher: Teacher): Promise<void> {
     await this.teacherModel.create({
       id: teacher.id,
+      userId: teacher.userId,
       name: teacher.name,
-      email: teacher.email,
-      passwordHash: teacher.passwordHash,
       createdAt: teacher.createdAt,
       updatedAt: teacher.updatedAt,
     });
-  }
-
-  async findByEmail(email: string): Promise<Teacher | null> {
-    const model = await this.teacherModel.findOne({ where: { email } });
-    if (!model) return null;
-    return model.toDomain();
   }
 
   async findById(id: string): Promise<Teacher | null> {

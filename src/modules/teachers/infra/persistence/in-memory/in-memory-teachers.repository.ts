@@ -10,11 +10,6 @@ export class InMemoryTeachersRepository implements ITeachersRepository {
     this.teachers.push(teacher);
   }
 
-  async findByEmail(email: string): Promise<Teacher | null> {
-    const teacher = this.teachers.find(t => t.email === email);
-    return teacher ? teacher : null;
-  }
-
   async findById(id: string): Promise<Teacher | null> {
     const teacher = this.teachers.find(t => t.id === id);
     return teacher ? teacher : null;

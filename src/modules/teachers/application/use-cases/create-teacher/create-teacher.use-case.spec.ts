@@ -16,8 +16,7 @@ describe('CreateTeacherUseCase', () => {
   it('should successfully create a new teacher', async () => {
     const input: CreateTeacherInput = {
       name: 'John Doe',
-      email: 'john@example.com',
-      password: 'strongpassword123',
+      userId: 'user-001',
     };
 
     const result = await useCase.execute(input);
@@ -25,50 +24,19 @@ describe('CreateTeacherUseCase', () => {
     expect(result.isSuccess).toBe(true);
     expect(result.getValue()).toHaveProperty('id');
     expect(result.getValue().name).toBe(input.name);
-    expect(result.getValue().email).toBe(input.email);
+    expect(result.getValue().userId).toBe(input.userId);
 
     // Verify it was saved in repo
-    const savedTeacher = await repository.findByEmail(input.email);
+    const savedTeacher = await repository.findById(result.getValue().id);
     expect(savedTeacher).toBeDefined();
     expect(savedTeacher?.name).toBe(input.name);
-
-    // Check if password was hashed
-    expect(savedTeacher?.passwordHash).not.toBe(input.password);
-    expect(savedTeacher?.passwordHash).toContain(':'); // checking our salt:key format
-
-    // Verify hash actually matches using util
-    const isMatch = await CryptoUtil.compare(input.password, savedTeacher!.passwordHash);
-    expect(isMatch).toBe(true);
-  });
-
-  it('should fail if email is already in use', async () => {
-    const input: CreateTeacherInput = {
-      name: 'John Doe',
-      email: 'john@example.com',
-      password: 'strongpassword123',
-    };
-
-    // First creation
-    await useCase.execute(input);
-
-    // Second creation attempt with same email
-    const duplicateInput: CreateTeacherInput = {
-      name: 'Jane Doe',
-      email: 'john@example.com', // same email
-      password: 'anotherpassword456',
-    };
-
-    const result = await useCase.execute(duplicateInput);
-
-    expect(result.isFailure).toBe(true);
-    expect(result.errorValue()).toBe('Email already in use.');
+    expect(savedTeacher?.userId).toBe(input.userId);
   });
 
   it('should fail when repository throws an error', async () => {
     const input: CreateTeacherInput = {
       name: 'John Doe',
-      email: 'john@example.com',
-      password: 'strongpassword123',
+      userId: 'user-001',
     };
     jest.spyOn(repository, 'create').mockRejectedValueOnce(new Error('DB Error'));
 
@@ -81,8 +49,7 @@ describe('CreateTeacherUseCase', () => {
   it('should cover the fallback branch for non-Error thrown objects', async () => {
     const input: CreateTeacherInput = {
       name: 'John Doe',
-      email: 'john@example.com',
-      password: 'strongpassword123',
+      userId: 'user-001',
     };
     jest.spyOn(repository, 'create').mockRejectedValueOnce('String Error');
 
