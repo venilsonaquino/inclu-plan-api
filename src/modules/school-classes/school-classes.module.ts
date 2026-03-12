@@ -5,9 +5,13 @@ import { ISchoolClassesRepository } from '@/modules/school-classes/domain/reposi
 import { SequelizeSchoolClassesRepository } from '@/modules/school-classes/infra/persistence/sequelize/repositories/sequelize-school-classes.repository';
 import { SchoolClassModel } from '@/modules/school-classes/infra/persistence/sequelize/models/school-class.model';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { TeachersModule } from '@/modules/teachers/teachers.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([SchoolClassModel])],
+  imports: [
+    SequelizeModule.forFeature([SchoolClassModel]),
+    TeachersModule,
+  ],
   controllers: [SchoolClassesController],
   providers: [
     CreateSchoolClassUseCase,

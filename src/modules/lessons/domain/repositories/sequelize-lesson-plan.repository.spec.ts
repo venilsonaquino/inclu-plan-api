@@ -32,7 +32,8 @@ describe('SequelizeLessonPlanRepository', () => {
     adaptationDetails: {
       strategy: 'Strat',
       behavioral_tips: 'Tips'
-    }
+    },
+    adaptations: []
   };
 
   beforeEach(async () => {
@@ -51,11 +52,12 @@ describe('SequelizeLessonPlanRepository', () => {
   });
 
   it('should save a batch of records', async () => {
-    (LessonPlanModel.bulkCreate as jest.Mock).mockResolvedValue([]);
+    (LessonPlanModel.upsert as jest.Mock).mockResolvedValue([{}, true]);
     (StudentAdaptationModel.bulkCreate as jest.Mock).mockResolvedValue([]);
+    (StudentAdaptationModel.destroy as jest.Mock).mockResolvedValue(1);
 
     await repository.saveBatch([mockRecord as any]);
 
-    expect(LessonPlanModel.bulkCreate).toHaveBeenCalledTimes(1);
+    expect(LessonPlanModel.upsert).toHaveBeenCalledTimes(1);
   });
 });

@@ -2,10 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GenerateLessonUseCase } from './generate-lesson.use-case';
 import { IAiProvider } from '@/modules/ai/domain/providers/ai-provider.interface';
 import { ITemplateLoader } from '@/modules/ai/domain/providers/template-loader.interface';
-import { ILessonPlanRepository } from '@/modules/ai/domain/repositories/lesson-plan.repository.interface';
+import { ILessonPlanRepository } from '@/modules/lessons/domain/repositories/lesson-plan.repository.interface';
 import { IStudentsRepository } from '@/modules/students/domain/repositories/students.repository';
 import { IGradesRepository } from '@/modules/grades/domain/repositories/grades.repository';
 import { INeurodivergenciesRepository } from '@/modules/neurodivergencies/domain/repositories/neurodivergencies.repository';
+import { ITeachersRepository } from '@/modules/teachers/domain/repositories/teachers.repository';
 
 describe('GenerateLessonUseCase', () => {
   let useCase: GenerateLessonUseCase;
@@ -15,6 +16,7 @@ describe('GenerateLessonUseCase', () => {
   let gradesRepository: any;
   let neurosRepository: any;
   let lessonPlanRepository: any;
+  let teachersRepository: any;
 
   const mockStudent = {
     id: 'student-1',
@@ -25,7 +27,7 @@ describe('GenerateLessonUseCase', () => {
   };
 
   const mockPayload = {
-    teacherId: 'teacher-1',
+    userId: 'user-1',
     lessons: [
       {
         discipline: { name: 'Matemática', theme: 'Frações', observations: 'Usar pizza' },
@@ -41,6 +43,7 @@ describe('GenerateLessonUseCase', () => {
     gradesRepository = { findByIds: jest.fn().mockResolvedValue([{ id: 'grade-1', name: '3º Ano' }]) };
     neurosRepository = { findByIds: jest.fn().mockResolvedValue([{ id: 'neuro-1', name: 'TEA' }]) };
     lessonPlanRepository = { saveBatch: jest.fn().mockResolvedValue(undefined) };
+    teachersRepository = { findByUserId: jest.fn().mockResolvedValue({ id: 'teacher-1' }) };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -51,6 +54,7 @@ describe('GenerateLessonUseCase', () => {
         { provide: IStudentsRepository, useValue: studentsRepository },
         { provide: IGradesRepository, useValue: gradesRepository },
         { provide: INeurodivergenciesRepository, useValue: neurosRepository },
+        { provide: ITeachersRepository, useValue: teachersRepository },
       ],
     }).compile();
 
@@ -60,15 +64,18 @@ describe('GenerateLessonUseCase', () => {
   describe('execute', () => {
     it('should successfully generate and persist lessons', async () => {
       const mockAiResponse = {
-        lessons: [{
-          objective: 'Obj',
-          bncc: { code: 'BNCC', description: 'Desc' },
-          duration: '45min',
-          activity_steps: 'Steps',
-          udl_strategies: { representation: 'R', action_and_expression: 'AE', engagement: 'E' },
-          resources: 'Res',
-          evaluation: 'Eval',
-          adaptations: [{ student_neurodivergencies: 'TEA', strategy: 'S', behavioral_tips: 'B' }]
+        disciplines: [{
+          name: 'Matemática',
+          lessons: [{
+            objective: 'Obj',
+            bncc: { code: 'BNCC', description: 'Desc' },
+            duration: '45min',
+            activity_steps: 'Steps',
+            udl_strategies: { representation: 'R', action_and_expression: 'AE', engagement: 'E' },
+            resources: 'Res',
+            evaluation: 'Eval',
+            adaptations: [{ student_neurodivergencies: 'TEA', strategy: 'S', behavioral_tips: 'B' }]
+          }]
         }]
       };
       aiProvider.generateText.mockResolvedValue(mockAiResponse);

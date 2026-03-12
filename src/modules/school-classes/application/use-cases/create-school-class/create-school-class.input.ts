@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class CreateSchoolClassInput {
   @IsString()
@@ -6,6 +6,10 @@ export class CreateSchoolClassInput {
   name: string;
 
   @IsString()
-  @IsNotEmpty()
-  teacherId: string;
+  @IsOptional()
+  teacherId?: string;
+
+  @IsString()
+  @IsOptional()
+  userId?: string;
 }

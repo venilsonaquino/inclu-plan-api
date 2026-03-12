@@ -16,6 +16,7 @@ import { StudentsModule } from '@/modules/students/students.module';
 import { GradesModule } from '@/modules/grades/grades.module';
 import { NeurodivergenciesModule } from '@/modules/neurodivergencies/neurodivergencies.module';
 import { LessonsModule } from '../lessons/lessons.module';
+import { TeachersModule } from '@/modules/teachers/teachers.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { LessonsModule } from '../lessons/lessons.module';
     GradesModule,
     NeurodivergenciesModule,
     LessonsModule,
+    TeachersModule,
   ],
   controllers: [AiController],
   providers: [

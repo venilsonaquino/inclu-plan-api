@@ -7,9 +7,8 @@ describe('TeacherModel', () => {
     const model = Object.create(TeacherModel.prototype);
     Object.assign(model, {
       id: '1',
+      userId: 'user-1',
       name: 'Jane Doe',
-      email: 'jane@example.com',
-      passwordHash: 'hashed',
       createdAt: new Date(),
       updatedAt: new Date(),
       deletedAt: null,
@@ -19,7 +18,7 @@ describe('TeacherModel', () => {
 
     expect(domain).toBeInstanceOf(Teacher);
     expect(domain.id).toBe('1');
+    expect(domain.userId).toBe('user-1');
     expect(domain.name).toBe('Jane Doe');
-    expect(domain.email).toBe('jane@example.com');
   });
 });

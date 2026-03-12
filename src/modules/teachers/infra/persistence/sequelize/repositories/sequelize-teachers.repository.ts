@@ -26,4 +26,10 @@ export class SequelizeTeachersRepository implements ITeachersRepository {
     if (!model) return null;
     return model.toDomain();
   }
+
+  async findByUserId(userId: string): Promise<Teacher | null> {
+    const model = await this.teacherModel.findOne({ where: { userId } });
+    if (!model) return null;
+    return model.toDomain();
+  }
 }

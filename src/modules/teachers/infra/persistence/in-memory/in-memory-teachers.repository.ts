@@ -14,4 +14,9 @@ export class InMemoryTeachersRepository implements ITeachersRepository {
     const teacher = this.teachers.find(t => t.id === id);
     return teacher ? teacher : null;
   }
+
+  async findByUserId(userId: string): Promise<Teacher | null> {
+    const teacher = this.teachers.find(t => t.userId === userId);
+    return teacher ? teacher : null;
+  }
 }

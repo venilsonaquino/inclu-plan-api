@@ -34,9 +34,13 @@ export class GenerateLessonInput {
   lessons: LessonRequest[];
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID('4')
-  teacherId: string;
+  teacherId?: string;
+
+  @IsString()
+  @IsOptional()
+  userId?: string;
 
   @IsString()
   @IsOptional()

@@ -4,6 +4,7 @@ import { GenerateLessonUseCase } from '@/modules/ai/application/use-cases/genera
 import { GenerateCardsUseCase } from '@/modules/ai/application/use-cases/generate-cards/generate-cards.use-case';
 import { GenerateBoardUseCase } from '@/modules/ai/application/use-cases/generate-board/generate-board.use-case';
 import { GenerateHomeworkUseCase } from '@/modules/ai/application/use-cases/generate-homework/generate-homework.use-case';
+import { ITeachersRepository } from '@/modules/teachers/domain/repositories/teachers.repository';
 import { Result } from '@/shared/domain/utils/result';
 import { HttpException } from '@nestjs/common';
 
@@ -13,6 +14,7 @@ describe('AiController', () => {
   let generateCardsUseCase: any;
   let generateBoardUseCase: any;
   let generateHomeworkUseCase: any;
+  let teachersRepo: ITeachersRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,6 +24,7 @@ describe('AiController', () => {
         { provide: GenerateCardsUseCase, useValue: { execute: jest.fn() } },
         { provide: GenerateBoardUseCase, useValue: { execute: jest.fn() } },
         { provide: GenerateHomeworkUseCase, useValue: { execute: jest.fn() } },
+        { provide: ITeachersRepository, useValue: { findByUserId: jest.fn() } },
       ],
     }).compile();
 
@@ -30,6 +33,7 @@ describe('AiController', () => {
     generateCardsUseCase = module.get(GenerateCardsUseCase);
     generateBoardUseCase = module.get(GenerateBoardUseCase);
     generateHomeworkUseCase = module.get(GenerateHomeworkUseCase);
+    teachersRepo = module.get<ITeachersRepository>(ITeachersRepository);
   });
 
   it('should be defined', () => {
@@ -39,18 +43,20 @@ describe('AiController', () => {
   describe('generateLessonPlan', () => {
     it('should return value on success', async () => {
       const mockResult = Result.ok({ days: [] } as any);
+      jest.spyOn(teachersRepo, 'findByUserId').mockResolvedValue({ id: 'teacher-1' } as any);
       generateLessonUseCase.execute.mockResolvedValue(mockResult);
 
-      const result = await controller.generateLessonPlan({ some: 'input' } as any);
+      const result = await controller.generateLessonPlan({ some: 'input' } as any, { id: 'user-1', email: 'a@a.com' });
 
       expect(result).toEqual({ days: [] });
     });
 
     it('should throw HttpException on failure', async () => {
       const mockResult = Result.fail('error');
+      jest.spyOn(teachersRepo, 'findByUserId').mockResolvedValue({ id: 'teacher-1' } as any);
       generateLessonUseCase.execute.mockResolvedValue(mockResult);
 
-      await expect(controller.generateLessonPlan({} as any)).rejects.toThrow(HttpException);
+      await expect(controller.generateLessonPlan({} as any, { id: 'user-1', email: 'a@a.com' })).rejects.toThrow(HttpException);
     });
   });
 

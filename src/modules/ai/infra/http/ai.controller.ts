@@ -1,5 +1,6 @@
-import { Controller, Post, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { JwtAuthGuard } from '@/modules/identity/infra/http/guards/jwt-auth.guard';
+import { CurrentUser, ValidatedUser } from '@/modules/identity/infra/http/decorators/current-user.decorator';
 import { GenerateLessonUseCase } from '@/modules/ai/application/use-cases/generate-lesson/generate-lesson.use-case';
 import { GenerateCardsUseCase } from '@/modules/ai/application/use-cases/generate-cards/generate-cards.use-case';
 import { GenerateBoardUseCase } from '@/modules/ai/application/use-cases/generate-board/generate-board.use-case';
@@ -21,7 +22,9 @@ export class AiController {
   ) { }
 
   @Post('lesson-plan')
-  async generateLessonPlan(@Body() body: GenerateLessonInput) {
+  async generateLessonPlan(@Body() body: GenerateLessonInput, @CurrentUser() user: ValidatedUser) {
+    body.userId = user.id;
+
     const result = await this.generateLessonUseCase.execute(body);
     if (result.isFailure) {
       throw new HttpException(result.errorValue(), HttpStatus.INTERNAL_SERVER_ERROR);

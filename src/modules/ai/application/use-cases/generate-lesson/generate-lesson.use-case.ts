@@ -13,6 +13,7 @@ import { ILessonPlanRepository } from '@/modules/lessons/domain/repositories/les
 import { LessonPlan } from '@/modules/lessons/domain/entities/lesson-plan.entity';
 import { GenerateLessonMapper } from './generate-lesson.mapper';
 import { UseCase } from '@/shared/domain/interfaces/use-case';
+import { ITeachersRepository } from '@/modules/teachers/domain/repositories/teachers.repository';
 
 @Injectable()
 export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILessonGenerationBatchResponse> {
@@ -25,10 +26,22 @@ export class GenerateLessonUseCase implements UseCase<GenerateLessonInput, ILess
     private readonly studentsRepository: IStudentsRepository,
     private readonly gradesRepository: IGradesRepository,
     private readonly neurodivergenciesRepository: INeurodivergenciesRepository,
+    private readonly teachersRepository: ITeachersRepository,
   ) { }
 
   async execute(payload: GenerateLessonInput): Promise<Result<ILessonGenerationBatchResponse>> {
     try {
+      if (!payload.userId) {
+        return Result.fail('User ID is required to generate a lesson plan.');
+      }
+
+      const teacher = await this.teachersRepository.findByUserId(payload.userId);
+      if (!teacher) {
+        return Result.fail('Teacher record not found.');
+      }
+
+      payload.teacherId = teacher.id;
+
       this.logger.log(`Step 1/4: Loading templates and pedagogical context...`);
       const [templates, context] = await Promise.all([
         this.loadTemplates(),

@@ -114,7 +114,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"teacherId\": \"COLE_O_ID_DO_PROFESSOR_AQUI\",\n  \"lessons\": [\n    {\n      \"discipline\": {\n        \"name\": \"Matemática\",\n        \"theme\": \"Frações\",\n        \"observations\": \"Usar materiais visuais\"\n      },\n      \"students\": [\n        \"ID_ALUNO_1_AQUI\",\n        \"ID_ALUNO_2_AQUI\"\n      ]\n    }\n  ],\n  \"imagePart\": \"\"\n}"
+              "raw": "{\n  \"lessons\": [\n    {\n      \"discipline\": {\n        \"name\": \"Matemática\",\n        \"theme\": \"Frações\",\n        \"observations\": \"Usar materiais visuais\"\n      },\n      \"students\": [\n        \"ID_ALUNO_1_AQUI\",\n        \"ID_ALUNO_2_AQUI\"\n      ]\n    }\n  ],\n  \"imagePart\": \"\"\n}"
             },
             "url": {
               "raw": "http://localhost:8080/api/ai/lesson-plan",
@@ -271,7 +271,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"3º Ano B\",\n  \"teacherId\": \"COLE_O_ID_DO_PROFESSOR_AQUI\"\n}"
+              "raw": "{\n  \"name\": \"3º Ano B\"\n}"
             },
             "url": {
               "raw": "http://localhost:8080/api/school-classes",
