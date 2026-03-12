@@ -2,10 +2,103 @@
   "info": {
     "_postman_id": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
     "name": "IncluPlanAI - Completo",
-    "description": "Coleção para testar todas as rotas do IncluPlanAI, incluindo Banco de Dados (Sequelize) e Módulo de Inteligência Artificial.",
+    "description": "Coleção para testar todas as rotas do IncluPlanAI, incluindo Banco de Dados (Sequelize) e Módulo de Inteligência Artificial. Atualizada com Autenticação JWT.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "jwt_token",
+      "value": ""
+    }
+  ],
   "item": [
+    {
+      "name": "Identidade (Identity)",
+      "item": [
+        {
+          "name": "Registrar Usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Maria Silva\",\n  \"email\": \"maria.silva@escola.com.br\",\n  \"password\": \"senha123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/identity/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "identity",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fazer Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.accessToken) {",
+                  "    pm.collectionVariables.set(\"jwt_token\", jsonData.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maria.silva@escola.com.br\",\n  \"password\": \"senha123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/identity/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "identity",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
     {
       "name": "Inteligência Artificial (AI)",
       "item": [
@@ -124,39 +217,6 @@
                 "ai",
                 "pedagogical-material",
                 "homework"
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Professores (Teachers)",
-      "item": [
-        {
-          "name": "Criar Professor",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Maria Silva\",\n  \"email\": \"maria.silva@escola.com.br\",\n  \"password\": \"senha123\"\n}"
-            },
-            "url": {
-              "raw": "http://localhost:8080/api/teachers",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "api",
-                "teachers"
               ]
             }
           }
