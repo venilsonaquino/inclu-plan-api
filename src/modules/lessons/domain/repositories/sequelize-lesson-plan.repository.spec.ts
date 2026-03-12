@@ -54,7 +54,7 @@ describe('SequelizeLessonPlanRepository', () => {
     (LessonPlanModel.bulkCreate as jest.Mock).mockResolvedValue([]);
     (StudentAdaptationModel.bulkCreate as jest.Mock).mockResolvedValue([]);
 
-    await repository.saveBatch([mockRecord as any], []);
+    await repository.saveBatch([mockRecord as any]);
 
     expect(LessonPlanModel.bulkCreate).toHaveBeenCalledTimes(1);
   });

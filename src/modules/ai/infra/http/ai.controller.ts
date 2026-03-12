@@ -1,4 +1,5 @@
-import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '@/modules/identity/infra/http/guards/jwt-auth.guard';
 import { GenerateLessonUseCase } from '@/modules/ai/application/use-cases/generate-lesson/generate-lesson.use-case';
 import { GenerateCardsUseCase } from '@/modules/ai/application/use-cases/generate-cards/generate-cards.use-case';
 import { GenerateBoardUseCase } from '@/modules/ai/application/use-cases/generate-board/generate-board.use-case';
@@ -10,6 +11,7 @@ import { GenerateHomeworkInput } from '@/modules/ai/application/use-cases/genera
 import { GenerateLessonInput } from '@/modules/ai/application/use-cases/generate-lesson/generate-lesson.input';
 
 @Controller('ai')
+@UseGuards(JwtAuthGuard)
 export class AiController {
   constructor(
     private readonly generateLessonUseCase: GenerateLessonUseCase,

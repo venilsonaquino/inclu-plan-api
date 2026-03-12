@@ -1,9 +1,11 @@
-import { Controller, Post, Body, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '@/modules/identity/infra/http/guards/jwt-auth.guard';
 import { CreateGradeUseCase } from '@/modules/grades/application/use-cases/create-grade/create-grade.use-case';
 import { CreateGradeInput } from '@/modules/grades/application/use-cases/create-grade/create-grade.input';
 import { Response } from 'express';
 
 @Controller('grades')
+@UseGuards(JwtAuthGuard)
 export class GradesController {
   constructor(private readonly createGradeUseCase: CreateGradeUseCase) {}
 

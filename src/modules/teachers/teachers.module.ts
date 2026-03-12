@@ -16,6 +16,6 @@ import { SequelizeModule } from '@nestjs/sequelize';
       useClass: SequelizeTeachersRepository,
     },
   ],
-  exports: [ITeachersRepository],
+  exports: [ITeachersRepository, CreateTeacherUseCase],
 })
 export class TeachersModule {}

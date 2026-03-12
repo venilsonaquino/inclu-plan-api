@@ -4,6 +4,8 @@ import { LoginUserInput } from './login-user.input';
 import { Result } from '@/shared/domain/utils/result';
 import { CryptoUtil } from '@/shared/utils/crypto.util';
 
+import { JwtService } from '@nestjs/jwt';
+
 export class LoginUserOutput {
   accessToken: string;
   user: {
@@ -19,9 +21,7 @@ export class LoginUserUseCase {
 
   constructor(
     private readonly usersRepository: IUsersRepository,
-    // Typically, a JwtService would be injected here to generate tokens
-    // For now, we will return a placeholder token, or if @nestjs/jwt is available, we can mock it or use it.
-    // Assuming a simple implementation for now.
+    private readonly jwtService: JwtService,
   ) {}
 
   async execute(input: LoginUserInput): Promise<Result<LoginUserOutput>> {
@@ -38,11 +38,8 @@ export class LoginUserUseCase {
         return Result.fail('Invalid email or password.');
       }
 
-      // Generate a mock JWT for now (In a real app, use JwtService)
-      // Since I don't know the exact Jwt config, I'll return a stub. 
-      // It can be refactored when integrating IdentityModule with JwtModule.
-      const payload = Buffer.from(JSON.stringify({ sub: user.id, email: user.email })).toString('base64');
-      const token = `header.${payload}.signature`;
+      const payload = { sub: user.id, email: user.email };
+      const token = await this.jwtService.signAsync(payload);
 
       return Result.ok({
         accessToken: token,

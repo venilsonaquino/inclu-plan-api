@@ -41,7 +41,7 @@ describe('AiController', () => {
       const mockResult = Result.ok({ days: [] } as any);
       generateLessonUseCase.execute.mockResolvedValue(mockResult);
 
-      const result = await controller.generateLessonPlan({ some: 'input' });
+      const result = await controller.generateLessonPlan({ some: 'input' } as any);
 
       expect(result).toEqual({ days: [] });
     });
@@ -50,7 +50,7 @@ describe('AiController', () => {
       const mockResult = Result.fail('error');
       generateLessonUseCase.execute.mockResolvedValue(mockResult);
 
-      await expect(controller.generateLessonPlan({})).rejects.toThrow(HttpException);
+      await expect(controller.generateLessonPlan({} as any)).rejects.toThrow(HttpException);
     });
   });
 

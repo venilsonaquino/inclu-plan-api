@@ -1,9 +1,11 @@
-import { Controller, Post, Body, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '@/modules/identity/infra/http/guards/jwt-auth.guard';
 import { CreateNeurodivergencyUseCase } from '@/modules/neurodivergencies/application/use-cases/create-neurodivergency/create-neurodivergency.use-case';
 import { CreateNeurodivergencyInput } from '@/modules/neurodivergencies/application/use-cases/create-neurodivergency/create-neurodivergency.input';
 import { Response } from 'express';
 
 @Controller('neurodivergencies')
+@UseGuards(JwtAuthGuard)
 export class NeurodivergenciesController {
   constructor(private readonly createNeurodivergencyUseCase: CreateNeurodivergencyUseCase) {}
 
