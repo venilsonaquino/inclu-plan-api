@@ -24,12 +24,12 @@
               "raw": "{\n  \"teacherId\": \"COLE_O_ID_DO_PROFESSOR_AQUI\",\n  \"lessons\": [\n    {\n      \"discipline\": {\n        \"name\": \"Matemática\",\n        \"theme\": \"Frações\",\n        \"observations\": \"Usar materiais visuais\"\n      },\n      \"students\": [\n        \"ID_ALUNO_1_AQUI\",\n        \"ID_ALUNO_2_AQUI\"\n      ]\n    }\n  ],\n  \"imagePart\": \"\"\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/ai/lesson-plan",
+              "raw": "http://localhost:8080/api/ai/lesson-plan",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "3000",
+              "port": "8080",
               "path": [
                 "api",
                 "ai",
@@ -53,12 +53,12 @@
               "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte VISUAL usando pictogramas claros, rotinas visuais estruturadas e pouca poluição.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/ai/pedagogical-material/cards",
+              "raw": "http://localhost:8080/api/ai/pedagogical-material/cards",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "3000",
+              "port": "8080",
               "path": [
                 "api",
                 "ai",
@@ -83,12 +83,12 @@
               "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte COGNITIVO usando instruções curtas, passo-a-passo simplificado e evite metáforas.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/ai/pedagogical-material/board",
+              "raw": "http://localhost:8080/api/ai/pedagogical-material/board",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "3000",
+              "port": "8080",
               "path": [
                 "api",
                 "ai",
@@ -113,12 +113,12 @@
               "raw": "{\n  \"theme\": \"Sistema Solar\",\n  \"objective\": \"Aprender a ordem dos planetas e as características principais do Sol e da Terra\",\n  \"description\": \"Os alunos vão aprender mediante leitura compartilhada e pintura.\",\n  \"strategyOverride\": \"Diretriz Pedagógica Obrigatória: Foque em Suporte SENSORIO-MOTOR usando texturas imaginárias, movimento corporal e manipulação tátil.\",\n  \"studentData\": {\n    \"name\": \"Alice (Exemplo)\",\n    \"grade\": \"3º Ano\",\n    \"profile\": \"Transtorno do Espectro Autista (Nível 1) e TDAH\",\n    \"adaptation\": \"Fornecer imagens planetárias de alto contraste. Para a leitura compartilhada, entregar o texto fragmentado em parágrafos mais curtos para diminuir a carga cognitiva.\"\n  }\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/ai/pedagogical-material/homework",
+              "raw": "http://localhost:8080/api/ai/pedagogical-material/homework",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "3000",
+              "port": "8080",
               "path": [
                 "api",
                 "ai",
@@ -148,12 +148,12 @@
               "raw": "{\n  \"name\": \"Maria Silva\",\n  \"email\": \"maria.silva@escola.com.br\",\n  \"password\": \"senha123\"\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/teachers",
+              "raw": "http://localhost:8080/api/teachers",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "3000",
+              "port": "8080",
               "path": [
                 "api",
                 "teachers"
@@ -181,12 +181,12 @@
               "raw": "{\n  \"name\": \"3º Ano\",\n  \"description\": \"Ensino Fundamental I\"\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/grades",
+              "raw": "http://localhost:8080/api/grades",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "3000",
+              "port": "8080",
               "path": [
                 "api",
                 "grades"
@@ -214,12 +214,12 @@
               "raw": "{\n  \"name\": \"3º Ano B\",\n  \"teacherId\": \"COLE_O_ID_DO_PROFESSOR_AQUI\"\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/school-classes",
+              "raw": "http://localhost:8080/api/school-classes",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "3000",
+              "port": "8080",
               "path": [
                 "api",
                 "school-classes"
@@ -247,12 +247,12 @@
               "raw": "{\n  \"name\": \"TEA\",\n  \"description\": \"Transtorno do Espectro Autista. O aluno necessita de previsibilidade, suporte visual claro e acomodações sensoriais.\"\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/neurodivergencies",
+              "raw": "http://localhost:8080/api/neurodivergencies",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "3000",
+              "port": "8080",
               "path": [
                 "api",
                 "learning-profiles"
@@ -280,12 +280,12 @@
               "raw": "{\n  \"name\": \"Joãozinho (Exemplo)\",\n  \"gradeId\": \"ID_DA_SERIE\",\n  \"schoolClassId\": \"ID_DA_TURMA\",\n  \"neurodivergencies\": [\"ID_DA_NEURODIVERGENCIA_1\", \"ID_DA_NEURODIVERGENCIA_2\"],\n  \"notes\": \"Aluno transferido recentemente. Tem bastante afinidade com artes.\"\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/students",
+              "raw": "http://localhost:8080/api/students",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "3000",
+              "port": "8080",
               "path": [
                 "api",
                 "students"
@@ -313,12 +313,12 @@
               "raw": "{\n  \"studentId\": \"COLE_O_ID_DO_ALUNO_AQUI\",\n  \"neurodivergencyId\": \"COLE_O_ID_DO_PERFIL_AQUI\",\n  \"notes\": \"Ocasionalmente usa abafadores.\"\n}"
             },
             "url": {
-              "raw": "http://localhost:3000/api/student-neurodivergencies/assign",
+              "raw": "http://localhost:8080/api/student-neurodivergencies/assign",
               "protocol": "http",
               "host": [
                 "localhost"
               ],
-              "port": "3000",
+              "port": "8080",
               "path": [
                 "api",
                 "student-learning-profiles",
