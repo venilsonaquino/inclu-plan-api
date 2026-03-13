@@ -8,4 +8,8 @@ export class CreateNeurodivergencyInput {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  icon: string;
 }

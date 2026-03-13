@@ -1,9 +1,10 @@
-import { Controller, Post, Get, Body, Res, HttpStatus, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Res, HttpStatus, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { JwtAuthGuard } from '@/modules/identity/infra/http/guards/jwt-auth.guard';
 import { CurrentUser, ValidatedUser } from '@/modules/identity/infra/http/decorators/current-user.decorator';
 import { CreateSchoolClassUseCase } from '@/modules/school-classes/application/use-cases/create-school-class/create-school-class.use-case';
 import { CreateSchoolClassInput } from '@/modules/school-classes/application/use-cases/create-school-class/create-school-class.input';
 import { ListSchoolClassesByTeacherUseCase } from '@/modules/school-classes/application/use-cases/list-school-classes-by-teacher/list-school-classes-by-teacher.use-case';
+import { GetSchoolClassUseCase } from '@/modules/school-classes/application/use-cases/get-school-class/get-school-class.use-case';
 import { Response } from 'express';
 
 @Controller('school-classes')
@@ -12,6 +13,7 @@ export class SchoolClassesController {
   constructor(
     private readonly createSchoolClassUseCase: CreateSchoolClassUseCase,
     private readonly listSchoolClassesByTeacherUseCase: ListSchoolClassesByTeacherUseCase,
+    private readonly getSchoolClassUseCase: GetSchoolClassUseCase,
   ) {}
 
   @Post()
@@ -37,6 +39,24 @@ export class SchoolClassesController {
     @Res() res: Response
   ) {
     const result = await this.listSchoolClassesByTeacherUseCase.execute({
+      userId: user.id,
+    });
+
+    if (result.isSuccess) {
+      return res.status(HttpStatus.OK).json(result.getValue());
+    } else {
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: result.errorValue() });
+    }
+  }
+
+  @Get(':id')
+  async findOne(
+    @Param('id') id: string,
+    @CurrentUser() user: ValidatedUser,
+    @Res() res: Response
+  ) {
+    const result = await this.getSchoolClassUseCase.execute({
+      id,
       userId: user.id,
     });
 

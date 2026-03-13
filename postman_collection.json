@@ -305,12 +305,51 @@
               ]
             }
           }
+        },
+        {
+          "name": "Buscar Turma por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/school-classes/ID_DA_TURMA_AQUI",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "school-classes",
+                "ID_DA_TURMA_AQUI"
+              ]
+            }
+          }
         }
       ]
     },
     {
       "name": "Neurodivergências (Neurodivergencies)",
       "item": [
+        {
+          "name": "Listar Neurodivergências",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/neurodivergencies",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "neurodivergencies"
+              ]
+            }
+          }
+        },
         {
           "name": "Criar Neurodivergência",
           "request": {
@@ -323,7 +362,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"TEA\",\n  \"description\": \"Transtorno do Espectro Autista. O aluno necessita de previsibilidade, suporte visual claro e acomodações sensoriais.\"\n}"
+              "raw": "{\n  \"name\": \"TEA\",\n  \"description\": \"Transtorno do Espectro Autista. O aluno necessita de previsibilidade, suporte visual claro e acomodações sensoriais.\",\n  \"icon\": \"extension\"\n}"
             },
             "url": {
               "raw": "http://localhost:8080/api/neurodivergencies",
@@ -334,7 +373,7 @@
               "port": "8080",
               "path": [
                 "api",
-                "learning-profiles"
+                "neurodivergencies"
               ]
             }
           }

@@ -29,6 +29,12 @@ export class NeurodivergencyModel extends Model<NeurodivergencyModel> {
   })
   declare description: string;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  declare icon: string;
+
   @BelongsToMany(() => StudentModel, () => StudentNeurodivergencyModel)
   students: StudentModel[];
 
@@ -38,6 +44,7 @@ export class NeurodivergencyModel extends Model<NeurodivergencyModel> {
       {
         name: this.name,
         description: this.description,
+        icon: this.icon,
         createdAt: this.createdAt,
         updatedAt: this.updatedAt,
       },

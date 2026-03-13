@@ -24,7 +24,14 @@ export class SequelizeSchoolClassesRepository implements ISchoolClassesRepositor
   }
 
   async findById(id: string): Promise<SchoolClass | null> {
-    const model = await this.schoolClassModel.findByPk(id);
+    const model = await this.schoolClassModel.findByPk(id, {
+      include: [
+        {
+          model: StudentModel,
+          required: false,
+        },
+      ],
+    });
     if (!model) return null;
     return model.toDomain();
   }

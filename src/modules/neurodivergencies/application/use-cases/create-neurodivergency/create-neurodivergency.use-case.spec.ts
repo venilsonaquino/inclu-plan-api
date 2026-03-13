@@ -19,12 +19,14 @@ describe('CreateNeurodivergencyUseCase', () => {
     const input = {
       name: 'Autismo',
       description: 'Transtorno do Espectro Autista',
+      icon: 'extension',
     };
 
     const result = await useCase.execute(input);
 
     expect(result.isSuccess).toBe(true);
     expect(result.getValue().name).toBe(input.name);
+    expect(result.getValue().icon).toBe(input.icon);
     expect(repository.create).toHaveBeenCalled();
   });
 
@@ -34,6 +36,7 @@ describe('CreateNeurodivergencyUseCase', () => {
     const input = {
       name: 'Autismo',
       description: 'Transtorno do Espectro Autista',
+      icon: 'extension',
     };
 
     const result = await useCase.execute(input);

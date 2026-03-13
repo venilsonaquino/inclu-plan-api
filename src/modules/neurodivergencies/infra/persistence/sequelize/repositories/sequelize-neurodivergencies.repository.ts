@@ -17,6 +17,7 @@ export class SequelizeNeurodivergenciesRepository implements INeurodivergenciesR
       id: neurodivergency.id,
       name: neurodivergency.name,
       description: neurodivergency.description,
+      icon: neurodivergency.icon,
       createdAt: neurodivergency.createdAt,
       updatedAt: neurodivergency.updatedAt,
     });
