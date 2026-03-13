@@ -11,7 +11,7 @@ export class NeurodivergenciesController {
   constructor(
     private readonly createNeurodivergencyUseCase: CreateNeurodivergencyUseCase,
     private readonly listNeurodivergenciesUseCase: ListNeurodivergenciesUseCase,
-  ) {}
+  ) { }
 
   @Post()
   async create(@Body() input: CreateNeurodivergencyInput, @Res() res: Response) {

@@ -17,6 +17,7 @@ export class CreateGradeUseCase {
         {
           name: input.name,
           description: input.description,
+          position: input.position,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -29,6 +30,7 @@ export class CreateGradeUseCase {
         id: newGrade.id,
         name: newGrade.name,
         description: newGrade.description,
+        position: newGrade.position,
         createdAt: newGrade.createdAt,
       });
     } catch (error) {

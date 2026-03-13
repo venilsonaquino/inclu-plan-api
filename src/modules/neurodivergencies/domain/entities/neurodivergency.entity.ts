@@ -4,6 +4,7 @@ export interface NeurodivergencyProps {
   name: string;
   description: string;
   icon: string;
+  position: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,6 +16,7 @@ export class Neurodivergency extends Entity<NeurodivergencyProps> {
         name: props.name ?? '',
         description: props.description ?? '',
         icon: props.icon ?? '',
+        position: props.position ?? 0,
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },
@@ -30,6 +32,9 @@ export class Neurodivergency extends Entity<NeurodivergencyProps> {
   }
   get icon() {
     return this.props.icon;
+  }
+  get position() {
+    return this.props.position;
   }
   get createdAt() {
     return this.props.createdAt;

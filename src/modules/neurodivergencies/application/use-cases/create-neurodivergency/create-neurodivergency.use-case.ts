@@ -18,6 +18,7 @@ export class CreateNeurodivergencyUseCase {
           name: input.name,
           description: input.description,
           icon: input.icon,
+          position: input.position,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -31,6 +32,7 @@ export class CreateNeurodivergencyUseCase {
         name: newNeurodivergency.name,
         description: newNeurodivergency.description,
         icon: newNeurodivergency.icon,
+        position: newNeurodivergency.position,
         createdAt: newNeurodivergency.createdAt,
       });
     } catch (error) {

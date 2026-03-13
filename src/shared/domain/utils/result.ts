@@ -2,7 +2,7 @@ export class Result<T> {
   public isSuccess: boolean;
   public isFailure: boolean;
   public error: string | null;
-  private _value: T | null;
+  private value: T | null;
 
   private constructor(isSuccess: boolean, error?: string | null, value?: T | null) {
     if (isSuccess && error) {
@@ -15,7 +15,7 @@ export class Result<T> {
     this.isSuccess = isSuccess;
     this.isFailure = !isSuccess;
     this.error = error || null;
-    this._value = value !== undefined ? value : null;
+    this.value = value !== undefined ? value : null;
 
     Object.freeze(this);
   }
@@ -25,7 +25,7 @@ export class Result<T> {
       throw new Error("Can't get the value of an error result. Use 'error' instead.");
     }
 
-    return this._value as T;
+    return this.value as T;
   }
 
   public errorValue(): string {

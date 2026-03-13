@@ -3,5 +3,6 @@ export type ListNeurodivergenciesOutput = {
   name: string;
   description: string;
   icon: string;
+  position: number;
   createdAt: Date;
 }[];

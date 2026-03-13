@@ -17,6 +17,7 @@ export class SequelizeGradesRepository implements IGradesRepository {
       id: grade.id,
       name: grade.name,
       description: grade.description,
+      position: grade.position,
       createdAt: grade.createdAt,
       updatedAt: grade.updatedAt,
     });

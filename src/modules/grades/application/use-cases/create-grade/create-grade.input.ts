@@ -8,4 +8,7 @@ export class CreateGradeInput {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @IsNotEmpty()
+  position: number;
 }

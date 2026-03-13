@@ -18,6 +18,7 @@ export class ListNeurodivergenciesUseCase {
         name: n.name,
         description: n.description,
         icon: n.icon,
+        position: n.position,
         createdAt: n.createdAt,
       }));
 

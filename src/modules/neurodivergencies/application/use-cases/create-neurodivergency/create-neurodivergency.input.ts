@@ -12,4 +12,7 @@ export class CreateNeurodivergencyInput {
   @IsString()
   @IsNotEmpty()
   icon: string;
+
+  @IsNotEmpty()
+  position: number;
 }

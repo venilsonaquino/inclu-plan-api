@@ -27,12 +27,19 @@ export class GradeModel extends Model<GradeModel> {
   })
   declare description: string;
 
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  declare position: number;
+
   // Domain Mapping Utils
   toDomain(): Grade {
     return new Grade(
       {
         name: this.name,
         description: this.description,
+        position: this.position,
         createdAt: this.createdAt,
         updatedAt: this.updatedAt,
       },
