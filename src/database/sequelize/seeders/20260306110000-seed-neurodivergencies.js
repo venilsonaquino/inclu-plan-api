@@ -12,7 +12,7 @@ module.exports = {
       { id: '62e60938-f9b8-4c11-9a7e-137688225916', icon: 'campaign', name: 'DLD / TEL', position: 6, description: 'Distúrbio de Linguagem de Desenvolvimento / Transtorno Específico de Linguagem', created_at: new Date(), updated_at: new Date() },
       { id: '28639556-9121-4d1a-967e-128267225110', icon: 'calculate', name: 'Discalculia', position: 7, description: 'Transtorno de aprendizagem na matemática', created_at: new Date(), updated_at: new Date() },
       { id: '10926639-9133-4066-9a25-247653882776', icon: 'edit_note', name: 'Disgrafia', position: 8, description: 'Transtorno de aprendizagem na escrita', created_at: new Date(), updated_at: new Date() },
-      { id: '91266380-4491-4c1a-9821-285366442110', icon: 'directions_run', name: 'Dispraxia / TDC', position: 1, description: 'Transtorno do Desenvolvimento da Coordenação', created_at: new Date(), updated_at: new Date() },
+      { id: '91266380-4491-4c1a-9821-285366442110', icon: 'directions_run', name: 'Dispraxia / TDC', position: 9, description: 'Transtorno do Desenvolvimento da Coordenação', created_at: new Date(), updated_at: new Date() },
     ];
 
     // For each neurodivergency, check if it exists and update or insert
