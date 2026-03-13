@@ -47,6 +47,7 @@ export class GetSchoolClassUseCase {
           name: s.name,
           gradeId: s.gradeId,
           isActive: s.isActive,
+          neurodivergencies: s.neurodivergencyDetails || [],
         })),
         createdAt: schoolClass.createdAt.toISOString(),
       };

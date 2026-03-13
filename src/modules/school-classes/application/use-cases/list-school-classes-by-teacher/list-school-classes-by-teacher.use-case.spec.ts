@@ -80,6 +80,7 @@ describe('ListSchoolClassesByTeacherUseCase', () => {
           name: 'John Doe',
           gradeId: 'grade-1',
           isActive: true,
+          neurodivergencies: [],
         },
       ],
       createdAt: '2023-01-01T10:00:00.000Z',

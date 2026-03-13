@@ -36,6 +36,7 @@ export class ListSchoolClassesByTeacherUseCase {
           name: s.name,
           gradeId: s.gradeId,
           isActive: s.isActive,
+          neurodivergencies: s.neurodivergencyDetails || [],
         })),
         createdAt: c.createdAt.toISOString(),
       }));

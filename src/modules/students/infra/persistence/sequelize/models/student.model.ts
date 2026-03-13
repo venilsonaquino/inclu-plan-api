@@ -59,6 +59,7 @@ export class StudentModel extends Model<StudentModel> {
         name: this.name,
         gradeId: this.gradeId,
         neurodivergencies: this.neurodivergencies ? this.neurodivergencies.map(p => p.id) : [],
+        neurodivergencyDetails: this.neurodivergencies ? this.neurodivergencies.map(p => ({ id: p.id, name: p.name })) : [],
         schoolClassId: this.schoolClassId,
         notes: this.notes,
         isActive: this.isActive,

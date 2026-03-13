@@ -4,6 +4,7 @@ export interface StudentProps {
   name: string;
   gradeId: string;
   neurodivergencies: string[];
+  neurodivergencyDetails?: { id: string; name: string }[];
   schoolClassId?: string;
   notes?: string;
   isActive: boolean;
@@ -19,6 +20,7 @@ export class Student extends Entity<StudentProps> {
         name: props.name ?? '',
         gradeId: props.gradeId ?? '',
         neurodivergencies: props.neurodivergencies ?? [],
+        neurodivergencyDetails: props.neurodivergencyDetails,
         schoolClassId: props.schoolClassId,
         notes: props.notes,
         isActive: props.isActive ?? true,
@@ -38,6 +40,9 @@ export class Student extends Entity<StudentProps> {
   }
   get neurodivergencies() {
     return this.props.neurodivergencies;
+  }
+  get neurodivergencyDetails() {
+    return this.props.neurodivergencyDetails;
   }
   get schoolClassId() {
     return this.props.schoolClassId;

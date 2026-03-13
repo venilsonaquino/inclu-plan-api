@@ -29,6 +29,12 @@ export class SequelizeSchoolClassesRepository implements ISchoolClassesRepositor
         {
           model: StudentModel,
           required: false,
+          include: [
+            {
+              model: (this.schoolClassModel.sequelize.models.NeurodivergencyModel as any) || 'NeurodivergencyModel',
+              required: false,
+            }
+          ]
         },
       ],
     });
@@ -43,6 +49,12 @@ export class SequelizeSchoolClassesRepository implements ISchoolClassesRepositor
         {
           model: StudentModel,
           required: false,
+          include: [
+            {
+              model: (this.schoolClassModel.sequelize.models.NeurodivergencyModel as any) || 'NeurodivergencyModel',
+              required: false,
+            }
+          ]
         },
       ],
     });

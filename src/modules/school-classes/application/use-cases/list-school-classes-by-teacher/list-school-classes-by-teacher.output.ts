@@ -7,6 +7,10 @@ export type ListSchoolClassesByTeacherOutput = {
     name: string;
     gradeId: string;
     isActive: boolean;
+    neurodivergencies: {
+      id: string;
+      name: string;
+    }[];
   }[];
   createdAt: string;
 }[];
