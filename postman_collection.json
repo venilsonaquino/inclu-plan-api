@@ -238,7 +238,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"3º Ano\",\n  \"description\": \"Ensino Fundamental I\"\n}"
+              "raw": "{\n  \"name\": \"3º Ano\",\n  \"description\": \"Ensino Fundamental I\",\n  \"position\": 3\n}"
             },
             "url": {
               "raw": "http://localhost:8080/api/grades",
@@ -253,6 +253,26 @@
               ]
             }
           }
+        },
+        {
+          "name": "Listar Séries / Níveis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/grades",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "grades"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -362,7 +382,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"TEA\",\n  \"description\": \"Transtorno do Espectro Autista. O aluno necessita de previsibilidade, suporte visual claro e acomodações sensoriais.\",\n  \"icon\": \"extension\"\n}"
+              "raw": "{\n  \"name\": \"TEA\",\n  \"description\": \"Transtorno do Espectro Autista. O aluno necessita de previsibilidade, suporte visual claro e acomodações sensoriais.\",\n  \"icon\": \"extension\",\n  \"position\": 1\n}"
             },
             "url": {
               "raw": "http://localhost:8080/api/neurodivergencies",
