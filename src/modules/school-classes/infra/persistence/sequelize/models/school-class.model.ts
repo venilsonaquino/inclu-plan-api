@@ -1,5 +1,6 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
 import { SchoolClass } from '@/modules/school-classes/domain/entities/school-class.entity';
+import { StudentModel } from '@/modules/students/infra/persistence/sequelize/models/student.model';
 
 @Table({
   tableName: 'school_classes',
@@ -35,6 +36,9 @@ export class SchoolClassModel extends Model<SchoolClassModel> {
   })
   declare isActive: boolean;
 
+  @HasMany(() => StudentModel, 'schoolClassId')
+  students: StudentModel[];
+
   // Domain Mapping Utils
   toDomain(): SchoolClass {
     return new SchoolClass(
@@ -42,6 +46,7 @@ export class SchoolClassModel extends Model<SchoolClassModel> {
         name: this.name,
         teacherId: this.teacherId,
         isActive: this.isActive,
+        students: this.students ? this.students.map(s => s.toDomain()) : [],
         createdAt: this.createdAt,
         updatedAt: this.updatedAt,
         deletedAt: this.deletedAt,

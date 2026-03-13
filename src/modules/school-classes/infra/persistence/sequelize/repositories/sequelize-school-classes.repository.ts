@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { ISchoolClassesRepository } from '@/modules/school-classes/domain/repositories/school-classes.repository';
 import { SchoolClass } from '@/modules/school-classes/domain/entities/school-class.entity';
 import { SchoolClassModel } from '@/modules/school-classes/infra/persistence/sequelize/models/school-class.model';
+import { StudentModel } from '@/modules/students/infra/persistence/sequelize/models/student.model';
 
 @Injectable()
 export class SequelizeSchoolClassesRepository implements ISchoolClassesRepository {
@@ -31,6 +32,12 @@ export class SequelizeSchoolClassesRepository implements ISchoolClassesRepositor
   async findByTeacherId(teacherId: string): Promise<SchoolClass[]> {
     const models = await this.schoolClassModel.findAll({
       where: { teacherId },
+      include: [
+        {
+          model: StudentModel,
+          required: false,
+        },
+      ],
     });
     return models.map(model => model.toDomain());
   }

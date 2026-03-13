@@ -286,6 +286,25 @@
               ]
             }
           }
+        },
+        {
+          "name": "Listar Turmas do Professor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/school-classes",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "school-classes"
+              ]
+            }
+          }
         }
       ]
     },

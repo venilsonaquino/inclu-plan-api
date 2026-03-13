@@ -4,6 +4,7 @@ export interface SchoolClassProps {
   name: string;
   teacherId: string;
   isActive: boolean;
+  students?: any[]; // We will type this as any[] or Student[] if we import Student
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
@@ -16,6 +17,7 @@ export class SchoolClass extends Entity<SchoolClassProps> {
         name: props.name ?? '',
         teacherId: props.teacherId ?? '',
         isActive: props.isActive ?? true,
+        students: props.students ?? [],
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
         deletedAt: props.deletedAt,
@@ -33,6 +35,9 @@ export class SchoolClass extends Entity<SchoolClassProps> {
   get isActive() {
     return this.props.isActive;
   }
+  get students() {
+    return this.props.students;
+  }
   get createdAt() {
     return this.props.createdAt;
   }
@@ -43,3 +48,4 @@ export class SchoolClass extends Entity<SchoolClassProps> {
     return this.props.deletedAt;
   }
 }
+
