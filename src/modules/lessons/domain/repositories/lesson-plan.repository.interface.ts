@@ -13,8 +13,10 @@ export abstract class ILessonPlanRepository {
   abstract saveBatch(lessonPlans: LessonPlan[]): Promise<void>;
 
   abstract findById(id: string): Promise<LessonPlan | null>;
+  abstract findAll(filter: { teacherId: string; limit?: number }): Promise<LessonPlan[]>;
 
   // For testing purposes
+
   abstract clear(): Promise<void>;
   abstract count(): Promise<number>;
 }

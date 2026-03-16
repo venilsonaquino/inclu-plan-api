@@ -101,7 +101,50 @@ export class SequelizeLessonPlanRepository implements ILessonPlanRepository {
     }, model.id, model.createdAt, model.updatedAt);
   }
 
+  async findAll(filter: { teacherId: string; limit?: number }): Promise<LessonPlan[]> {
+    const { teacherId, limit } = filter;
+    const models = await LessonPlanModel.findAll({
+      where: { teacherId },
+      limit,
+      order: [['createdAt', 'DESC']],
+      include: [StudentAdaptationModel]
+    });
+
+    return models.map(model => LessonPlan.create({
+      teacherId: model.teacherId,
+      discipline: model.discipline,
+      theme: model.theme,
+      lessonTitle: model.lessonTitle,
+      estimatedPrepTime: model.estimatedPrepTime,
+      lessonNumber: model.lessonNumber,
+      objective: model.objective,
+      learningObjects: model.learningObjects,
+      bnccCode: model.bnccCode,
+      bnccDescription: model.bnccDescription,
+      duration: model.duration,
+      activitySteps: model.activitySteps,
+      udlRepresentation: model.udlRepresentation,
+      udlActionExpression: model.udlActionExpression,
+      udlEngagement: model.udlEngagement,
+      resources: model.resources,
+      evaluation: model.evaluation,
+      adaptations: (model as any).studentAdaptations?.map((a: any) =>
+        StudentAdaptation.create({
+          studentId: a.studentId,
+          studentName: a.studentName,
+          studentGrade: a.studentGrade,
+          studentNeurodivergencies: a.studentNeurodivergencies,
+          strategy: a.strategy,
+          behavioralTips: a.behavioralTips,
+          supportLevel: a.supportLevel,
+          successIndicators: a.successIndicators,
+        }, a.id, a.createdAt, a.updatedAt)
+      ) || []
+    }, model.id, model.createdAt, model.updatedAt));
+  }
+
   async clear(): Promise<void> {
+
     await StudentAdaptationModel.destroy({ where: {}, truncate: true, cascade: true });
     await LessonPlanModel.destroy({ where: {}, truncate: true, cascade: true });
   }

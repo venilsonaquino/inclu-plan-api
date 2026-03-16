@@ -466,6 +466,37 @@
           }
         }
       ]
+    },
+    {
+      "name": "Planos de Aula (Lesson Plans)",
+      "item": [
+        {
+          "name": "Listar Planos de Aula",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/lessons?limit=3",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "lessons"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "3",
+                  "description": "Limitar quantidade de planos retornados"
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }
