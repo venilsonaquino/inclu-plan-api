@@ -11,7 +11,7 @@ export class ListLessonPlansUseCase implements UseCase<ListLessonPlansInput, Lis
   constructor(
     private readonly repository: ILessonPlanRepository,
     private readonly teachersRepository: ITeachersRepository,
-  ) {}
+  ) { }
 
   async execute(request: ListLessonPlansInput): Promise<Result<ListLessonPlansOutput[]>> {
     try {
@@ -32,6 +32,7 @@ export class ListLessonPlansUseCase implements UseCase<ListLessonPlansInput, Lis
       const output: ListLessonPlansOutput[] = plans.map(plan => ({
         id: plan.id,
         title: plan.lessonTitle,
+        discipline: plan.discipline,
         description: plan.objective || plan.theme || '',
         targetAudience: plan.adaptations?.[0]?.studentGrade || 'Geral',
         createdAt: plan.created_at,
