@@ -18,6 +18,7 @@ describe('CreateNeurodivergencyUseCase', () => {
   it('should create a neurodivergency successfully', async () => {
     const input = {
       name: 'Autismo',
+      position: 1,
       description: 'Transtorno do Espectro Autista',
       icon: 'extension',
     };
@@ -35,6 +36,7 @@ describe('CreateNeurodivergencyUseCase', () => {
 
     const input = {
       name: 'Autismo',
+      position: 1,
       description: 'Transtorno do Espectro Autista',
       icon: 'extension',
     };
