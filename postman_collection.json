@@ -495,8 +495,29 @@
               ]
             }
           }
+        },
+        {
+          "name": "Buscar Plano de Aula por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/lessons/ID_DO_PLANO_AQUI",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "lessons",
+                "ID_DO_PLANO_AQUI"
+              ]
+            }
+          }
         }
       ]
+
     }
   ]
 }

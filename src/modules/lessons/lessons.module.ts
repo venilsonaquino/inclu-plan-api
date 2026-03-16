@@ -6,6 +6,7 @@ import { ILessonPlanRepository } from './domain/repositories/lesson-plan.reposit
 import { SequelizeLessonPlanRepository } from './infra/persistence/sequelize/sequelize-lesson-plan.repository';
 import { LessonsController } from './infra/http/controllers/lessons.controller';
 import { ListLessonPlansUseCase } from './application/use-cases/list-lesson-plans/list-lesson-plans.use-case';
+import { GetLessonPlanUseCase } from './application/use-cases/get-lesson-plan/get-lesson-plan.use-case';
 import { TeachersModule } from '@/modules/teachers/teachers.module';
 
 @Module({
@@ -20,8 +21,10 @@ import { TeachersModule } from '@/modules/teachers/teachers.module';
       useClass: SequelizeLessonPlanRepository,
     },
     ListLessonPlansUseCase,
+    GetLessonPlanUseCase,
   ],
   exports: [ILessonPlanRepository],
 })
 export class LessonsModule { }
+
 
